@@ -1,8 +1,9 @@
 Package: average-predictive-comparisons
-Title: 
-Description: 
+Title: Average Predictive Comparisons
+Description: An implementation of Gelman/Pardoe's average predictive comparisons
 Version: 0.1
-Authors@R: # getOptions('devtools.desc.author')
+Author: David Chudzicki
+Maintainer: David Chudzicki (dchudz@gmail.com)
 Depends: R (>= 3.0.2)
-License: # getOptions('devtools.desc.license')
-LazyData: true
+License: I haven't decided yet. Hopefully BSD or MIT will make sense.
+
