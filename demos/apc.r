@@ -1,27 +1,7 @@
-source(file.path(Sys.getenv("GITHUB_PATH"),"average-predictive-comparisons","utilities.R"))
-
-#X is a data frame with all of the inputs
-#predictionFunction is a function that can predict the output from a data frame with all inputs
-#u is the input to vary
-#v are the inputs not to vary
-#weights default to 1/(1+(squared mahalanobis distance)) -- but you can specify some other function of mahalanobis
-getAPC <- function(predictionFunction, X, u, v, weightAsFunctionOfMahalanobis = function(x) 1/(1+x)) {
-  uNew <- paste(u,".B",sep="")
-  pairs <- getPairs(X,u,v)  
-  yHat1 <- predictionFunction(pairs)
-  pairsNew <- pairs[,c(v,uNew)]
-  names(pairsNew)[which(names(pairsNew)==uNew)] = u
-  yHat2 <- predictionFunction(pairsNew)
-  uDiff <- pairs[[uNew]] - pairs[[u]]
-  w <- weightAsFunctionOfMahalanobis(pairs$mahalanobis)
-  APC <- sum(w * (yHat2 - yHat1) * sign(uDiff)) / sum(w * uDiff * sign(uDiff))
-  list(APC=APC, pairsDF=pairs, weights=w)
-}
 
 
 #I'll use this prediction function for the next few examples:
 predictionFunction <- function(df) inv.logit(10*df$X1 + 10*df$X2)
-
 
 #APC for two uncorrelated variables
 sigma <- matrix(c(1,0,

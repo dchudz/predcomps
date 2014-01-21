@@ -1,9 +1,3 @@
-requireInstall <- function(packageName) {
-  if(!packageName %in% rownames(installed.packages())) install.packages(packageName)
-  base::require(packageName, character.only=TRUE)
-}
-
-
 mahalanobis <- function(matrix1, matrix2, covariance) {
   #rows of matrix1, matrix2 are observations; columns are features
   #I'll convert to matrices so that we can use data frames as arguments if we want:
@@ -20,7 +14,6 @@ getPairs <- function(X,u,v) {
   pairsNoId <- subset(pairs, mahalanobis!=0)
   pairsNoId[,c(v,u,paste(u,".B",sep=""), "mahalanobis")]
 }
-
 
 getXAndResampledXMerged <- function(X, u, v, samplingProbsAsFunctionOfMahalanobis = function(x) 1/(1+x)) {
   pairs <- getPairs(X,u,v)

@@ -1,0 +1,18 @@
+
+
+Example datasets (for comparison with Gelman)--
+
+Ideally I'd be able to replicate his results.
+
+Example used in the paper (and in ARM 21.4) -- prison sentences data set -- doesn't seem to be included in the example data files for the book (http://www.stat.columbia.edu/~gelman/arm/software/) or anywhere else that I could find
+
+
+Section 5.7
+
+wells examples
+
+APC framed as alternative to plotting probability as a function of feature of interest (at particular chosen values for the other features) --  
+
+chooses a particular comparison of interest and averages across the rest of the data set (this is pretty similar to randomForest's partial plots)
+
+(gelman gives code example--I could use it in my unit tests)

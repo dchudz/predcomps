@@ -1,9 +1,12 @@
-Package: average-predictive-comparisons
+Package: predcomps
 Title: Average Predictive Comparisons
 Description: An implementation of Gelman/Pardoe's average predictive comparisons
 Version: 0.1
 Author: David Chudzicki
-Maintainer: David Chudzicki (dchudz@gmail.com)
-Depends: R (>= 3.0.2)
+Maintainer: David Chudzicki <dchudz@gmail.com>
+Depends:
+    R (>= 3.0.2)
+Imports:
+    plyr,
+    ggplot2
 License: I haven't decided yet. Hopefully BSD or MIT will make sense.
-
