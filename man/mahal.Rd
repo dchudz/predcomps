@@ -17,8 +17,6 @@ mahal(matrix1, matrix2, covariance)
 
   \item{covariance}{covariance to be used for mahalanobis
   computation}
-
-  \item{high}{high value of input feature}
 }
 \value{
 a vector of mahalanobis distances between row i of matrix1
