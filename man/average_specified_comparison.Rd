@@ -18,9 +18,7 @@ average_specified_comparison(fit, df, input, low, high)
 }
 \description{
 Makes an average predictive comparison for two specified
-values of the input variable of interest
-}
-\examples{
-print("hi")
+values of the input variable of interest, as in section 5.7
+of ARM
 }
 

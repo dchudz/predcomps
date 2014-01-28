@@ -1,6 +1,6 @@
 library("devtools")
-setwd("~/Github/average-predictive-comparisons")
+setwd("~/Github/predcomps")
+getwd()
 document()
 load_all()
-
-x
+dev_help("mahal")
