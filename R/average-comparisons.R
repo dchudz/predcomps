@@ -1,14 +1,12 @@
 #' average_specified_comparison
 #'
-#' Makes an average predictive comparison for two specified values of the input variable of interest
+#' Makes an average predictive comparison for two specified values of the input variable of interest, as in section 5.7 of ARM
 #'
 #' @param fit fitted glm object
 #' @param df data frame for evaluating predictions
 #' @param input string representing the name of the input feature you want an APC for
 #' @param low low value of input feature
 #' @param high high value of input feature
-#' @examples
-#' print("hi")
 #' @export
 average_specified_comparison <- function(fit, df, input, low, high) {
   dfHigh <- df
