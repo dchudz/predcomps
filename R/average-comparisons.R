@@ -19,14 +19,30 @@ average_specified_comparison <- function(fit, df, input, low, high) {
 }
 
 
+#' get_apc
+#' 
+#' makes average predictive comparison (based on Gelman/Pardoe) by forming pairs with two versions of the input of interest and averaging the predictive difference using weights. I think weights should be an approximation of the density p(u1,u2|v) or something like that... I need to look back at this. At present, I believe this is probably implementing the version in the Gelman/Pardoe paper.
+#' 
+#' Only works fore continuous inputs right now
+#' 
+#' @param predictionFunction
+#' @param X 
+#' @param u input of interest
+#' @param v other inputs
+#' @param weightAsFunctionOfMahalanobis weights to use, expressed as a function of mahalanobis distance
+#' @return a list with: 
+#' APC (the average predictive comparison), 
+#  pairsDF (the data frame of pairs), 
+#' w (the weights used)
+
 #X is a data frame with all of the inputs
 #predictionFunction is a function that can predict the output from a data frame with all inputs
 #u is the input to vary
 #v are the inputs not to vary
 #weights default to 1/(1+(squared mahalanobis distance)) -- but you can specify some other function of mahalanobis
-getAPC <- function(predictionFunction, X, u, v, weightAsFunctionOfMahalanobis = function(x) 1/(1+x)) {
+get_apc <- function(predictionFunction, X, u, v, weightAsFunctionOfMahalanobis = function(x) 1/(1+x)) {
   uNew <- paste(u,".B",sep="")
-  pairs <- getPairs(X,u,v)  
+  pairs <- get_pairs(X,u,v)
   yHat1 <- predictionFunction(pairs)
   pairsNew <- pairs[,c(v,uNew)]
   names(pairsNew)[which(names(pairsNew)==uNew)] = u
