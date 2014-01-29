@@ -34,12 +34,6 @@ average_specified_comparison <- function(fit, df, input, low, high) {
 #' APC (the average predictive comparison), 
 #  pairsDF (the data frame of pairs), 
 #' w (the weights used)
-
-#X is a data frame with all of the inputs
-#predictionFunction is a function that can predict the output from a data frame with all inputs
-#u is the input to vary
-#v are the inputs not to vary
-#weights default to 1/(1+(squared mahalanobis distance)) -- but you can specify some other function of mahalanobis
 get_apc <- function(predictionFunction, X, u, v, weightAsFunctionOfMahalanobis = function(x) 1/(1+x)) {
   uNew <- paste(u,".B",sep="")
   pairs <- get_pairs(X,u,v)
