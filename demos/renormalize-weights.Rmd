@@ -1,0 +1,39 @@
+## Imagine we have enough exact transitions...
+
+(p. 37 mentions approximating exact transitions)
+
+Suppose:
+
+$v$ consists of only 1 input, which can either be $v=v_1$ or $v=v_2$. For simplicity, assume $u$ only has one possible transition at each $v$. Suppose there's only one possible transition for $u$, $u_a \rightarrow u_b$.
+
+(show example of what this dataset could look like)
+
+Say we have a model $\hat{y} = f(u,v)$. 
+
+Write out what equation (2) says the APC should be. It's something like:
+
+$$.75 \delta_u(u_a \rightarrow u_b, v_1, f) + 0.25 \delta_u(u_a \rightarrow u_b, v_2, f)$$
+
+(todo: write this out more cleanly)
+
+Note that for equation (2) it matters how the $u | v$ is distributed... if for a particular $v$, $u | v$ is almost constant, then that $v$ just gets mostly 0's and doesn't count for anything. Assume here that for each $v$, $u$ is evenly distributed between $u_a$ and $u_b$.
+
+
+## Imagine we have to approximate exact transitions
+
+Now $v = v + N(0,epsilon)$
+
+still close to original values...
+
+go to approximation...
+
+now since there's fewer things for the v's near $v_2$ to pair with 
+
+
+Imagine 2 groups....
+
+75% are one way, 
+
+25% are the other...
+
+make it clear what the 
