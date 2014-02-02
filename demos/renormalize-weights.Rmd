@@ -1,35 +1,70 @@
 ## Imagine we have enough exact transitions...
 
-(p. 37 mentions approximating exact transitions)
+If $u$ is an input of interest and $v$ are the other inputs, recall that we compute the APC by sampling twice from $u$ conditional on $v$, and average over the distribution of $v$ (equation (5) in [the APC paper](http://www.stat.columbia.edu/~gelman/research/published/ape17.pdf) defines the quantity we wish to approximate). So we're interested in the distribution of $u$ given $v$. 
 
-Suppose:
+If there were enough pairs of points with identical $v$, we could just use the sample distribution of $u$ given $v$. As noted in the paper, we may have few (if any) pairs of points with identical $v$. But still, it's worth thinking through an example where we do.
 
-$v$ consists of only 1 input, which can either be $v=v_1$ or $v=v_2$. For simplicity, assume $u$ only has one possible transition at each $v$. Suppose there's only one possible transition for $u$, $u_a \rightarrow u_b$.
+Suppose $v$ consists of only 1 input, which can either be $v=v_1$ or $v=v_2$. For simplicity, assume $u$ only has exactly two possible (equally likely) values at each $v$, so there is only one possible transition at each $v$. Here's an example:
 
-(show example of what this dataset could look like)
+```{r}
+exampleDF <- data.frame(
+  v=c(3,3,7,7),
+  u=c(10,20,50,60)
+  )[rep(c(1,2,3,4),c(40,40,10,10)),]
 
-Say we have a model $\hat{y} = f(u,v)$. 
+library("plyr")
+# Count each u/v combination:
+ddply(exampleDF, c("v","u"), function(df) data.frame(CountOfRows = nrow(df)))
+```
 
-Write out what equation (2) says the APC should be. It's something like:
+Say we have a model $\hat{y} = f(u,v)$. I'll choose $\hat{y} = f(u,v) = uv$ for a simple example. (How the model is estimated is completely orthogonal to the questions addressed here.)
 
-$$.75 \delta_u(u_a \rightarrow u_b, v_1, f) + 0.25 \delta_u(u_a \rightarrow u_b, v_2, f)$$
+Equation (2) in the paper says the numerator in the APC should be. It's:
 
-(todo: write this out more cleanly)
+$$.4 \cdot .5 \cdot .5 \cdot (f(20,3) - f(10, 3)) + 0.1 \cdot .5 \cdot .5 (f(60,7) - f(50,7)) $$
 
-Note that for equation (2) it matters how the $u | v$ is distributed... if for a particular $v$, $u | v$ is almost constant, then that $v$ just gets mostly 0's and doesn't count for anything. Assume here that for each $v$, $u$ is evenly distributed between $u_a$ and $u_b$. (Maybe make these different for $v_1$ and $v_2$ so when we form the pairs it's more clear what's going on)
+The .5's are the $p(u|v)$'s (and will end up canceling out). (Terms with transition size 0 aren't included.)
 
+The denominator is:
 
-## Imagine we have to approximate exact transitions
+$$.4 \cdot .5 \cdot .5 \cdot (20 - 10) + .1 \cdot .5 \cdot .5 \cdot (60 - 50)$$
 
-Now $v = v + N(0,epsilon)$
+The ratio simplifies to:
 
-still close to original values...
+$$.8 \frac{\delta_u(10 \rightarrow 20, 3, f)}{10} + 0.2 \frac{\delta_u(50 \rightarrow 60, 7, f)}{10} $$
 
-go to approximation... by forming pairs, compute weights...
+This is all overkill for our very simpler example, where it's easy to see that the APC is just $.8 \cdot 3 + .2 \cdot 6$. But I wanted to be very concrete.
 
-* pairs that both come from $v$ near $v_1$ or both near $v_2$ each have high weights, mixed pairs have low weights (good)
-* now since there's fewer things for the v's near $v_2$ to pair with, $v_2$ is weighted much less than it should be --- $v_2$ should make up a quarter  
+I'll compute it:
 
+```{r}
+f <- function(u, v) return(u*v)
+APC1 <- .8*(f(20,3) - f(10,3))/10 + .2*(f(60,7) - f(50,7))/10
+APC1
+```
+
+## Now without exact duplicates
+
+Now imagine we don't have any exact duplicates of $v$. To get a corresponding example like that, I'll add a really tiny bit of noise to $v$ in the example, $v_{new} = v + N(0,epsilon)$.
+
+```{r}
+exampleDF2 <- transform(exampleDF, v = v + rnorm(nrow(exampleDF), sd=.001))
+```
+
+Now we form pairs and compute weights as described in the paper:
+
+```{r}
+pairsDF <- get_pairs(exampleDF2, u="u", v="v")
+pairsDF[sample(1:nrow(pairsDF), 50), ]
+```
+
+Now pairs with nearby $v$'s (which would have been the same $v$'s previously) have high weights, where pairs from what used to be different $v$'s have low weights. That's good.
+
+But we have a problem, which is that $v$ near 3 now has more weight in the data set for two reasons: one is that we started with more $v$'s near 3, so there are more rows with $v$ near 3 as the first element of the pair. But also each time $v$ is near $3$ in the first element of each pair, there are more nearby $v$'s to pair with, so we get higher weights.
+
+```{r}
+# Demonstrate by rounding V and summarizing 
+```
 
 Imagine 2 groups....
 

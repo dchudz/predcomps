@@ -24,6 +24,8 @@ mahal <- function(matrix1, matrix2, covariance) {
 #' @param X data frame
 #' @param u input of interest
 #' @param v other inputs
+#' @param weightAsFunctionOfMahalanobis weights to use, expressed as a function of mahalanobis distance
+#' @param renormalizeWeights whether to renormalize the weights to that they sum to 1 within each group (groups based on the first element of the pair). If I'm right, there's no reason to use \code{FALSE} ever; I'm only leaving the option in so I can compare with the paper.
 #' @return a data frame with the inputs \code{v} from the first of each pair, \code{u} from each half (with ".B" appended to the second), and the mahalanobis distances between the pairs.
 #' @examples
 #' library("mvtnorm")
@@ -33,12 +35,15 @@ mahal <- function(matrix1, matrix2, covariance) {
 #' X <- data.frame(rmvnorm(n=10, sigma=sigma))
 #' get_pairs(X, u="X3", v=c("X1","X2"))
 #' 
-get_pairs <- function(X,u,v) {
+get_pairs <- function(X, u, v,
+                      samplingProbsAsFunctionOfMahalanobis = function(x) 1/(1+x), 
+                      renormalizeWeights=TRUE) {
   pairs <- merge(X,X,by=c(), suffixes=c("",".B"))
   covV=cov(as.matrix(X[,v]))
   pairs$mahalanobis <- mahal(pairs[,v], pairs[,paste0(v,".B")], covV)
   pairsNoId <- subset(pairs, mahalanobis!=0)
-  pairsNoId[,c(v,u,paste(u,".B",sep=""), "mahalanobis")]
+  pairsNoId$weight <- samplingProbsAsFunctionOfMahalanobis(pairsNoId$mahalanobis)
+  pairsNoId[,c(v,u,paste(u,".B",sep=""), "mahalanobis", "weight")]
 }
 
 #' resample_from_pairs

@@ -1,5 +1,5 @@
 library("devtools")
-setwd("~/Github/predcomps")
+setwd("~/predcomps")
 getwd()
 document()
 load_all()

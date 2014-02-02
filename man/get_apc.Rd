@@ -18,8 +18,8 @@ get_apc(predictionFunction, X, u, v,
   expressed as a function of mahalanobis distance}
 }
 \value{
-a list with: - APC (the average predictive comparison), -
-pairsDF (the data frame of pairs), - w (the weights used)
+a list with: APC (the average predictive comparison), w
+(the weights used)
 }
 \description{
 makes average predictive comparison (based on

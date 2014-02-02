@@ -2,7 +2,8 @@
 \alias{get_pairs}
 \title{get_pairs}
 \usage{
-get_pairs(X, u, v)
+get_pairs(X, u, v, samplingProbsAsFunctionOfMahalanobis = function(x) 1/(1 +
+  x), renormalizeWeights = TRUE)
 }
 \arguments{
   \item{X}{data frame}
@@ -10,6 +11,15 @@ get_pairs(X, u, v)
   \item{u}{input of interest}
 
   \item{v}{other inputs}
+
+  \item{weightAsFunctionOfMahalanobis}{weights to use,
+  expressed as a function of mahalanobis distance}
+
+  \item{renormalizeWeights}{whether to renormalize the
+  weights to that they sum to 1 within each group (groups
+  based on the first element of the pair). If I'm right,
+  there's no reason to use \code{FALSE} ever; I'm only
+  leaving the option in so I can compare with the paper.}
 }
 \value{
 a data frame with the inputs \code{v} from the first of
