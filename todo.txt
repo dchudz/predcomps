@@ -1,17 +1,6 @@
-- start discussion of why we don't currently get the right answer in the limit with more data
-- make a sensible option (not default) to implement some change that does get the right answer in the limit as we get more data, e.g.:
-  - now weights are 1/(k+d), k==1
-  - make k down as N scales up? perhaps tricky to get scaling right
-  - or use only closest s(N) points, s increases with N, but not as fast as N, e.g. s(N) = sqrt(N) probably works -- this means we're always decreasing bias (sampling from closer to the right v) and also decreasing various (more samples) as N increases.
-
 - make apc function take *either* a function to compute yHat, *or* a glm object
 - demonstrate on simulated linear regression example
 - demonstrate on simulated logistic regression example
-
-
-
-
-
 
 
 

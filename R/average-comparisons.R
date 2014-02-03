@@ -70,7 +70,9 @@ get_apc_with_absolute <- function(predictionFunction, X, u, v,
 #' 
 #' (abstracted this into a separate function from \code{get_apc} so we can more easily do things 
 #' like \code{get_apc_with_absolute})
-compute_apc_from_pairs <- function(predictionFunction, pairs, u, v, absolute=FALSE) {
+#' @export
+compute_apc_from_pairs <- function(predictionFunction, pairs, u, v, 
+                                   absolute=FALSE) {
   uNew <- paste(u,".B",sep="")
   yHat1 <- predictionFunction(pairs)
   pairsNew <- structure(pairs[,c(v,uNew)], names=c(v,u)) #renaming u in pairsNew so we can call predictionFunction
@@ -79,4 +81,5 @@ compute_apc_from_pairs <- function(predictionFunction, pairs, u, v, absolute=FAL
   w <- pairs$weight
   absoluteOrIdentity <- if (absolute) abs else identity
   APC <- sum(absoluteOrIdentity(w * (yHat2 - yHat1) * sign(uDiff))) / sum(w * uDiff * sign(uDiff))
+  return(APC)
 }
