@@ -1,16 +1,5 @@
-```{r echo=FALSE, message=FALSE}
-#TODO: change this before publicizing
-library(methods)
-library(utils)
-library(roxygen2)
-library("devtools")
-setwd("~/predcomps")
-load_all()
-library("knitr")
-opts_chunk$set(tidy=FALSE)
-library("plyr")
-print.data.frame <- function(...) base::print.data.frame(..., row.names=FALSE)
-```
+
+
 
 ## Toy example with exact transitions
 
@@ -20,7 +9,8 @@ If there were enough pairs of points with identical $v$, we could just use the s
 
 Suppose $v$ consists of only 1 input, which can either be $v=v_1$ or $v=v_2$. For simplicity, assume $u$ only has exactly two possible (equally likely) values at each $v$, so there is only one possible transition at each $v$. Here's an example:
 
-```{r}
+
+```r
 exampleDF <- data.frame(
   v=c(3,3,7,7),  
   u=c(10,20,12,22) 
@@ -29,9 +19,17 @@ exampleDF <- data.frame(
 # Count each u/v combination:
 ```
 
-```{r echo=FALSE}
-kable(ddply(exampleDF, c("v","u"), function(df) data.frame(CountOfRows = nrow(df))))
+
+
 ```
+## |  v|   u|  CountOfRows|
+## |--:|---:|------------:|
+## |  3|  10|           40|
+## |  3|  20|           40|
+## |  7|  12|           10|
+## |  7|  22|           10|
+```
+
 
 Say we have a model $\hat{y} = f(u,v)$. I'll choose $\hat{y} = f(u,v) = uv$ for a simple example. (How the model is estimated is completely orthogonal to the questions addressed here.)
 
@@ -53,29 +51,54 @@ This is all overkill for our very simple example, where it's easy to see that th
 
 I'll compute it:
 
-```{r}
+
+```r
 f <- function(u, v) return(u*v)
 ApcExact <- .8*(f(20,3) - f(10,3))/10 + .2*(f(22,7) - f(12,7))/10
 ApcExact
 ```
 
+```
+## [1] 3.8
+```
+
+
 ## Now without exact duplicates
 
 Now imagine we don't have any exact duplicates of $v$. To get a corresponding example like that, I'll add a really tiny bit of noise to $v$ in the example, $v_{new} = v + N(0,\epsilon)$.
 
-```{r}
+
+```r
 exampleDF2 <- transform(exampleDF, v = v + rnorm(nrow(exampleDF), sd=.001))
 ```
 
+
 Now we form pairs and compute weights as described in the paper. Here's a sample of the resulting data frame of pairs:
 
-```{r}
+
+```r
 pairsDF <- get_pairs(exampleDF2, u="u", v="v", renormalizeWeights=FALSE)
 ```
 
-```{r echo=FALSE}
-kable(pairsDF[sample(1:nrow(pairsDF), 12), ], row.names=FALSE)
+
+
 ```
+## |      v|   u|  originalRowNumber|    v.B|  u.B|  originalRowNumber.B|  weight|
+## |------:|---:|------------------:|------:|----:|--------------------:|-------:|
+## |  3.000|  20|                 53|  3.000|   20|                   57|  1.0000|
+## |  3.000|  10|                 34|  3.000|   10|                   16|  1.0000|
+## |  3.000|  10|                  3|  3.001|   10|                   21|  1.0000|
+## |  3.000|  20|                 63|  3.000|   20|                   41|  1.0000|
+## |  7.001|  12|                 87|  3.000|   20|                   62|  0.1391|
+## |  2.999|  10|                 19|  3.000|   20|                   48|  1.0000|
+## |  2.999|  20|                 58|  7.000|   12|                   90|  0.1390|
+## |  3.000|  10|                 39|  3.000|   20|                   60|  1.0000|
+## |  3.001|  10|                  1|  7.000|   22|                   96|  0.1392|
+## |  3.000|  20|                 44|  2.997|   20|                   75|  1.0000|
+## |  3.001|  10|                 25|  2.999|   20|                   73|  1.0000|
+## |  3.002|  10|                 13|  3.000|   20|                   52|  1.0000|
+```
+
 
 Now pairs with nearby $v$'s (which would have been the same $v$'s previously) have high weights, where pairs from far-away $v$'s (which were different $v$'s in the previous example) have low weights. That's good.
 
@@ -88,7 +111,8 @@ Reason (1) is good, but reason (2) is not so good.
 
 In the data frame of pairs, the weights are all close to 0.14 or 1. Let's look at how the distribution of $u$ and $v$ in just the pairs with weights close to 1:
 
-```{r HistogramOfWeights}
+
+```r
 pairsDF <- data.frame(vRounded = round(pairsDF$v), pairsDF)
 pairsHighWeightsDF <- subset(pairsDF, weight > 0.9)
 ddply(pairsHighWeightsDF,
@@ -97,11 +121,21 @@ ddply(pairsHighWeightsDF,
                               ProportionOfRows = nrow(df)/nrow(pairsHighWeightsDF)))
 ```
 
+```
+##   vRounded  u CountOfRows ProportionOfRows
+## 1        3 10        3160          0.47164
+## 2        3 20        3160          0.47164
+## 3        7 12         190          0.02836
+## 4        7 22         190          0.02836
+```
+
+
 We see that $v$'s near 7 makes up only about 5.7% of the pairs. (It would be exactly $(.2)(.2) = 4$%, except that when we form pairs to compute the APC we don't pair any row with itself.)
 
 If we form the APC based on these pairs and these weights, we weight the $v$'s near 3 too much, so our APC is too low:
 
-```{r}
+
+```r
 
 pairsDF$yHat1 <- f(pairsDF$u, pairsDF$v)
 pairsDF$yHat2 <- f(pairsDF$u.B, pairsDF$v)
@@ -112,15 +146,27 @@ ApcApprox1 <-
 ApcApprox1
 ```
 
+```
+## [1] 3.364
+```
+
+
 I showed the computation above, but we can also use the ```get_apc``` function:
 
-```{r}
+
+```r
 get_apc(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=FALSE)
 ```
 
+```
+## [1] 3.364
+```
+
+
 Instead, we can normalize weights so that within each first element of the pair. 
 
-```{r}
+
+```r
 pairsDFWeightsNormalized <- ddply(pairsDF, "originalRowNumber", transform, weight = weight/sum(weight))
 ApcApprox2 <- 
   with(pairsDFWeightsNormalized,
@@ -128,9 +174,20 @@ ApcApprox2 <-
 ApcApprox2
 ```
 
+```
+## [1] 3.854
+```
+
+
 These renormalized weights are the ones returned from ```get_pairs``` by default, and used in ```get_apc``` by default:
 
-```{r}
+
+```r
 get_apc(function(df) return(df$u * df$v), exampleDF2, u="u", v="v")
 ```
+
+```
+## [1] 3.854
+```
+
 
