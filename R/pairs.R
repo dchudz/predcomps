@@ -44,10 +44,10 @@ get_pairs <- function(X, u, v,
   covV=cov(as.matrix(X[,v]))
   mahalanobis <- mahal(pairs[,v], pairs[,paste0(v,".B")], covV)
   pairs$weight <- weightAsFunctionOfMahalanobis(mahalanobis)
-  pairsNoId <- pairs[mahalanobis!=0, , drop=FALSE]  #remove pairs where both elements are the same
+  pairsNoId <- subset(pairs, originalRowNumber != originalRowNumber.B) #remove pairs where both elements are the same
   if (renormalizeWeights) {
-    pairsNoId <- ddply(pairsDF, "originalRowNumber", transform, weight = weight/sum(weight))
-  }
+    pairsNoId <- ddply(pairsNoId, "originalRowNumber", transform, weight = weight/sum(weight))
+  } #normalizing AFTER removing pairs from same row as each other
   return(pairsNoId) 
 }
 

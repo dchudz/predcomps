@@ -3,7 +3,8 @@
 \title{get_apc}
 \usage{
 get_apc(predictionFunction, X, u, v,
-  weightAsFunctionOfMahalanobis = function(x) 1/(1 + x))
+  weightAsFunctionOfMahalanobis = function(x) 1/(1 + x),
+  renormalizeWeights = TRUE)
 }
 \arguments{
   \item{predictionFunction}{}
@@ -18,8 +19,7 @@ get_apc(predictionFunction, X, u, v,
   expressed as a function of mahalanobis distance}
 }
 \value{
-a list with: APC (the average predictive comparison), w
-(the weights used)
+a list with:
 }
 \description{
 makes average predictive comparison (based on

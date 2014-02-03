@@ -2,8 +2,8 @@
 \alias{get_pairs}
 \title{get_pairs}
 \usage{
-get_pairs(X, u, v, samplingProbsAsFunctionOfMahalanobis = function(x) 1/(1 +
-  x), renormalizeWeights = TRUE)
+get_pairs(X, u, v, weightAsFunctionOfMahalanobis = function(x) 1/(1 + x),
+  renormalizeWeights = TRUE)
 }
 \arguments{
   \item{X}{data frame}

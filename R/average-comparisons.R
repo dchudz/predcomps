@@ -31,9 +31,7 @@ average_specified_comparison <- function(fit, df, input, low, high) {
 #' @param v other inputs
 #' @param weightAsFunctionOfMahalanobis weights to use, expressed as a function of mahalanobis distance
 #' @return a list with: 
-#' APC (the average predictive comparison), 
-#  pairsDF (the data frame of pairs), 
-#' w (the weights used)
+#' @export
 get_apc <- function(predictionFunction, X, u, v, 
                     weightAsFunctionOfMahalanobis = function(x) 1/(1+x),
                     renormalizeWeights=TRUE) {
@@ -49,3 +47,5 @@ get_apc <- function(predictionFunction, X, u, v,
   APC <- sum(w * (yHat2 - yHat1) * sign(uDiff)) / sum(w * uDiff * sign(uDiff))
   return(APC)
 }
+
+# compute_apc_from_pairs <- function(pairsDF, predictionFunction)

@@ -1,4 +1,5 @@
 ```{r echo=FALSE, message=FALSE}
+set.seed(89890)
 #TODO: change this before publicizing
 library(methods)
 library(utils)
@@ -123,7 +124,7 @@ Instead, we can normalize weights so that within each first element of the pair.
 ```{r}
 pairsDFWeightsNormalized <- ddply(pairsDF, "originalRowNumber", transform, weight = weight/sum(weight))
 ApcApprox2 <- 
-  with(pairsDFWeightsNormalized,
+  with(pairsDFWeightsNormalized, 
        sum(weight * (yHat2 - yHat1) * sign(uDiff)) / sum(weight * uDiff * sign(uDiff)))
 ApcApprox2
 ```
@@ -131,6 +132,6 @@ ApcApprox2
 These renormalized weights are the ones returned from ```get_pairs``` by default, and used in ```get_apc``` by default:
 
 ```{r}
-get_apc(function(df) return(df$u * df$v), exampleDF2, u="u", v="v")
+get_apc(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=TRUE)
 ```
 
