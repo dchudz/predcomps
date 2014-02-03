@@ -38,12 +38,13 @@ mahal <- function(matrix1, matrix2, covariance) {
 get_pairs <- function(X, u, v,
                       samplingProbsAsFunctionOfMahalanobis = function(x) 1/(1+x), 
                       renormalizeWeights=TRUE) {
+  X$OriginalRowNumber <- 1:nrow(X)
   pairs <- merge(X,X,by=c(), suffixes=c("",".B"))
   covV=cov(as.matrix(X[,v]))
   pairs$mahalanobis <- mahal(pairs[,v], pairs[,paste0(v,".B")], covV)
   pairsNoId <- subset(pairs, mahalanobis!=0)
   pairsNoId$weight <- samplingProbsAsFunctionOfMahalanobis(pairsNoId$mahalanobis)
-  pairsNoId[,c(v,u,paste(u,".B",sep=""), "mahalanobis", "weight")]
+  return(pairsNoId) 
 }
 
 #' resample_from_pairs

@@ -1,3 +1,17 @@
+```{r echo=FALSE}
+#TODO: change this before publicizing
+library(methods)
+library(utils)
+library(roxygen2)
+library("devtools")
+setwd("~/predcomps")
+load_all()
+library("knitr")
+opts_chunk$set(tidy=FALSE)
+library("plyr")
+print.data.frame <- function(...) base::print.data.frame(..., row.names=FALSE)
+```
+
 ## Imagine we have enough exact transitions...
 
 If $u$ is an input of interest and $v$ are the other inputs, recall that we compute the APC by sampling twice from $u$ conditional on $v$, and average over the distribution of $v$ (equation (5) in [the APC paper](http://www.stat.columbia.edu/~gelman/research/published/ape17.pdf) defines the quantity we wish to approximate). So we're interested in the distribution of $u$ given $v$. 
@@ -8,74 +22,81 @@ Suppose $v$ consists of only 1 input, which can either be $v=v_1$ or $v=v_2$. Fo
 
 ```{r}
 exampleDF <- data.frame(
-  v=c(3,3,7,7),
-  u=c(10,20,12,22)
+  v=c(3,3,7,7),  
+  u=c(10,20,12,22) 
   )[rep(c(1,2,3,4),c(40,40,10,10)),]
 
-library("plyr")
 # Count each u/v combination:
-ddply(exampleDF, c("v","u"), function(df) data.frame(CountOfRows = nrow(df)))
+```
+
+```{r echo=FALSE}
+kable(ddply(exampleDF, c("v","u"), function(df) data.frame(CountOfRows = nrow(df))),
+      format="markdown")
+
 ```
 
 Say we have a model $\hat{y} = f(u,v)$. I'll choose $\hat{y} = f(u,v) = uv$ for a simple example. (How the model is estimated is completely orthogonal to the questions addressed here.)
 
-Equation (2) in the paper says the numerator in the APC should be. It's:
+Equation (2) in the paper says the numerator in the APC should be:
 
-$$.4 \cdot .5 \cdot .5 \cdot (f(20,3) - f(10, 3)) + 0.1 \cdot .5 \cdot .5 (f(22,7) - f(12,7)) $$
+$$(.4)(.5)(.5)(f(20,3) - f(10, 3)) + (0.1)(.5)(.5)(f(22,7) - f(12,7)) $$
 
-The .5's are the $p(u|v)$'s (and will end up canceling out). (Terms with transition size 0 aren't included.)
+The .5's are the $p(u|v)$'s (and will cancel out in this case). (Terms with transition size 0 aren't included.)
 
 The denominator is:
 
-$$.4 \cdot .5 \cdot .5 \cdot (20 - 10) + .1 \cdot .5 \cdot .5 \cdot (22 - 12)$$
+$$(.4)(.5)(.5)((20 - 10) + (.1)(.5)(.5)((22 - 12)$$
 
 The ratio simplifies to:
 
-$$.8 \frac{\delta_u(10 \rightarrow 20, 3, f)}{10} + 0.2 \frac{\delta_u(12 \rightarrow 22, 7, f)}{10} $$
+$$.8 \delta_u(10 \rightarrow 20, 3, f) + 0.2 \delta_u(12 \rightarrow 22, 7, f)$$
 
-This is all overkill for our very simpler example, where it's easy to see that the APC is just $.8 \cdot 3 + .2 \cdot 6$. But I wanted to be very concrete.
+This is all overkill for our very simple example, where it's easy to see that the APC is just $(.8)(3) + (.2)(6)$. But I wanted to be very concrete.
 
 I'll compute it:
 
 ```{r}
 f <- function(u, v) return(u*v)
-APC1 <- .8*(f(20,3) - f(10,3))/10 + .2*(f(22,7) - f(12,7))/10
-APC1
+ApcExact <- .8*(f(20,3) - f(10,3))/10 + .2*(f(22,7) - f(12,7))/10
+ApcExact
 ```
 
 ## Now without exact duplicates
 
-Now imagine we don't have any exact duplicates of $v$. To get a corresponding example like that, I'll add a really tiny bit of noise to $v$ in the example, $v_{new} = v + N(0,epsilon)$.
+Now imagine we don't have any exact duplicates of $v$. To get a corresponding example like that, I'll add a really tiny bit of noise to $v$ in the example, $v_{new} = v + N(0,\epsilon)$.
 
 ```{r}
 exampleDF2 <- transform(exampleDF, v = v + rnorm(nrow(exampleDF), sd=.001))
 ```
 
-Now we form pairs and compute weights as described in the paper:
+Now we form pairs and compute weights as described in the paper. Here's a sample of the resulting data frame of pairs:
 
 ```{r}
 pairsDF <- get_pairs(exampleDF2, u="u", v="v")
 pairsDF[sample(1:nrow(pairsDF), 12), ]
 ```
 
-Now pairs with nearby $v$'s (which would have been the same $v$'s previously) have high weights, where pairs from what used to be different $v$'s have low weights. That's good.
+Now pairs with nearby $v$'s (which would have been the same $v$'s previously) have high weights, where pairs from far-away $v$'s (which were different $v$'s in the previous example) have low weights. That's good.
 
-But we have a problem, which is that $v$ near 3 now has more weight in the data set for two reasons: one is that we started with more $v$'s near 3, so there are more rows with $v$ near 3 as the first element of the pair. But also each time $v$ is near $3$ in the first element of each pair, there are more nearby $v$'s to pair with, so we get higher weights.
+But we have a problem, which is that $v$ near 3 now has more weight in the data set for two reasons:
 
-The weights are all close to 0.14 or 1. Let's look at how the pairs with weights close to 1 are distributed:
+1. we started with more $v$'s near 3, so there are more rows with $v$ near 3 as the first element of the pair; and
+2. each time $v$ is near $3$ in the first element of each pair, there are more nearby $v$'s to pair with, so we get higher weights.
+
+Reason (1) is good, but reason (2) is not so good.
+
+In the data frame of pairs, the weights are all close to 0.14 or 1. Let's look at how the distribution of $u$ and $v$ in just the pairs with weights close to 1:
 
 ```{r HistogramOfWeights}
-# Demonstrate by rounding V and summarizing 
 pairsDF <- data.frame(vRounded = round(pairsDF$v), pairsDF)
-pairsDF[sample(1:nrow(pairsDF), 12), ]
-hist(pairsDF$weight)
 pairsHighWeightsDF <- subset(pairsDF, weight > 0.9)
 ddply(pairsHighWeightsDF,
-      c("vRounded","u"), function(df) data.frame(CountOfRows = nrow(df),
-                                                 ProportionOfRows = nrow(df)/nrow(pairsHighWeightsDF)))
+      c("vRounded","u"), 
+      function(df) data.frame(CountOfRows = nrow(df),
+                              ProportionOfRows = nrow(df)/nrow(pairsHighWeightsDF)))
 ```
 
-We see that $v$ near 7 makes up only about 5.7% of the pairs. (It would be exactly $.2 \cdot .2 = .04$, but when we form pairs to compute the APC we don't pair any rows with themselves.)
+We see that $v$'s near 7 makes up only about 5.7% of the pairs. (It would be exactly $(.2)(.2) = 4$%, except that when we form pairs to compute the APC we don't pair any row with itself.)
 
 If we form the APC based on these pairs and these weights, we weight the $v$'s near 3 too much, so our APC is too low:
 
@@ -84,20 +105,17 @@ If we form the APC based on these pairs and these weights, we weight the $v$'s n
 pairsDF$yHat1 <- f(pairsDF$u, pairsDF$v)
 pairsDF$yHat2 <- f(pairsDF$u.B, pairsDF$v)
 pairsDF$uDiff <- pairsDF$u.B - pairsDF$u
-APC2 <- with(pairsDF,
-             sum(weight * (yHat2 - yHat1) * sign(uDiff)) / sum(weight * uDiff * sign(uDiff)))
-APC2
-
-with(subset(pairsDF, weight > .9),
-             sum(weight * (yHat2 - yHat1) * sign(uDiff)) / sum(weight * uDiff * sign(uDiff)))
-
+ApcApprox1 <- 
+  with(pairsDF,
+       sum(weight * (yHat2 - yHat1) * sign(uDiff)) / sum(weight * uDiff * sign(uDiff)))
+ApcApprox1
 ```
 
 Instead, if we normalize within each $v$...
 
 ```{r}
 
-Normalize weights within each $v$.
+#Normalize weights within each $v$.
 ```
 
 
