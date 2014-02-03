@@ -34,15 +34,18 @@ average_specified_comparison <- function(fit, df, input, low, high) {
 #' APC (the average predictive comparison), 
 #  pairsDF (the data frame of pairs), 
 #' w (the weights used)
-get_apc <- function(predictionFunction, X, u, v, weightAsFunctionOfMahalanobis = function(x) 1/(1+x)) {
+get_apc <- function(predictionFunction, X, u, v, 
+                    weightAsFunctionOfMahalanobis = function(x) 1/(1+x),
+                    renormalizeWeights=TRUE) {
   uNew <- paste(u,".B",sep="")
-  pairs <- get_pairs(X,u,v)
+  pairs <- get_pairs(X,u,v,
+                     weightAsFunctionOfMahalanobis=weightAsFunctionOfMahalanobis,
+                     renormalizeWeights=renormalizeWeights)
   yHat1 <- predictionFunction(pairs)
-  pairsNew <- pairs[,c(v,uNew)]
-  names(pairsNew)[which(names(pairsNew)==uNew)] = u
+  pairsNew <- structure(pairs[,c(v,uNew)], names=c(v,u)) #renaming u in pairsNew so we can call predictionFunction
   yHat2 <- predictionFunction(pairsNew)
   uDiff <- pairs[[uNew]] - pairs[[u]]
-  w <- weightAsFunctionOfMahalanobis(pairs$mahalanobis)
+  w <- pairs$weight
   APC <- sum(w * (yHat2 - yHat1) * sign(uDiff)) / sum(w * uDiff * sign(uDiff))
-  list(APC=APC, pairsDF=pairs, weights=w)
+  return(APC)
 }

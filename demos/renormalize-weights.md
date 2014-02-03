@@ -1,12 +1,7 @@
 
-```
-## Loading predcomps
-## Loading required namespace: plyr
-## Loading required namespace: ggplot2
-```
 
 
-## Imagine we have enough exact transitions...
+## Toy example with exact transitions
 
 If $u$ is an input of interest and $v$ are the other inputs, recall that we compute the APC by sampling twice from $u$ conditional on $v$, and average over the distribution of $v$ (equation (5) in [the APC paper](http://www.stat.columbia.edu/~gelman/research/published/ape17.pdf) defines the quantity we wish to approximate). So we're interested in the distribution of $u$ given $v$. 
 
@@ -82,24 +77,26 @@ Now we form pairs and compute weights as described in the paper. Here's a sample
 
 
 ```r
-pairsDF <- get_pairs(exampleDF2, u="u", v="v")
-pairsDF[sample(1:nrow(pairsDF), 12), ]
+pairsDF <- get_pairs(exampleDF2, u="u", v="v", renormalizeWeights=FALSE)
 ```
 
+
+
 ```
-##          v  u   v.B u.B mahalanobis weight
-## 233  2.998 10 2.999  10   1.175e-06 1.0000
-## 3063 3.000 20 3.000  10   9.521e-09 1.0000
-## 1988 6.999 12 3.000  10   6.184e+00 0.1392
-## 1881 7.000 12 2.998  10   6.191e+00 0.1391
-## 9088 6.999 12 7.001  22   1.425e-06 1.0000
-## 8489 6.999 12 7.001  12   2.045e-06 1.0000
-## 3221 3.001 10 2.998  10   5.078e-06 1.0000
-## 4562 3.002 20 2.999  20   2.461e-06 1.0000
-## 7752 3.000 20 3.002  20   2.036e-06 1.0000
-## 7055 2.999 20 3.001  20   1.024e-06 1.0000
-## 4946 2.999 20 3.000  20   2.486e-07 1.0000
-## 5574 2.999 20 3.000  20   1.996e-07 1.0000
+## |      v|   u|  originalRowNumber|    v.B|  u.B|  originalRowNumber.B|  weight|
+## |------:|---:|------------------:|------:|----:|--------------------:|-------:|
+## |  7.000|  22|                 95|  2.999|   10|                   39|  0.1391|
+## |  3.001|  10|                 10|  7.001|   12|                   90|  0.1391|
+## |  2.999|  10|                 19|  2.998|   10|                   31|  1.0000|
+## |  7.000|  22|                 92|  3.000|   20|                   70|  0.1392|
+## |  7.001|  12|                 88|  7.000|   12|                   82|  1.0000|
+## |  2.999|  10|                 11|  7.000|   22|                   92|  0.1391|
+## |  2.998|  20|                 65|  3.000|   20|                   67|  1.0000|
+## |  3.001|  10|                  2|  3.000|   10|                    7|  1.0000|
+## |  3.000|  20|                 49|  2.999|   20|                   72|  1.0000|
+## |  3.001|  20|                 47|  3.000|   10|                   33|  1.0000|
+## |  6.999|  22|                 96|  7.000|   22|                   94|  1.0000|
+## |  3.001|  10|                 34|  2.999|   10|                   39|  1.0000|
 ```
 
 
@@ -154,20 +151,43 @@ ApcApprox1
 ```
 
 
-Instead, if we normalize within each $v$...
+I showed the computation above, but we can also use the ```get_apc``` function:
 
 
 ```r
+get_apc(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=FALSE)
+```
 
-#Normalize weights within each $v$.
+```
+## [1] 3.364
 ```
 
 
+Instead, we can normalize weights so that within each first element of the pair. 
 
-Imagine 2 groups....
 
-75% are one way, 
+```r
+pairsDFWeightsNormalized <- ddply(pairsDF, "originalRowNumber", transform, weight = weight/sum(weight))
+ApcApprox2 <- 
+  with(pairsDFWeightsNormalized,
+       sum(weight * (yHat2 - yHat1) * sign(uDiff)) / sum(weight * uDiff * sign(uDiff)))
+ApcApprox2
+```
 
-25% are the other...
+```
+## [1] 3.854
+```
 
-make it clear what the 
+
+These renormalized weights are the ones returned from ```get_pairs``` by default, and used in ```get_apc``` by default:
+
+
+```r
+get_apc(function(df) return(df$u * df$v), exampleDF2, u="u", v="v")
+```
+
+```
+## [1] 3.854
+```
+
+

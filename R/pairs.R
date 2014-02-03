@@ -36,14 +36,18 @@ mahal <- function(matrix1, matrix2, covariance) {
 #' get_pairs(X, u="X3", v=c("X1","X2"))
 #' 
 get_pairs <- function(X, u, v,
-                      samplingProbsAsFunctionOfMahalanobis = function(x) 1/(1+x), 
+                      weightAsFunctionOfMahalanobis = function(x) 1/(1+x), 
                       renormalizeWeights=TRUE) {
-  X$OriginalRowNumber <- 1:nrow(X)
+  X <- X[c(v,u)]
+  X$originalRowNumber <- 1:nrow(X)
   pairs <- merge(X,X,by=c(), suffixes=c("",".B"))
   covV=cov(as.matrix(X[,v]))
-  pairs$mahalanobis <- mahal(pairs[,v], pairs[,paste0(v,".B")], covV)
-  pairsNoId <- subset(pairs, mahalanobis!=0)
-  pairsNoId$weight <- samplingProbsAsFunctionOfMahalanobis(pairsNoId$mahalanobis)
+  mahalanobis <- mahal(pairs[,v], pairs[,paste0(v,".B")], covV)
+  pairs$weight <- weightAsFunctionOfMahalanobis(mahalanobis)
+  pairsNoId <- pairs[mahalanobis!=0, , drop=FALSE]  #remove pairs where both elements are the same
+  if (renormalizeWeights) {
+    pairsNoId <- ddply(pairsDF, "originalRowNumber", transform, weight = weight/sum(weight))
+  }
   return(pairsNoId) 
 }
 

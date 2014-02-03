@@ -1,4 +1,4 @@
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE}
 #TODO: change this before publicizing
 library(methods)
 library(utils)
@@ -12,7 +12,7 @@ library("plyr")
 print.data.frame <- function(...) base::print.data.frame(..., row.names=FALSE)
 ```
 
-## Imagine we have enough exact transitions...
+## Toy example with exact transitions
 
 If $u$ is an input of interest and $v$ are the other inputs, recall that we compute the APC by sampling twice from $u$ conditional on $v$, and average over the distribution of $v$ (equation (5) in [the APC paper](http://www.stat.columbia.edu/~gelman/research/published/ape17.pdf) defines the quantity we wish to approximate). So we're interested in the distribution of $u$ given $v$. 
 
@@ -30,9 +30,7 @@ exampleDF <- data.frame(
 ```
 
 ```{r echo=FALSE}
-kable(ddply(exampleDF, c("v","u"), function(df) data.frame(CountOfRows = nrow(df))),
-      format="markdown")
-
+kable(ddply(exampleDF, c("v","u"), function(df) data.frame(CountOfRows = nrow(df))))
 ```
 
 Say we have a model $\hat{y} = f(u,v)$. I'll choose $\hat{y} = f(u,v) = uv$ for a simple example. (How the model is estimated is completely orthogonal to the questions addressed here.)
@@ -72,8 +70,11 @@ exampleDF2 <- transform(exampleDF, v = v + rnorm(nrow(exampleDF), sd=.001))
 Now we form pairs and compute weights as described in the paper. Here's a sample of the resulting data frame of pairs:
 
 ```{r}
-pairsDF <- get_pairs(exampleDF2, u="u", v="v")
-pairsDF[sample(1:nrow(pairsDF), 12), ]
+pairsDF <- get_pairs(exampleDF2, u="u", v="v", renormalizeWeights=FALSE)
+```
+
+```{r echo=FALSE}
+kable(pairsDF[sample(1:nrow(pairsDF), 12), ], row.names=FALSE)
 ```
 
 Now pairs with nearby $v$'s (which would have been the same $v$'s previously) have high weights, where pairs from far-away $v$'s (which were different $v$'s in the previous example) have low weights. That's good.
@@ -111,18 +112,25 @@ ApcApprox1 <-
 ApcApprox1
 ```
 
-Instead, if we normalize within each $v$...
+I showed the computation above, but we can also use the ```get_apc``` function:
 
 ```{r}
-
-#Normalize weights within each $v$.
+get_apc(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=FALSE)
 ```
 
+Instead, we can normalize weights so that within each first element of the pair. 
 
-Imagine 2 groups....
+```{r}
+pairsDFWeightsNormalized <- ddply(pairsDF, "originalRowNumber", transform, weight = weight/sum(weight))
+ApcApprox2 <- 
+  with(pairsDFWeightsNormalized,
+       sum(weight * (yHat2 - yHat1) * sign(uDiff)) / sum(weight * uDiff * sign(uDiff)))
+ApcApprox2
+```
 
-75% are one way, 
+These renormalized weights are the ones returned from ```get_pairs``` by default, and used in ```get_apc``` by default:
 
-25% are the other...
+```{r}
+get_apc(function(df) return(df$u * df$v), exampleDF2, u="u", v="v")
+```
 
-make it clear what the 
