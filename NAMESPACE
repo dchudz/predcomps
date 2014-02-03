@@ -1,5 +1,6 @@
 export(average_specified_comparison)
 export(get_apc)
+export(get_apc_with_absolute)
 import(assertthat)
 import(ggplot2)
 import(plyr)
