@@ -1,3 +1,5 @@
+- factor last bit of get_apc to compute_apc_from_pairs so that I can easily make function for absolute difference
+
 - start discussion of why we don't currently get the right answer in the limit with more data
 - make a sensible option (not default) to implement some change that does get the right answer in the limit as we get more data, e.g.:
   - now weights are 1/(k+d), k==1
