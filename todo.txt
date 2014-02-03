@@ -1,8 +1,3 @@
-- demonstrate call to apc function in normalizing weights discussion instead of just computing directly from the pairs
-- finish demonstration of why we need to normalize weights
-- make normalizing weights into default behavior
-
-
 - start discussion of why we don't currently get the right answer in the limit with more data
 - make a sensible option (not default) to implement some change that does get the right answer in the limit as we get more data, e.g.:
   - now weights are 1/(k+d), k==1
