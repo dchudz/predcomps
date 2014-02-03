@@ -12,3 +12,15 @@
 - make apc function take *either* a function to compute yHat, *or* a glm object
 - demonstrate on simulated linear regression example
 - demonstrate on simulated logistic regression example
+
+
+
+
+
+
+
+
+## Further away
+
+- deal with potential column name conflicts in data frames (e.g. what if "weight" is already a column of X)
+
