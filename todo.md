@@ -1,8 +1,6 @@
 Todo
 
-- change fxn of mahabolanonis to k (force 1/(k+m))
-- make apc function take *either* a function to compute yHat, *or* a glm object
-- demonstrate on simulated linear regression example
+- FINISH EXAMPLE: demos/SimpleSimulatedLinearModelInteractionsDemo.R
 - demonstrate on simulated logistic regression example
 
 Learn about
