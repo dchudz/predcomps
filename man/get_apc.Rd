@@ -2,9 +2,7 @@
 \alias{get_apc}
 \title{get_apc}
 \usage{
-get_apc(predictionFunction, X, u, v,
-  weightAsFunctionOfMahalanobis = function(x) 1/(1 + x),
-  renormalizeWeights = TRUE)
+get_apc(predictionFunction, X, u, v, ...)
 }
 \arguments{
   \item{predictionFunction}{}
@@ -15,8 +13,8 @@ get_apc(predictionFunction, X, u, v,
 
   \item{v}{other inputs}
 
-  \item{weightAsFunctionOfMahalanobis}{weights to use,
-  expressed as a function of mahalanobis distance}
+  \item{...}{extra parguments passed to get_pairs used to
+  control weight function}
 }
 \description{
 makes average predictive comparison (based on

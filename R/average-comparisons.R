@@ -25,18 +25,15 @@ average_specified_comparison <- function(fit, df, input, low, high) {
 #' 
 #' Only works fore continuous inputs right now
 #' 
+#' 
 #' @param predictionFunction
 #' @param X 
 #' @param u input of interest
 #' @param v other inputs
-#' @param weightAsFunctionOfMahalanobis weights to use, expressed as a function of mahalanobis distance
+#' @param ... extra parguments passed to get_pairs used to control weight function
 #' @export
-get_apc <- function(predictionFunction, X, u, v, 
-                    weightAsFunctionOfMahalanobis = function(x) 1/(1+x),
-                    renormalizeWeights=TRUE) {
-  pairs <- get_pairs(X,u,v,
-                     weightAsFunctionOfMahalanobis=weightAsFunctionOfMahalanobis,
-                     renormalizeWeights=renormalizeWeights)
+get_apc <- function(predictionFunction, X, u, v, ...) {
+  pairs <- get_pairs(X, u, v, ...)
   return(compute_apc_from_pairs(predictionFunction, pairs, u, v))
 }
 
@@ -50,29 +47,29 @@ get_apc <- function(predictionFunction, X, u, v,
 #' @param X 
 #' @param u input of interest
 #' @param v other inputs
-#' @param weightAsFunctionOfMahalanobis weights to use, expressed as a function of mahalanobis distance
+#' @param k weights are (1 / (k + mahalanobis distance))
 #' @return a list with: \code{signed} (the usual APC) and \code{absolute} (APC applied to the absolute value of the differences)
 #' @export
-get_apc_with_absolute <- function(predictionFunction, X, u, v, 
-                    weightAsFunctionOfMahalanobis = function(x) 1/(1+x),
-                    renormalizeWeights=TRUE) {
-  pairs <- get_pairs(X,u,v,
-                     weightAsFunctionOfMahalanobis=weightAsFunctionOfMahalanobis,
-                     renormalizeWeights=renormalizeWeights)
+get_apc_with_absolute <- function(predictionFunction, X, u, v, ...) {
+  pairs <- get_pairs(X, u, v)
   return(
     list(Signed = compute_apc_from_pairs(predictionFunction, pairs, u, v),
          Absolute = compute_apc_from_pairs(predictionFunction, pairs, u, v, absolute=TRUE))
   )
 }
 
-
 #' compute_apc_from_pairs
 #' 
 #' (abstracted this into a separate function from \code{get_apc} so we can more easily do things 
 #' like \code{get_apc_with_absolute})
 #' @export
-compute_apc_from_pairs <- function(predictionFunction, pairs, u, v, 
-                                   absolute=FALSE) {
+compute_apc_from_pairs <- function(predictionFunction, pairs, u, v, absolute=FALSE) UseMethod("compute_apc_from_pairs")
+  
+# Two methods:
+#  one for predictionFunction (df |--> predictions)
+#  another for a glm object
+
+compute_apc_from_pairs.function <- function(predictionFunction, pairs, u, v, absolute=FALSE) {
   uNew <- paste(u,".B",sep="")
   yHat1 <- predictionFunction(pairs)
   pairsNew <- structure(pairs[,c(v,uNew)], names=c(v,u)) #renaming u in pairsNew so we can call predictionFunction
@@ -82,4 +79,11 @@ compute_apc_from_pairs <- function(predictionFunction, pairs, u, v,
   absoluteOrIdentity <- if (absolute) abs else identity
   APC <- sum(absoluteOrIdentity(w * (yHat2 - yHat1) * sign(uDiff))) / sum(w * uDiff * sign(uDiff))
   return(APC)
+}
+
+compute_apc_from_pairs.glm <- function(glmFit, pairs, u, v, absolute=FALSE) {
+  predictionFunction <- function(df) predict.glm(glmFit, df)
+  return(
+    compute_apc_from_pairs.function(predictionFunction, pairs, u, v, absolute=FALSE)
+    ) 
 }

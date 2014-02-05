@@ -2,8 +2,7 @@
 \alias{get_pairs}
 \title{get_pairs}
 \usage{
-get_pairs(X, u, v, weightAsFunctionOfMahalanobis = function(x) 1/(1 + x),
-  renormalizeWeights = TRUE)
+get_pairs(X, u, v, mahalanobisConstantTerm = 1, renormalizeWeights = TRUE)
 }
 \arguments{
   \item{X}{data frame}
@@ -12,8 +11,8 @@ get_pairs(X, u, v, weightAsFunctionOfMahalanobis = function(x) 1/(1 + x),
 
   \item{v}{other inputs}
 
-  \item{weightAsFunctionOfMahalanobis}{weights to use,
-  expressed as a function of mahalanobis distance}
+  \item{mahalanobisConstantTerm}{weights are (1 /
+  (mahalanobisConstantTerm + mahalanobis distance))}
 
   \item{renormalizeWeights}{whether to renormalize the
   weights to that they sum to 1 within each group (groups

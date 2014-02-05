@@ -24,7 +24,7 @@ mahal <- function(matrix1, matrix2, covariance) {
 #' @param X data frame
 #' @param u input of interest
 #' @param v other inputs
-#' @param weightAsFunctionOfMahalanobis weights to use, expressed as a function of mahalanobis distance
+#' @param mahalanobisConstantTerm weights are (1 / (mahalanobisConstantTerm + mahalanobis distance))
 #' @param renormalizeWeights whether to renormalize the weights to that they sum to 1 within each group (groups based on the first element of the pair). If I'm right, there's no reason to use \code{FALSE} ever; I'm only leaving the option in so I can compare with the paper.
 #' @return a data frame with the inputs \code{v} from the first of each pair, \code{u} from each half (with ".B" appended to the second), and the mahalanobis distances between the pairs.
 #' @examples
@@ -36,14 +36,14 @@ mahal <- function(matrix1, matrix2, covariance) {
 #' get_pairs(X, u="X3", v=c("X1","X2"))
 #' 
 get_pairs <- function(X, u, v,
-                      weightAsFunctionOfMahalanobis = function(x) 1/(1+x), 
+                      mahalanobisConstantTerm=1, 
                       renormalizeWeights=TRUE) {
   X <- X[c(v,u)]
   X$originalRowNumber <- 1:nrow(X)
   pairs <- merge(X,X,by=c(), suffixes=c("",".B"))
   covV=cov(as.matrix(X[,v]))
   mahalanobis <- mahal(pairs[,v], pairs[,paste0(v,".B")], covV)
-  pairs$weight <- weightAsFunctionOfMahalanobis(mahalanobis)
+  pairs$weight <- 1/(mahalanobisConstantTerm + mahalanobis)
   pairsNoId <- subset(pairs, originalRowNumber != originalRowNumber.B) #remove pairs where both elements are the same
   if (renormalizeWeights) {
     pairsNoId <- ddply(pairsNoId, "originalRowNumber", transform, weight = weight/sum(weight))

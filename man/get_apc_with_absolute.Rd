@@ -2,9 +2,7 @@
 \alias{get_apc_with_absolute}
 \title{get_apc_with_absolute}
 \usage{
-get_apc_with_absolute(predictionFunction, X, u, v,
-  weightAsFunctionOfMahalanobis = function(x) 1/(1 + x),
-  renormalizeWeights = TRUE)
+get_apc_with_absolute(predictionFunction, X, u, v, ...)
 }
 \arguments{
   \item{predictionFunction}{}
@@ -15,8 +13,7 @@ get_apc_with_absolute(predictionFunction, X, u, v,
 
   \item{v}{other inputs}
 
-  \item{weightAsFunctionOfMahalanobis}{weights to use,
-  expressed as a function of mahalanobis distance}
+  \item{k}{weights are (1 / (k + mahalanobis distance))}
 }
 \value{
 a list with: \code{signed} (the usual APC) and
