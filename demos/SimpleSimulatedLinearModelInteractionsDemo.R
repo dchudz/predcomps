@@ -1,6 +1,12 @@
+library("devtools")
+setwd("~/predcomps")
+document()
+load_all()
+
+
 library(ggplot2)
 library(reshape2)
-
+library(plyr)
 # Want a simple linear model demo with v and u1, u2, ... , u7.
 # Model has an interactions between each u and v (same for each)
 # Each u has same marginal distribution
@@ -28,6 +34,25 @@ ggplot(melt(df, id="v")) +
   ggtitle("Distributions of each u conditional on v")
 
 
+TargetGenerationFunction <- function(df) {
+  with(df, v*u1 + v*u2 + v*u3 + v*u4 + v*u5 + v*u6 + v*u6 + v*u7)
+}
+
+df$y <- TargetGenerationFunction(df)
+df
+
+inputVars <- setdiff(names(df), "y")
+
+APCs <-  Map(function(currentVar) {
+  get_apc_with_absolute(TargetGenerationFunction, 
+                        df, 
+                        currentVar, 
+                        c(setdiff(inputVars, currentVar)))},
+  uVars
+)
+
+rename(ldply(uAPCs, data.frame), c(".id"=variable)
+?ldply
 # Todo: 
 #   make prediction function
 #   make linear model with interactions only
