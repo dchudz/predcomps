@@ -48,16 +48,43 @@ APCs <-  Map(function(currentVar) {
                         df, 
                         currentVar, 
                         c(setdiff(inputVars, currentVar)))},
-  uVars
+  inputVars
 )
 
-rename(ldply(uAPCs, data.frame), c(".id"=variable)
-?ldply
-# Todo: 
-#   make prediction function
-#   make linear model with interactions only
-#   compute APCs (may need to tweak parameter for 1/(1+m))
-#   plot APCs (hopefully they look at expected)
-#   generalize plotting function
 
-#get_apc_with_absolute(function(df) return(df$u * df$v), exampleDF, u="u", v="v")
+longAPCs <- 
+  melt(
+    rename(ldply(APCs, data.frame), c(".id"="Input")),
+    id="Input",
+    value.name = "APC",
+    variable.name = "Type")
+
+
+maxAPC <- max(abs(longAPCs$APC))
+
+
+longAPCs2 <- rbind(
+  longAPCs,
+  transform(subset(longAPCs, Type=="Absolute"), APC=-APC)
+)
+?reorder
+longAPCs2$Input <- reorder(factor(longAPCs2$Input), longAPCs2$APC, FUN = function(x) mean(abs(x))) 
+
+longAPCs2 <- longAPCs2[order(factor(longAPCs2$Type, levels=c("Absolute", "Signed"))), ]
+
+ggplot(longAPCs2) +
+  geom_point(aes(y = Input, x=APC, color=Type, shape=Type, size=Type)) +
+  #facet_grid(. ~ Type) + 
+  theme_grey(base_size=20) +
+  scale_x_continuous(limits=c(-maxAPC, maxAPC)) +
+  scale_size_discrete(range=c(3,4))
+
+## I like this way of plotting APCs!
+
+# To do: 
+#   1) determine theoretically correct APCs for this example 
+#   2) make sure that I get close to the theoretically correct APCs with get_pairs(mahalanobisConstantTerm=SMALL) and large N
+#   3) plot the APC in a few different ways
+#   4) email Gelman to ask for advice about plotting -- does he like the plot I like?
+# 
+
