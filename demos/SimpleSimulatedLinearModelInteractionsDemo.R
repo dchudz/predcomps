@@ -44,6 +44,7 @@ df
 inputVars <- setdiff(names(df), "y")
 
 APCs <-  Map(function(currentVar) {
+  cat(paste("Working on:", currentVar, "\n"))
   get_apc_with_absolute(TargetGenerationFunction, 
                         df, 
                         currentVar, 
@@ -51,13 +52,8 @@ APCs <-  Map(function(currentVar) {
   inputVars
 )
 
-
-longAPCs <- 
-  melt(
-    rename(ldply(APCs, data.frame), c(".id"="Input")),
-    id="Input",
-    value.name = "APC",
-    variable.name = "Type")
+apcDF <- rename(ldply(APCs, data.frame), c(".id"="Input"))
+longAPCs <- melt(apcDF, id="Input", value.name = "APC", variable.name = "Type")
 
 
 maxAPC <- max(abs(longAPCs$APC))
@@ -81,10 +77,5 @@ ggplot(longAPCs2) +
 
 ## I like this way of plotting APCs!
 
-# To do: 
-#   1) determine theoretically correct APCs for this example 
-#   2) make sure that I get close to the theoretically correct APCs with get_pairs(mahalanobisConstantTerm=SMALL) and large N
-#   3) plot the APC in a few different ways
-#   4) email Gelman to ask for advice about plotting -- does he like the plot I like?
-# 
+
 
