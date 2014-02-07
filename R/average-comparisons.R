@@ -82,7 +82,7 @@ ComputeAPCFromPairs.function <- function(predictionFunction, pairs, u, v, absolu
 }
 
 ComputeAPCFromPairs.glm <- function(glmFit, pairs, u, v, absolute=FALSE) {
-  predictionFunction <- function(df) predict.glm(glmFit, df)
+  predictionFunction <- function(df) predict.glm(glmFit, newdata=df, type="response")
   return(
     ComputeAPCFromPairs.function(predictionFunction, pairs, u, v, absolute=FALSE)
     ) 
