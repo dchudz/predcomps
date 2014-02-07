@@ -24,8 +24,8 @@ Mahal <- function(matrix1, matrix2, covariance) {
 #' @param X data frame
 #' @param u input of interest
 #' @param v other inputs
-#' @param mahalanobisConstantTerm weights are (1 / (mahalanobisConstantTerm + Mahalanobis distance))
-#' @param renormalizeWeights whether to renormalize the weights to that they sum to 1 within each group (groups based on the first element of the pair). If I'm right, there's no reason to use \code{FALSE} ever; I'm only leaving the option in so I can compare with the paper.
+#' @param mahalanobisConstantTerm Weights are (1 / (mahalanobisConstantTerm + Mahalanobis distance))
+#' @param renormalizeWeights whether to renormalize the Weights to that they sum to 1 within each group (groups based on the first element of the pair). If I'm right, there's no reason to use \code{FALSE} ever; I'm only leaving the option in so I can compare with the paper.
 #' @return a data frame with the inputs \code{v} from the first of each pair, \code{u} from each half (with ".B" appended to the second), and the Mahalanobis distances between the pairs.
 #' @examples
 #' library("mvtnorm")
@@ -46,7 +46,7 @@ GetPairs <- function(X, u, v,
   pairs$Weight <- 1/(mahalanobisConstantTerm + mahalanobis)
   pairsNoId <- subset(pairs, OriginalRowNumber != OriginalRowNumber.B) #remove pairs where both elements are the same
   if (renormalizeWeights) {
-    pairsNoId <- ddply(pairsNoId, "OriginalRowNumber", transform, weight = weight/sum(weight))
+    pairsNoId <- ddply(pairsNoId, "OriginalRowNumber", transform, Weight = Weight/sum(Weight))
   } #normalizing AFTER removing pairs from same row as each other
   return(pairsNoId) 
 }

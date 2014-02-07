@@ -1,8 +1,8 @@
-\name{mahal}
-\alias{mahal}
-\title{mahal}
+\name{Mahal}
+\alias{Mahal}
+\title{Mahal}
 \usage{
-mahal(matrix1, matrix2, covariance)
+Mahal(matrix1, matrix2, covariance)
 }
 \arguments{
   \item{matrix1}{nxm matrix or data frame representing 1st
@@ -15,16 +15,16 @@ mahal(matrix1, matrix2, covariance)
   \item{input}{string representing the name of the input
   feature you want an APC for}
 
-  \item{covariance}{covariance to be used for mahalanobis
+  \item{covariance}{covariance to be used for Mahalanobis
   computation}
 }
 \value{
-a vector of mahalanobis distances between row i of matrix1
+a vector of Mahalanobis distances between row i of matrix1
 and row i of matrix2
 }
 \description{
-Computes mahalanobis distance between pairs of
-observations. I'm using this rather than stats::mahalanobis
+Computes Mahalanobis distance between pairs of
+observations. I'm using this rather than stats::Mahalanobis
 because I want just the distances between corresponding
 rows of each matrix, not all pair-wise distances
 }

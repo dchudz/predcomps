@@ -68,7 +68,7 @@ Now imagine we don't have any exact duplicates of $v$. To get a corresponding ex
 exampleDF2 <- transform(exampleDF, v = v + rnorm(nrow(exampleDF), sd=.001))
 ```
 
-Now we form pairs and compute weights as described in the paper. Here's a sample of the resulting data frame of pairs:
+Now we form pairs and compute Weights as described in the paper. Here's a sample of the resulting data frame of pairs:
 
 ```{r}
 pairsDF <- GetPairs(exampleDF2, u="u", v="v", renormalizeWeights=FALSE)
@@ -78,20 +78,20 @@ pairsDF <- GetPairs(exampleDF2, u="u", v="v", renormalizeWeights=FALSE)
 kable(pairsDF[sample(1:nrow(pairsDF), 12), ], row.names=FALSE)
 ```
 
-Now pairs with nearby $v$'s (which would have been the same $v$'s previously) have high weights, where pairs from far-away $v$'s (which were different $v$'s in the previous example) have low weights. That's good.
+Now pairs with nearby $v$'s (which would have been the same $v$'s previously) have high Weights, where pairs from far-away $v$'s (which were different $v$'s in the previous example) have low Weights. That's good.
 
-But we have a problem, which is that $v$ near 3 now has more weight in the data set for two reasons:
+But we have a problem, which is that $v$ near 3 now has more Weight in the data set for two reasons:
 
 1. we started with more $v$'s near 3, so there are more rows with $v$ near 3 as the first element of the pair; and
-2. each time $v$ is near $3$ in the first element of each pair, there are more nearby $v$'s to pair with, so we get higher weights.
+2. each time $v$ is near $3$ in the first element of each pair, there are more nearby $v$'s to pair with, so we get higher Weights.
 
 Reason (1) is good, but reason (2) is not so good.
 
-In the data frame of pairs, the weights are all close to 0.14 or 1. Let's look at how the distribution of $u$ and $v$ in just the pairs with weights close to 1:
+In the data frame of pairs, the Weights are all close to 0.14 or 1. Let's look at how the distribution of $u$ and $v$ in just the pairs with Weights close to 1:
 
 ```{r}
 pairsDF <- data.frame(vRounded = round(pairsDF$v), pairsDF)
-pairsHighWeightsDF <- subset(pairsDF, weight > 0.9)
+pairsHighWeightsDF <- subset(pairsDF, Weight > 0.9)
 ddply(pairsHighWeightsDF,
       c("vRounded","u"), 
       function(df) data.frame(CountOfRows = nrow(df),
@@ -100,7 +100,7 @@ ddply(pairsHighWeightsDF,
 
 We see that $v$'s near 7 makes up only about 5.7% of the pairs. (It would be exactly $(.2)(.2) = 4$%, except that when we form pairs to compute the APC we don't pair any row with itself.)
 
-If we form the APC based on these pairs and these weights, we weight the $v$'s near 3 too much, so our APC is too low:
+If we form the APC based on these pairs and these Weights, we Weight the $v$'s near 3 too much, so our APC is too low:
 
 ```{r}
 
@@ -109,7 +109,7 @@ pairsDF$yHat2 <- f(pairsDF$u.B, pairsDF$v)
 pairsDF$uDiff <- pairsDF$u.B - pairsDF$u
 ApcApprox1 <- 
   with(pairsDF,
-       sum(weight * (yHat2 - yHat1) * sign(uDiff)) / sum(weight * uDiff * sign(uDiff)))
+       sum(Weight * (yHat2 - yHat1) * sign(uDiff)) / sum(Weight * uDiff * sign(uDiff)))
 ApcApprox1
 ```
 
@@ -119,17 +119,17 @@ I showed the computation above, but we can also use the ```GetAPC``` function:
 GetAPC(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=FALSE)
 ```
 
-Instead, we can normalize weights so that within each first element of the pair. 
+Instead, we can normalize Weights so that within each first element of the pair. 
 
 ```{r}
-pairsDFWeightsNormalized <- ddply(pairsDF, "OriginalRowNumber", transform, weight = weight/sum(weight))
+pairsDFWeightsNormalized <- ddply(pairsDF, "OriginalRowNumber", transform, Weight = Weight/sum(Weight))
 ApcApprox2 <- 
   with(pairsDFWeightsNormalized, 
-       sum(weight * (yHat2 - yHat1) * sign(uDiff)) / sum(weight * uDiff * sign(uDiff)))
+       sum(Weight * (yHat2 - yHat1) * sign(uDiff)) / sum(Weight * uDiff * sign(uDiff)))
 ApcApprox2
 ```
 
-These renormalized weights are the ones returned from ```GetPairs``` by default, and used in ```GetAPC``` by default:
+These renormalized Weights are the ones returned from ```GetPairs``` by default, and used in ```GetAPC``` by default:
 
 ```{r}
 GetAPC(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=TRUE)
