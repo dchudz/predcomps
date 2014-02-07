@@ -39,14 +39,14 @@ GetPairs <- function(X, u, v,
                       mahalanobisConstantTerm=1, 
                       renormalizeWeights=TRUE) {
   X <- X[c(v,u)]
-  X$originalRowNumber <- 1:nrow(X)
+  X$OriginalRowNumber <- 1:nrow(X)
   pairs <- merge(X,X,by=c(), suffixes=c("",".B"))
   covV=cov(as.matrix(X[,v]))
   mahalanobis <- Mahal(pairs[,v], pairs[,paste0(v,".B")], covV)
   pairs$Weight <- 1/(mahalanobisConstantTerm + mahalanobis)
-  pairsNoId <- subset(pairs, originalRowNumber != originalRowNumber.B) #remove pairs where both elements are the same
+  pairsNoId <- subset(pairs, OriginalRowNumber != OriginalRowNumber.B) #remove pairs where both elements are the same
   if (renormalizeWeights) {
-    pairsNoId <- ddply(pairsNoId, "originalRowNumber", transform, weight = weight/sum(weight))
+    pairsNoId <- ddply(pairsNoId, "OriginalRowNumber", transform, weight = weight/sum(weight))
   } #normalizing AFTER removing pairs from same row as each other
   return(pairsNoId) 
 }
