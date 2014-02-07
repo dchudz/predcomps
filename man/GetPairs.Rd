@@ -11,11 +11,11 @@ GetPairs(X, u, v, mahalanobisConstantTerm = 1, renormalizeWeights = TRUE)
 
   \item{v}{other inputs}
 
-  \item{mahalanobisConstantTerm}{weights are (1 /
+  \item{mahalanobisConstantTerm}{Weights are (1 /
   (mahalanobisConstantTerm + Mahalanobis distance))}
 
   \item{renormalizeWeights}{whether to renormalize the
-  weights to that they sum to 1 within each group (groups
+  Weights to that they sum to 1 within each group (groups
   based on the first element of the pair). If I'm right,
   there's no reason to use \code{FALSE} ever; I'm only
   leaving the option in so I can compare with the paper.}

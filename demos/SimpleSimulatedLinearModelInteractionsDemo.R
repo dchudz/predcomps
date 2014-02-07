@@ -12,7 +12,7 @@ library(plyr)
 # Each u has same marginal distribution
 # Only variation is in its correlation with v
 
-N <- 200
+N <- 400
 vValues <- (-3):3
 v <- sample(vValues, N, replace=TRUE)
 v
@@ -25,6 +25,11 @@ for (i in seq_along(vValues)) {
                                 rep(0, N)
                                 )
 }
+df$u8 <- ifelse(v %in% c(-3,3),
+                sample(c(0,10), N, replace=TRUE),
+                rep(0, N)
+                )
+
 
 ggplot(melt(df, id="v")) +
   geom_bar(aes(x=factor(v), fill=factor(value)), position=position_fill()) +
@@ -35,7 +40,7 @@ ggplot(melt(df, id="v")) +
 
 
 TargetGenerationFunction <- function(df) {
-  with(df, v*u1 + v*u2 + v*u3 + v*u4 + v*u5 + v*u6 + v*u6 + v*u7)
+  with(df, v*u1 + v*u2 + v*u3 + v*u4 + v*u5 + v*u6 + v*u6 + v*u7 + v*u8)
 }
 
 df$y <- TargetGenerationFunction(df)
@@ -43,7 +48,7 @@ df
 
 inputVars <- setdiff(names(df), "y")
 
-APCs <-  Map(function(currentVar) {
+apcList <-  Map(function(currentVar) {
   cat(paste("Working on:", currentVar, "\n"))
   GetAPCWithAbsolute(TargetGenerationFunction, 
                         df, 
@@ -52,7 +57,7 @@ APCs <-  Map(function(currentVar) {
   inputVars
 )
 
-apcDF <- rename(ldply(APCs, data.frame), c(".id"="Input"))
+apcDF <- rename(ldply(apcList, data.frame), c(".id"="Input"))
 longAPCs <- melt(apcDF, id="Input", value.name = "APC", variable.name = "Type")
 
 
@@ -63,7 +68,6 @@ longAPCs2 <- rbind(
   longAPCs,
   transform(subset(longAPCs, Type=="Absolute"), APC=-APC)
 )
-?reorder
 longAPCs2$Input <- reorder(factor(longAPCs2$Input), longAPCs2$APC, FUN = function(x) mean(abs(x))) 
 
 longAPCs2 <- longAPCs2[order(factor(longAPCs2$Type, levels=c("Absolute", "Signed"))), ]

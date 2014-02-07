@@ -51,7 +51,7 @@ GetAPC <- function(predictionFunction, X, u, v, ...) {
 #' @return a list with: \code{signed} (the usual APC) and \code{absolute} (APC applied to the absolute value of the differences)
 #' @export
 GetAPCWithAbsolute <- function(predictionFunction, X, u, v, ...) {
-  pairs <- GetPairs(X, u, v)
+  pairs <- GetPairs(X, u, v, ...)
   return(
     list(Signed = ComputeAPCFromPairs(predictionFunction, pairs, u, v),
          Absolute = ComputeAPCFromPairs(predictionFunction, pairs, u, v, absolute=TRUE))
