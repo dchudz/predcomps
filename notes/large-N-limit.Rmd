@@ -34,8 +34,8 @@ $$.8 \delta_u(10 \rightarrow 20, 3, f) + 0.2 \delta_u(12 \rightarrow 22, 7, f) =
 We get almost the same APC with 300 data points as 100:
 
 ```{r}
-get_apc(function(df) return(df$u * df$v), makeExampleDF(100), u="u", v="v")
-get_apc(function(df) return(df$u * df$v), makeExampleDF(300), u="u", v="v")
+GetAPC(function(df) return(df$u * df$v), makeExampleDF(100), u="u", v="v")
+GetAPC(function(df) return(df$u * df$v), makeExampleDF(300), u="u", v="v")
 ```
 
 If we're looking at one value for $v$, $v=v_0$, the tradeoff in determining the weights is:

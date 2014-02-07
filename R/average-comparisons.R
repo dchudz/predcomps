@@ -1,4 +1,4 @@
-#' average_specified_comparison
+#' AverageSpecifiedComparison
 #'
 #' Makes an average predictive comparison for two specified values of the input variable of interest, as in section 5.7 of ARM
 #'
@@ -8,7 +8,7 @@
 #' @param low low value of input feature
 #' @param high high value of input feature
 #' @export
-average_specified_comparison <- function(fit, df, input, low, high) {
+AverageSpecifiedComparison <- function(fit, df, input, low, high) {
   dfHigh <- df
   dfLow <- df
   dfHigh[[input]] <- rep(high, nrow(df))
@@ -19,7 +19,7 @@ average_specified_comparison <- function(fit, df, input, low, high) {
 }
 
 
-#' get_apc
+#' GetAPC
 #' 
 #' makes average predictive comparison (based on Gelman/Pardoe) by forming pairs with two versions of the input of interest and averaging the predictive difference using weights. I think weights should be an approximation of the density p(u1,u2|v) or something like that... I need to look back at this. At present, I believe this is probably implementing the version in the Gelman/Pardoe paper.
 #' 
@@ -32,12 +32,12 @@ average_specified_comparison <- function(fit, df, input, low, high) {
 #' @param v other inputs
 #' @param ... extra parguments passed to GetPairs used to control weight function
 #' @export
-get_apc <- function(predictionFunction, X, u, v, ...) {
+GetAPC <- function(predictionFunction, X, u, v, ...) {
   pairs <- GetPairs(X, u, v, ...)
-  return(compute_apc_from_pairs(predictionFunction, pairs, u, v))
+  return(ComputeAPCFromPairs(predictionFunction, pairs, u, v))
 }
 
-#' get_apc_with_absolute
+#' GetAPCWithAbsolute
 #' 
 #' makes average predictive comparison (based on Gelman/Pardoe) by forming pairs with two versions of the input of interest and averaging the predictive difference using weights. I think weights should be an approximation of the density p(u1,u2|v) or something like that... I need to look back at this. At present, I believe this is probably implementing the version in the Gelman/Pardoe paper.
 #' returns a list with the APC and the APC applied to the absolute value of the prediction function
@@ -50,26 +50,26 @@ get_apc <- function(predictionFunction, X, u, v, ...) {
 #' @param k weights are (1 / (k + Mahalanobis distance))
 #' @return a list with: \code{signed} (the usual APC) and \code{absolute} (APC applied to the absolute value of the differences)
 #' @export
-get_apc_with_absolute <- function(predictionFunction, X, u, v, ...) {
+GetAPCWithAbsolute <- function(predictionFunction, X, u, v, ...) {
   pairs <- GetPairs(X, u, v)
   return(
-    list(Signed = compute_apc_from_pairs(predictionFunction, pairs, u, v),
-         Absolute = compute_apc_from_pairs(predictionFunction, pairs, u, v, absolute=TRUE))
+    list(Signed = ComputeAPCFromPairs(predictionFunction, pairs, u, v),
+         Absolute = ComputeAPCFromPairs(predictionFunction, pairs, u, v, absolute=TRUE))
   )
 }
 
-#' compute_apc_from_pairs
+#' ComputeAPCFromPairs
 #' 
-#' (abstracted this into a separate function from \code{get_apc} so we can more easily do things 
-#' like \code{get_apc_with_absolute})
+#' (abstracted this into a separate function from \code{GetAPC} so we can more easily do things 
+#' like \code{GetAPCWithAbsolute})
 #' @export
-compute_apc_from_pairs <- function(predictionFunction, pairs, u, v, absolute=FALSE) UseMethod("compute_apc_from_pairs")
+ComputeAPCFromPairs <- function(predictionFunction, pairs, u, v, absolute=FALSE) UseMethod("ComputeAPCFromPairs")
   
 # Two methods:
 #  one for predictionFunction (df |--> predictions)
 #  another for a glm object
 
-compute_apc_from_pairs.function <- function(predictionFunction, pairs, u, v, absolute=FALSE) {
+ComputeAPCFromPairs.function <- function(predictionFunction, pairs, u, v, absolute=FALSE) {
   uNew <- paste(u,".B",sep="")
   yHat1 <- predictionFunction(pairs)
   pairsNew <- structure(pairs[,c(v,uNew)], names=c(v,u)) #renaming u in pairsNew so we can call predictionFunction
@@ -81,9 +81,9 @@ compute_apc_from_pairs.function <- function(predictionFunction, pairs, u, v, abs
   return(APC)
 }
 
-compute_apc_from_pairs.glm <- function(glmFit, pairs, u, v, absolute=FALSE) {
+ComputeAPCFromPairs.glm <- function(glmFit, pairs, u, v, absolute=FALSE) {
   predictionFunction <- function(df) predict.glm(glmFit, df)
   return(
-    compute_apc_from_pairs.function(predictionFunction, pairs, u, v, absolute=FALSE)
+    ComputeAPCFromPairs.function(predictionFunction, pairs, u, v, absolute=FALSE)
     ) 
 }

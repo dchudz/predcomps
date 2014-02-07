@@ -45,7 +45,7 @@ inputVars <- setdiff(names(df), "y")
 
 APCs <-  Map(function(currentVar) {
   cat(paste("Working on:", currentVar, "\n"))
-  get_apc_with_absolute(TargetGenerationFunction, 
+  GetAPCWithAbsolute(TargetGenerationFunction, 
                         df, 
                         currentVar, 
                         c(setdiff(inputVars, currentVar)))},

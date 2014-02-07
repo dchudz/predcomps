@@ -113,10 +113,10 @@ ApcApprox1 <-
 ApcApprox1
 ```
 
-I showed the computation above, but we can also use the ```get_apc``` function:
+I showed the computation above, but we can also use the ```GetAPC``` function:
 
 ```{r}
-get_apc(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=FALSE)
+GetAPC(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=FALSE)
 ```
 
 Instead, we can normalize weights so that within each first element of the pair. 
@@ -129,9 +129,9 @@ ApcApprox2 <-
 ApcApprox2
 ```
 
-These renormalized weights are the ones returned from ```GetPairs``` by default, and used in ```get_apc``` by default:
+These renormalized weights are the ones returned from ```GetPairs``` by default, and used in ```GetAPC``` by default:
 
 ```{r}
-get_apc(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=TRUE)
+GetAPC(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=TRUE)
 ```
 
