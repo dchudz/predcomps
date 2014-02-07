@@ -30,10 +30,10 @@ average_specified_comparison <- function(fit, df, input, low, high) {
 #' @param X 
 #' @param u input of interest
 #' @param v other inputs
-#' @param ... extra parguments passed to get_pairs used to control weight function
+#' @param ... extra parguments passed to GetPairs used to control weight function
 #' @export
 get_apc <- function(predictionFunction, X, u, v, ...) {
-  pairs <- get_pairs(X, u, v, ...)
+  pairs <- GetPairs(X, u, v, ...)
   return(compute_apc_from_pairs(predictionFunction, pairs, u, v))
 }
 
@@ -51,7 +51,7 @@ get_apc <- function(predictionFunction, X, u, v, ...) {
 #' @return a list with: \code{signed} (the usual APC) and \code{absolute} (APC applied to the absolute value of the differences)
 #' @export
 get_apc_with_absolute <- function(predictionFunction, X, u, v, ...) {
-  pairs <- get_pairs(X, u, v)
+  pairs <- GetPairs(X, u, v)
   return(
     list(Signed = compute_apc_from_pairs(predictionFunction, pairs, u, v),
          Absolute = compute_apc_from_pairs(predictionFunction, pairs, u, v, absolute=TRUE))

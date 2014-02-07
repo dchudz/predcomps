@@ -17,7 +17,7 @@ Mahal <- function(matrix1, matrix2, covariance) {
   )
 }
 
-#' get_pairs
+#' GetPairs
 #'
 #' Form all pairs of rows in X and compute Mahalanobis distances based on \code{v}. 
 #' 
@@ -33,9 +33,9 @@ Mahal <- function(matrix1, matrix2, covariance) {
 #'                   .5,1,.5,
 #'                   -.5,.5,1), ncol=3)
 #' X <- data.frame(rmvnorm(n=10, sigma=sigma))
-#' get_pairs(X, u="X3", v=c("X1","X2"))
+#' GetPairs(X, u="X3", v=c("X1","X2"))
 #' 
-get_pairs <- function(X, u, v,
+GetPairs <- function(X, u, v,
                       mahalanobisConstantTerm=1, 
                       renormalizeWeights=TRUE) {
   X <- X[c(v,u)]
@@ -53,10 +53,10 @@ get_pairs <- function(X, u, v,
 
 #' resample_from_pairs
 #'
-#' form pairs with \code{get_pairs} and resample \code{v} and \code{u} according to a function of the Mahalanobis distances (used diagnostics / understanding how things are working)
+#' form pairs with \code{GetPairs} and resample \code{v} and \code{u} according to a function of the Mahalanobis distances (used diagnostics / understanding how things are working)
 resample_from_pairs <- function(X, u, v, samplingProbsAsFunctionOfMahalanobis = function(x) 1/(1+x)) {
   pairs <- pairs(X,u,v)
-  newX <- get_pairs[sample(1:nrow(pairs), nrow(X), prob=samplingProbsAsFunctionOfMahalanobis(pairs$Mahalanobis),replace=FALSE), 
+  newX <- GetPairs[sample(1:nrow(pairs), nrow(X), prob=samplingProbsAsFunctionOfMahalanobis(pairs$Mahalanobis),replace=FALSE), 
                     c(v,paste(u,"B",sep="."))]
   names(newX) <- c(v,u)
   newX$type <- "resampled"

@@ -71,7 +71,7 @@ exampleDF2 <- transform(exampleDF, v = v + rnorm(nrow(exampleDF), sd=.001))
 Now we form pairs and compute weights as described in the paper. Here's a sample of the resulting data frame of pairs:
 
 ```{r}
-pairsDF <- get_pairs(exampleDF2, u="u", v="v", renormalizeWeights=FALSE)
+pairsDF <- GetPairs(exampleDF2, u="u", v="v", renormalizeWeights=FALSE)
 ```
 
 ```{r echo=FALSE}
@@ -129,7 +129,7 @@ ApcApprox2 <-
 ApcApprox2
 ```
 
-These renormalized weights are the ones returned from ```get_pairs``` by default, and used in ```get_apc``` by default:
+These renormalized weights are the ones returned from ```GetPairs``` by default, and used in ```get_apc``` by default:
 
 ```{r}
 get_apc(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=TRUE)
