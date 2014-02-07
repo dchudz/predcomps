@@ -47,7 +47,7 @@ get_apc <- function(predictionFunction, X, u, v, ...) {
 #' @param X 
 #' @param u input of interest
 #' @param v other inputs
-#' @param k weights are (1 / (k + mahalanobis distance))
+#' @param k weights are (1 / (k + Mahalanobis distance))
 #' @return a list with: \code{signed} (the usual APC) and \code{absolute} (APC applied to the absolute value of the differences)
 #' @export
 get_apc_with_absolute <- function(predictionFunction, X, u, v, ...) {
@@ -75,7 +75,7 @@ compute_apc_from_pairs.function <- function(predictionFunction, pairs, u, v, abs
   pairsNew <- structure(pairs[,c(v,uNew)], names=c(v,u)) #renaming u in pairsNew so we can call predictionFunction
   yHat2 <- predictionFunction(pairsNew)
   uDiff <- pairs[[uNew]] - pairs[[u]]
-  w <- pairs$weight
+  w <- pairs$Weight
   absoluteOrIdentity <- if (absolute) abs else identity
   APC <- sum(absoluteOrIdentity(w * (yHat2 - yHat1) * sign(uDiff))) / sum(w * uDiff * sign(uDiff))
   return(APC)
