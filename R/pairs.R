@@ -50,16 +50,3 @@ GetPairs <- function(X, u, v,
   } #normalizing AFTER removing pairs from same row as each other
   return(pairsNoId) 
 }
-
-#' resample_from_pairs
-#'
-#' form pairs with \code{GetPairs} and resample \code{v} and \code{u} according to a function of the Mahalanobis distances (used diagnostics / understanding how things are working)
-resample_from_pairs <- function(X, u, v, samplingProbsAsFunctionOfMahalanobis = function(x) 1/(1+x)) {
-  pairs <- pairs(X,u,v)
-  newX <- GetPairs[sample(1:nrow(pairs), nrow(X), prob=samplingProbsAsFunctionOfMahalanobis(pairs$Mahalanobis),replace=FALSE), 
-                    c(v,paste(u,"B",sep="."))]
-  names(newX) <- c(v,u)
-  newX$type <- "resampled"
-  X$type <- "original"
-  rbind(X,newX)
-}
