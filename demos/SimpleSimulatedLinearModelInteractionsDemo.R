@@ -12,10 +12,9 @@ library(plyr)
 # Each u has same marginal distribution
 # Only variation is in its correlation with v
 
-N <- 400
+N <- 100
 vValues <- (-3):3
 v <- sample(vValues, N, replace=TRUE)
-v
 
 
 df <- data.frame(v)
@@ -39,30 +38,29 @@ ggplot(melt(df, id="v")) +
   ggtitle("Distributions of each u conditional on v")
 
 
-TargetGenerationFunction <- function(df) {
-  with(df, v*u1 + v*u2 + v*u3 + v*u4 + v*u5 + v*u6 + v*u6 + v*u7 + v*u8)
+outputGenerationFunction <- function(df) {
+  with(df, v*u1 + v*u2 + v*u3 + v*u4 + v*u5 + v*u6 + v*u7 + v*u8)
 }
 
-df$y <- TargetGenerationFunction(df)
-df
+df$y <- outputGenerationFunction(df)
 
-inputVars <- setdiff(names(df), "y")
 
-apcList <-  Map(function(currentVar) {
-  cat(paste("Working on:", currentVar, "\n"))
-  GetAPCWithAbsolute(TargetGenerationFunction, 
-                        df, 
-                        currentVar, 
-                        c(setdiff(inputVars, currentVar)))},
-  inputVars
-)
+inputVars <- c("v",paste0("u",1:8))
 
-apcDF <- rename(ldply(apcList, data.frame), c(".id"="Input"))
+
+apcDF <- GetApcDF(outputGenerationFunction, df, inputVars)
+
+
+
+
+
+
+
 longAPCs <- melt(apcDF, id="Input", value.name = "APC", variable.name = "Type")
 
 
 maxAPC <- max(abs(longAPCs$APC))
-
+by the
 
 longAPCs2 <- rbind(
   longAPCs,
