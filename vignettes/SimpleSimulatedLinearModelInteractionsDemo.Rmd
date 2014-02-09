@@ -57,17 +57,10 @@ Compute the APCs:
 inputVars <- c("v",paste0("u",1:8))
 apcDF <- GetApcDF(outputGenerationFunction, df, inputVars)
 
-
-
-
-
-
-
 longAPCs <- melt(apcDF, id="Input", value.name = "APC", variable.name = "Type")
 
 
 maxAPC <- max(abs(longAPCs$APC))
-by the
 
 longAPCs2 <- rbind(
   longAPCs,
@@ -85,6 +78,6 @@ ggplot(longAPCs2) +
   scale_size_discrete(range=c(3,4))
 
 ## I like this way of plotting APCs!
-
+```
 
 
