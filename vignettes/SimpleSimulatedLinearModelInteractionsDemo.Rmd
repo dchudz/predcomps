@@ -1,6 +1,6 @@
 <!--
 %\VignetteEngine{knitr}
-%\VignetteIndexEntry{Hybrid Evaluation}
+%\VignetteIndexEntry{Example: 8 Inputs, Same Role in the Model}
 -->
 
 ```{r}
