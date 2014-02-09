@@ -4,6 +4,7 @@ Description: An implementation of Gelman/Pardoe's average predictive comparisons
 Version: 0.1
 Author: David Chudzicki
 Maintainer: David Chudzicki <dchudz@gmail.com>
+VignetteBuilder: knitr
 Depends:
     R (>= 3.0.2)
 Imports:
