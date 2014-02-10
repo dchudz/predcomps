@@ -35,6 +35,7 @@ Mahal <- function(matrix1, matrix2, covariance) {
 #' X <- data.frame(rmvnorm(n=10, sigma=sigma))
 #' GetPairs(X, u="X3", v=c("X1","X2"))
 #' 
+#' @export
 GetPairs <- function(X, u, v,
                       mahalanobisConstantTerm=1, 
                       renormalizeWeights=TRUE) {
