@@ -51,7 +51,9 @@ ggplot(melt(df, id="v")) +
 
 ## Outcome Generation
 
-Each $u$ will have the same role in the model, which is $$\mathbb{E}[y] = vu_1 + vu_2 + vu_3 + vu_4 + vu_5 + vu_6 + vu_7 + vu_8 = v(u_1 + u_2 + u_3 + u_4 + u_5 + u_6 + u_7 + u_8)$$. Note that each $u$ has the same role in this function. Differences between their APCs can only arise from the correlation structure of the inputs in combination with this function, not from this function alone.
+Each $u$ will have the same role in the model, which is $$\mathbb{E}[y] = vu_1 + vu_2 + vu_3 + vu_4 + vu_5 + vu_6 + vu_7 + vu_8.$$ 
+
+Note that each $u$ has the same role in this function. Differences between their APCs can only arise from the correlation structure of the inputs in combination with this function, not from this function alone.
 
 For simplicity this demonstration, I'll assume that $\mathbb{E}[y \mid v, u_1, \ldots, u_8]$ is known rather than estimated.
 
