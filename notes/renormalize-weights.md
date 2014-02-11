@@ -1,13 +1,19 @@
 
 
 
+## Renormalizing Weights
+
+In computing the APC, we assign weights to pairs of observations based on the Mahalanobis distance between the corresponding $v$'s. This note uses a toy example to argue that we must *renormalize* the weights so that when we group by the first element of each pair and sum the weights, each group has the same sum-of-weights.
+
+This suggested renormalization is not discussed in [Gelman and Pardoe 2007](http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9531.2007.00181.x/abstract).
+
 ## Toy example with exact transitions
 
-If $u$ is an input of interest and $v$ are the other inputs, recall that we compute the APC by sampling twice from $u$ conditional on $v$, and average over the distribution of $v$ (equation (5) in [the APC paper](http://www.stat.columbia.edu/~gelman/research/published/ape17.pdf) defines the quantity we wish to approximate). So we're interested in the distribution of $u$ given $v$. 
+If $u$ is an input of interest and $v$ are the other inputs, recall that the APC is the expected value of a quantity formed upon sampling from $v$, sampling twice from $u$ conditional on $v$, and computing predictive comparisons using those $u$'s. See equation (2) of [Gelman and Pardoe 2007](http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9531.2007.00181.x/abstract).
 
-If there were enough pairs of points with identical $v$, we could just use the sample distribution of $u$ given $v$. As noted in the paper, we may have few (if any) pairs of points with identical $v$. But still, it's worth thinking through an example where we do.
+If there were enough pairs of points with identical $v$, we could just use the sample distribution of $u$ given $v$. As noted in the paper, we may have few (if any) pairs of points with identical $v$. Even so, let's think through an example where we do have such identical pairs:
 
-Suppose $v$ consists of only 1 input, which can either be $v=v_1$ or $v=v_2$. For simplicity, assume $u$ only has exactly two possible (equally likely) values at each $v$, so there is only one possible transition at each $v$. Here's an example:
+Suppose $v$ consists of only 1 input, which can take one of two values. For simplicity, assume $u$ has exactly two possible (equally likely) values at each $v$ (which are different depending on the value of $v$), so there is only one possible transition at each $v$. Here's an example:
 
 
 ```r
@@ -15,8 +21,6 @@ exampleDF <- data.frame(
   v=c(3,3,7,7),  
   u=c(10,20,12,22) 
   )[rep(c(1,2,3,4),c(40,40,10,10)),]
-
-# Count each u/v combination:
 ```
 
 
@@ -31,7 +35,7 @@ exampleDF <- data.frame(
 ```
 
 
-Say we have a model $\hat{y} = f(u,v)$. I'll choose $\hat{y} = f(u,v) = uv$ for a simple example. (How the model is estimated is completely orthogonal to the questions addressed here.)
+Say we have a model $\hat{y} = f(u,v)$. I'll choose $\hat{y} = f(u,v) = uv$ for a simple example. (How the model is estimated is completely orthogonal to the questions addressed here, and I'll just pretend it's known exactly.)
 
 Equation (2) in the paper says the numerator in the APC should be:
 
@@ -65,7 +69,7 @@ ApcExact
 
 ## Now without exact duplicates
 
-Now imagine we don't have any exact duplicates of $v$. To get a corresponding example like that, I'll add a really tiny bit of noise to $v$ in the example, $v_{new} = v + N(0,\epsilon)$.
+Now imagine we don't have any exact duplicates of $v$. To get a corresponding example like that, I'll modify the first example by adding a really tiny bit of noise to $v$: $v_{new} = v + N(0,\epsilon)$.
 
 
 ```r
@@ -73,7 +77,7 @@ exampleDF2 <- transform(exampleDF, v = v + rnorm(nrow(exampleDF), sd=.001))
 ```
 
 
-Now we form pairs and compute Weights as described in the paper. Here's a sample of the resulting data frame of pairs:
+Now we form pairs and compute weights as described in the paper. Here's a sample of the resulting data frame of pairs, just to get a sense of what it looks like:
 
 
 ```r
@@ -100,16 +104,16 @@ pairsDF <- GetPairs(exampleDF2, u="u", v="v", renormalizeWeights=FALSE)
 ```
 
 
-Now pairs with nearby $v$'s (which would have been the same $v$'s previously) have high Weights, where pairs from far-away $v$'s (which were different $v$'s in the previous example) have low Weights. That's good.
+Now pairs with nearby $v$'s (which would have been the same $v$'s previously) have high weights, where pairs from far-away $v$'s (which were different $v$'s in the previous example) have low weights. That's good.
 
-But we have a problem, which is that $v$ near 3 now has more Weight in the data set for two reasons:
+But $v$ near 3 now has more weight in the data set for two reasons:
 
 1. we started with more $v$'s near 3, so there are more rows with $v$ near 3 as the first element of the pair; and
 2. each time $v$ is near $3$ in the first element of each pair, there are more nearby $v$'s to pair with, so we get higher Weights.
 
 Reason (1) is good, but reason (2) is not so good.
 
-In the data frame of pairs, the Weights are all close to 0.14 or 1. Let's look at how the distribution of $u$ and $v$ in just the pairs with Weights close to 1:
+In the data frame of pairs, the weights are all close to 0.14 or 1. Let's look at the joint distribution of $u$ and $v$ in just the pairs with weights close to 1:
 
 
 ```r
@@ -132,11 +136,10 @@ ddply(pairsHighWeightsDF,
 
 We see that $v$'s near 7 makes up only about 5.7% of the pairs. (It would be exactly $(.2)(.2) = 4$%, except that when we form pairs to compute the APC we don't pair any row with itself.)
 
-If we form the APC based on these pairs and these Weights, we Weight the $v$'s near 3 too much, so our APC is too low:
+If we form the APC based on these pairs and these weights, we weight the $v$'s near 3 too much, so our APC is too low:
 
 
 ```r
-
 pairsDF$yHat1 <- f(pairsDF$u, pairsDF$v)
 pairsDF$yHat2 <- f(pairsDF$u.B, pairsDF$v)
 pairsDF$uDiff <- pairsDF$u.B - pairsDF$u
@@ -151,7 +154,7 @@ ApcApprox1
 ```
 
 
-I showed the computation above, but we can also use the ```GetAPC``` function:
+I showed the full computation above, but we can also use the ```GetAPC``` function from this package:
 
 
 ```r

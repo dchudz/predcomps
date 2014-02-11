@@ -8,7 +8,7 @@
 
 ## Input Generation
 
-This example will have 9 inputs: $v$ and $u_1$, $u_2$, ..., $u_8$. The input $v$ is uniformly distributed between 7 values, $-3, -2, \ldots, 2, 3$. Each $u$ is mostly constant (at 0) but at one value of $v$ (which is $v=-3$ for $u_1$, $v=-2$ for $u_2$, etc), $u$ can be either $0$ and $10$. The input $u_8$ can transition at two values of $v$: At either $v=-3$ or $v=3$, $u_8$ can be $0$ or $10$; otherwise, $u_8$ is 0. I'll construct the data and plot the relationship between the $u$'s and $v$. 
+This example will have 9 inputs: $v$ and $u_1$, $u_2$, ..., $u_8$. The input $v$ is uniformly distributed between 7 values, $-3, -2, \ldots, 2, 3$. Each $u$ is mostly constant (at $0$) but at one value of $v$ (which is $v=-3$ for $u_1$, $v=-2$ for $u_2$, etc), $u$ can be either $0$ and $10$. The input $u_8$ can transition at two values of $v$: At either $v=-3$ or $v=3$, $u_8$ can be $0$ or $10$; otherwise, $u_8$ is 0. I'll construct the data and plot the relationship between the $u$'s and $v$. 
 
 
 ```r
@@ -87,15 +87,15 @@ print(apcDF)
 
 ```
 ##  Input   Signed Absolute
-##      v  5.49218   5.4922
-##     u1 -1.96453   2.4788
-##     u2 -1.23661   1.7929
-##     u3 -0.64088   1.2408
-##     u4  0.02116   0.7636
-##     u5  0.68314   1.2637
-##     u6  1.25926   1.8044
-##     u7  2.07089   2.5521
-##     u8  0.20639   2.5513
+##      v  4.81631   4.8163
+##     u1 -2.14070   2.5994
+##     u2 -1.22273   1.8594
+##     u3 -0.68995   1.3228
+##     u4  0.01158   0.8904
+##     u5  0.70664   1.3396
+##     u6  1.31842   1.8738
+##     u7  2.09419   2.5586
+##     u8  0.28046   2.5770
 ```
 
 ```r

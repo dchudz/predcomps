@@ -1,9 +1,9 @@
 
 
 
-## Large N Limit
+## Large $N$ Limit
 
-As we get more data, it would be nice if the APC we compute tends toward the right answer, equation (2) of Gelman 2007. I don't care about asymptotics as much as some people, but if we don't get the right answer in the limit, that's at least a clue that we might not be doing as well as we can for smaller N. This note shows that unless we adjust the Weights Weighting function as we get more data, we won't have that nice property.
+As we get more data, it would be nice if the APC we compute tends toward the right answer, equation (2) of [Gelman and Pardoe 2007](http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9531.2007.00181.x/abstract). I don't care about asymptotics as much as some people, but if we don't get the right answer in the limit, that's at least a clue that we might not be doing as well as we can for smaller $N$. This note shows that unless we adjust the weighting function as we get more data, we won't have that nice property.
 
 
 ```r
@@ -30,7 +30,7 @@ GetAPC(function(df) return(df$u * df$v), makeExampleDF(100), u="u", v="v")
 ```
 
 ```
-## [1] 3.854
+## [1] 3.855
 ```
 
 ```r
@@ -42,12 +42,12 @@ GetAPC(function(df) return(df$u * df$v), makeExampleDF(300), u="u", v="v")
 ```
 
 
-If we're looking at one value for $v$, $v=v_0$, the tradeoff in determining the Weights is:
+If we're looking at one value for $v$, $v=v_0$, the tradeoff in determining the weights is:
 
 1. $v$'s closer to $v_0$ will do a better job representing the distribution of $u$ conditional on $v=v_0$
-2. but if too few $v$'s get too much of the Weight, our estimate for the conditional distribution of $u$ will be too noisy
+2. but if too few $v$'s get too much of the weight, our estimate for the conditional distribution of $u$ will be too noisy
 
-As we get more data, we can afford to put more Weight on closer $v$, because (2) becomes less of a problem. A couple ideas are:
+The reason our estimate didn't improve with more data is that we're not moving more weight to nearby points as we get more data. For any $N$, we're presently putting roughly the same amount of mass at the same distances. As we get more data, we can afford to put more weight closer to $v$, because (2) becomes less of a problem. A couple ideas are:
 
-- With the Weights as $\frac{1}{k+d}$ (where now $k=1$ and $d$ is the Mahalanobis distance), we could scale $k$ down as $N$ goes up.
-- Or use the Weights we are now, except we drop (set the Weight to 0) for all but the closest $s(N)$ points to each $v$. The function $s$ needs to increases with N, but not as fast as N, e.g. maybe $s(N) = sqrt(N)$ probably works. -- this means we're always decreasing bias (sampling from closer to the right $v$) and also decreasing variance (more samples) as N increases.
+- With the weights as $\frac{1}{k+d}$ ($d$ is the Mahalanobis distance), we could scale $k$ down as $N$ goes up.
+- Or we could use the weights we are now ($k=1$), except we drop (equivalent to setting the weight to 0) all but the closest $s(N)$ points to each $v$. The function $s$ needs to increases with $N$, but not as fast as $N$, e.g. maybe $s(N) = sqrt(N)$ probably works. This means we're always decreasing bias (sampling from closer to the right $v$) and also decreasing variance (more samples) as N increases. This would also be good for keeping run-times and memory usage under control as $N$ increases.
