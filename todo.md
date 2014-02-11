@@ -1,22 +1,9 @@
-Todo
-
-- need a system for easiling copying the html files and adding the bit at the top that they need
-
-- need to edit the layout to include navigation
-
-- clean up naming -- casing convention's should match Kaggle's or else I'll go crazy -- probably use a recursive find/replace
-
-- FINISH EXAMPLE: demos/SimpleSimulatedLinearModelInteractionsDemo.R
-	- add a feature with high absolute but zero signed APC -- e.g. its only transitions are at -3 OR 3
-	- absolute and signed on different charts? 
-	- show that more data & get_pairs(mahalanobisConstantTerm=SMALL) get us closer to theoretical values
-	- generalize plotting to function ()
-	- what would partial plots say about about this example?
+# Todo
 
 - demonstrate on simulated logistic regression example
 	- should see effect of shape of logistic curve... ie, if one feature only varies at high values of another, less effect than if it varies at middle values of the other
 
-- email to ask for advice about unsigned APCs -- (1) absolute value and (2) a way to make them comparable between numeric and categorical inputs
+- make it work for categorical variables
 
 - write down my ideas about APC "variable importance" -- essentially APC without the denominator. instead of expected change in y per unit change in u conditonal on a u transition, this is just expected change in y given two draws from u (which needed be a "transition" -- the two could be the same value, in which case) -- make example for where random forest variable importance can go wrong
 
@@ -32,12 +19,7 @@ Todo
 ## Uncertainty
 
 - it would be pretty easy to allow for multiple samples of parameters and plot uncertainties as in the paper
-- ... BUT I'm interested in the uncertainty that arises from the density estimation as well. I'm not sure how much I like displaying one source of uncertainty without the other. (understates the overall uncertainty, and people may get confused)
-
-
-## Better format for demos
-
-- learn about vignettes (this should be the form my examples take)
+- I'm also interested in the uncertainty that arises from the density estimation as. I'm not that excited about displaying one source of uncertainty without at least having a sense for the other.
 
 ## Tests
 
