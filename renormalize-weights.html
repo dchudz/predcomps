@@ -1,0 +1,160 @@
+---
+layout: page
+title: Your New Jekyll Site
+---
+
+
+
+<h2>Toy example with exact transitions</h2>
+
+<p>If \(u\) is an input of interest and \(v\) are the other inputs, recall that we compute the APC by sampling twice from \(u\) conditional on \(v\), and average over the distribution of \(v\) (equation (5) in <a href="http://www.stat.columbia.edu/%7Egelman/research/published/ape17.pdf">the APC paper</a> defines the quantity we wish to approximate). So we&#39;re interested in the distribution of \(u\) given \(v\). </p>
+
+<p>If there were enough pairs of points with identical \(v\), we could just use the sample distribution of \(u\) given \(v\). As noted in the paper, we may have few (if any) pairs of points with identical \(v\). But still, it&#39;s worth thinking through an example where we do.</p>
+
+<p>Suppose \(v\) consists of only 1 input, which can either be \(v=v_1\) or \(v=v_2\). For simplicity, assume \(u\) only has exactly two possible (equally likely) values at each \(v\), so there is only one possible transition at each \(v\). Here&#39;s an example:</p>
+
+<pre><code class="r">exampleDF &lt;- data.frame(
+  v=c(3,3,7,7),  
+  u=c(10,20,12,22) 
+  )[rep(c(1,2,3,4),c(40,40,10,10)),]
+
+# Count each u/v combination:
+</code></pre>
+
+<pre><code>## |  v|   u|  CountOfRows|
+## |--:|---:|------------:|
+## |  3|  10|           40|
+## |  3|  20|           40|
+## |  7|  12|           10|
+## |  7|  22|           10|
+</code></pre>
+
+<p>Say we have a model \(\hat{y} = f(u,v)\). I&#39;ll choose \(\hat{y} = f(u,v) = uv\) for a simple example. (How the model is estimated is completely orthogonal to the questions addressed here.)</p>
+
+<p>Equation (2) in the paper says the numerator in the APC should be:</p>
+
+<p>\[(.4)(.5)(.5)(f(20,3) - f(10, 3)) + (0.1)(.5)(.5)(f(22,7) - f(12,7)) \]</p>
+
+<p>The .5&#39;s are the \(p(u|v)\)&#39;s (and will cancel out in this case). (Terms with transition size 0 aren&#39;t included.)</p>
+
+<p>The denominator is:</p>
+
+<p>\[(.4)(.5)(.5)((20 - 10) + (.1)(.5)(.5)((22 - 12)\]</p>
+
+<p>The ratio simplifies to:</p>
+
+<p>\[.8 \delta_u(10 \rightarrow 20, 3, f) + 0.2 \delta_u(12 \rightarrow 22, 7, f)\]</p>
+
+<p>This is all overkill for our very simple example, where it&#39;s easy to see that the APC is just \((.8)(3) + (.2)(6)\). But I wanted to be very concrete.</p>
+
+<p>I&#39;ll compute it:</p>
+
+<pre><code class="r">f &lt;- function(u, v) return(u*v)
+ApcExact &lt;- .8*(f(20,3) - f(10,3))/10 + .2*(f(22,7) - f(12,7))/10
+ApcExact
+</code></pre>
+
+<pre><code>## [1] 3.8
+</code></pre>
+
+<h2>Now without exact duplicates</h2>
+
+<p>Now imagine we don&#39;t have any exact duplicates of \(v\). To get a corresponding example like that, I&#39;ll add a really tiny bit of noise to \(v\) in the example, \(v_{new} = v + N(0,\epsilon)\).</p>
+
+<pre><code class="r">exampleDF2 &lt;- transform(exampleDF, v = v + rnorm(nrow(exampleDF), sd=.001))
+</code></pre>
+
+<p>Now we form pairs and compute Weights as described in the paper. Here&#39;s a sample of the resulting data frame of pairs:</p>
+
+<pre><code class="r">pairsDF &lt;- GetPairs(exampleDF2, u=&quot;u&quot;, v=&quot;v&quot;, renormalizeWeights=FALSE)
+</code></pre>
+
+<pre><code>## |      v|   u|  OriginalRowNumber|    v.B|  u.B|  OriginalRowNumber.B|  Weight|
+## |------:|---:|------------------:|------:|----:|--------------------:|-------:|
+## |  3.002|  20|                 70|  3.000|   20|                   69|  1.0000|
+## |  6.999|  12|                 85|  3.002|   10|                   10|  0.1393|
+## |  3.001|  20|                 80|  3.000|   10|                   29|  1.0000|
+## |  3.000|  10|                  8|  3.001|   20|                   54|  1.0000|
+## |  3.001|  20|                 68|  3.001|   20|                   73|  1.0000|
+## |  3.001|  20|                 68|  2.999|   20|                   47|  1.0000|
+## |  7.000|  12|                 83|  3.001|   10|                   15|  0.1392|
+## |  3.001|  10|                 35|  3.001|   10|                   37|  1.0000|
+## |  7.001|  22|                 99|  2.998|   20|                   67|  0.1389|
+## |  2.999|  20|                 78|  3.001|   20|                   72|  1.0000|
+## |  7.000|  22|                 98|  3.002|   20|                   52|  0.1392|
+## |  2.998|  20|                 58|  2.999|   20|                   76|  1.0000|
+</code></pre>
+
+<p>Now pairs with nearby \(v\)&#39;s (which would have been the same \(v\)&#39;s previously) have high Weights, where pairs from far-away \(v\)&#39;s (which were different \(v\)&#39;s in the previous example) have low Weights. That&#39;s good.</p>
+
+<p>But we have a problem, which is that \(v\) near 3 now has more Weight in the data set for two reasons:</p>
+
+<ol>
+<li>we started with more \(v\)&#39;s near 3, so there are more rows with \(v\) near 3 as the first element of the pair; and</li>
+<li>each time \(v\) is near \(3\) in the first element of each pair, there are more nearby \(v\)&#39;s to pair with, so we get higher Weights.</li>
+</ol>
+
+<p>Reason (1) is good, but reason (2) is not so good.</p>
+
+<p>In the data frame of pairs, the Weights are all close to 0.14 or 1. Let&#39;s look at how the distribution of \(u\) and \(v\) in just the pairs with Weights close to 1:</p>
+
+<pre><code class="r">pairsDF &lt;- data.frame(vRounded = round(pairsDF$v), pairsDF)
+pairsHighWeightsDF &lt;- subset(pairsDF, Weight &gt; 0.9)
+ddply(pairsHighWeightsDF,
+      c(&quot;vRounded&quot;,&quot;u&quot;), 
+      function(df) data.frame(CountOfRows = nrow(df),
+                              ProportionOfRows = nrow(df)/nrow(pairsHighWeightsDF)))
+</code></pre>
+
+<pre><code>##   vRounded  u CountOfRows ProportionOfRows
+## 1        3 10        3160          0.47164
+## 2        3 20        3160          0.47164
+## 3        7 12         190          0.02836
+## 4        7 22         190          0.02836
+</code></pre>
+
+<p>We see that \(v\)&#39;s near 7 makes up only about 5.7% of the pairs. (It would be exactly \((.2)(.2) = 4\)%, except that when we form pairs to compute the APC we don&#39;t pair any row with itself.)</p>
+
+<p>If we form the APC based on these pairs and these Weights, we Weight the \(v\)&#39;s near 3 too much, so our APC is too low:</p>
+
+<pre><code class="r">
+pairsDF$yHat1 &lt;- f(pairsDF$u, pairsDF$v)
+pairsDF$yHat2 &lt;- f(pairsDF$u.B, pairsDF$v)
+pairsDF$uDiff &lt;- pairsDF$u.B - pairsDF$u
+ApcApprox1 &lt;- 
+  with(pairsDF,
+       sum(Weight * (yHat2 - yHat1) * sign(uDiff)) / sum(Weight * uDiff * sign(uDiff)))
+ApcApprox1
+</code></pre>
+
+<pre><code>## [1] 3.364
+</code></pre>
+
+<p>I showed the computation above, but we can also use the <code>GetAPC</code> function:</p>
+
+<pre><code class="r">GetAPC(function(df) return(df$u * df$v), exampleDF2, u=&quot;u&quot;, v=&quot;v&quot;, renormalizeWeights=FALSE)
+</code></pre>
+
+<pre><code>## [1] 3.364
+</code></pre>
+
+<p>Instead, we can normalize Weights so that within each first element of the pair. </p>
+
+<pre><code class="r">pairsDFWeightsNormalized &lt;- ddply(pairsDF, &quot;OriginalRowNumber&quot;, transform, Weight = Weight/sum(Weight))
+ApcApprox2 &lt;- 
+  with(pairsDFWeightsNormalized, 
+       sum(Weight * (yHat2 - yHat1) * sign(uDiff)) / sum(Weight * uDiff * sign(uDiff)))
+ApcApprox2
+</code></pre>
+
+<pre><code>## [1] 3.854
+</code></pre>
+
+<p>These renormalized Weights are the ones returned from <code>GetPairs</code> by default, and used in <code>GetAPC</code> by default:</p>
+
+<pre><code class="r">GetAPC(function(df) return(df$u * df$v), exampleDF2, u=&quot;u&quot;, v=&quot;v&quot;, renormalizeWeights=TRUE)
+</code></pre>
+
+<pre><code>## [1] 3.854
+</code></pre>
+
