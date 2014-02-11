@@ -2,20 +2,24 @@
 layout: page
 ---
 
+<h2>Renormalizing Weights</h2>
+
+<p>In computing the APC, we assign weights to pairs of observations based on the Mahalanobis distance between the corresponding \(v\)&#39;s. This note uses a toy example to argue that we must <em>renormalize</em> the weights so that when we group by the first element of each pair and sum the weights, each group has the same sum-of-weights.</p>
+
+<p>This suggested renormalization is not discussed in <a href="http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9531.2007.00181.x/abstract">Gelman and Pardoe 2007</a>.</p>
+
 <h2>Toy example with exact transitions</h2>
 
-<p>If \(u\) is an input of interest and \(v\) are the other inputs, recall that we compute the APC by sampling twice from \(u\) conditional on \(v\), and average over the distribution of \(v\) (equation (5) in <a href="http://www.stat.columbia.edu/%7Egelman/research/published/ape17.pdf">the APC paper</a> defines the quantity we wish to approximate). So we&#39;re interested in the distribution of \(u\) given \(v\). </p>
+<p>If \(u\) is an input of interest and \(v\) are the other inputs, recall that the APC is the expected value of a quantity formed upon sampling from \(v\), sampling twice from \(u\) conditional on \(v\), and computing predictive comparisons using those \(u\)&#39;s. See equation (2) of <a href="http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9531.2007.00181.x/abstract">Gelman and Pardoe 2007</a>.</p>
 
-<p>If there were enough pairs of points with identical \(v\), we could just use the sample distribution of \(u\) given \(v\). As noted in the paper, we may have few (if any) pairs of points with identical \(v\). But still, it&#39;s worth thinking through an example where we do.</p>
+<p>If there were enough pairs of points with identical \(v\), we could just use the sample distribution of \(u\) given \(v\). As noted in the paper, we may have few (if any) pairs of points with identical \(v\). Even so, let&#39;s think through an example where we do have such identical pairs:</p>
 
-<p>Suppose \(v\) consists of only 1 input, which can either be \(v=v_1\) or \(v=v_2\). For simplicity, assume \(u\) only has exactly two possible (equally likely) values at each \(v\), so there is only one possible transition at each \(v\). Here&#39;s an example:</p>
+<p>Suppose \(v\) consists of only 1 input, which can take one of two values. For simplicity, assume \(u\) has exactly two possible (equally likely) values at each \(v\) (which are different depending on the value of \(v\)), so there is only one possible transition at each \(v\). Here&#39;s an example:</p>
 
 <pre><code class="r">exampleDF &lt;- data.frame(
   v=c(3,3,7,7),  
   u=c(10,20,12,22) 
   )[rep(c(1,2,3,4),c(40,40,10,10)),]
-
-# Count each u/v combination:
 </code></pre>
 
 <pre><code>## |  v|   u|  CountOfRows|
@@ -26,7 +30,7 @@ layout: page
 ## |  7|  22|           10|
 </code></pre>
 
-<p>Say we have a model \(\hat{y} = f(u,v)\). I&#39;ll choose \(\hat{y} = f(u,v) = uv\) for a simple example. (How the model is estimated is completely orthogonal to the questions addressed here.)</p>
+<p>Say we have a model \(\hat{y} = f(u,v)\). I&#39;ll choose \(\hat{y} = f(u,v) = uv\) for a simple example. (How the model is estimated is completely orthogonal to the questions addressed here, and I&#39;ll just pretend it&#39;s known exactly.)</p>
 
 <p>Equation (2) in the paper says the numerator in the APC should be:</p>
 
@@ -56,12 +60,12 @@ ApcExact
 
 <h2>Now without exact duplicates</h2>
 
-<p>Now imagine we don&#39;t have any exact duplicates of \(v\). To get a corresponding example like that, I&#39;ll add a really tiny bit of noise to \(v\) in the example, \(v_{new} = v + N(0,\epsilon)\).</p>
+<p>Now imagine we don&#39;t have any exact duplicates of \(v\). To get a corresponding example like that, I&#39;ll modify the first example by adding a really tiny bit of noise to \(v\): \(v_{new} = v + N(0,\epsilon)\).</p>
 
 <pre><code class="r">exampleDF2 &lt;- transform(exampleDF, v = v + rnorm(nrow(exampleDF), sd=.001))
 </code></pre>
 
-<p>Now we form pairs and compute Weights as described in the paper. Here&#39;s a sample of the resulting data frame of pairs:</p>
+<p>Now we form pairs and compute weights as described in the paper. Here&#39;s a sample of the resulting data frame of pairs, just to get a sense of what it looks like:</p>
 
 <pre><code class="r">pairsDF &lt;- GetPairs(exampleDF2, u=&quot;u&quot;, v=&quot;v&quot;, renormalizeWeights=FALSE)
 </code></pre>
@@ -82,9 +86,9 @@ ApcExact
 ## |  7.001|  22|                 97|  3.001|   20|                   52|  0.1391|
 </code></pre>
 
-<p>Now pairs with nearby \(v\)&#39;s (which would have been the same \(v\)&#39;s previously) have high Weights, where pairs from far-away \(v\)&#39;s (which were different \(v\)&#39;s in the previous example) have low Weights. That&#39;s good.</p>
+<p>Now pairs with nearby \(v\)&#39;s (which would have been the same \(v\)&#39;s previously) have high weights, where pairs from far-away \(v\)&#39;s (which were different \(v\)&#39;s in the previous example) have low weights. That&#39;s good.</p>
 
-<p>But we have a problem, which is that \(v\) near 3 now has more Weight in the data set for two reasons:</p>
+<p>But \(v\) near 3 now has more weight in the data set for two reasons:</p>
 
 <ol>
 <li>we started with more \(v\)&#39;s near 3, so there are more rows with \(v\) near 3 as the first element of the pair; and</li>
@@ -93,7 +97,7 @@ ApcExact
 
 <p>Reason (1) is good, but reason (2) is not so good.</p>
 
-<p>In the data frame of pairs, the Weights are all close to 0.14 or 1. Let&#39;s look at how the distribution of \(u\) and \(v\) in just the pairs with Weights close to 1:</p>
+<p>In the data frame of pairs, the weights are all close to 0.14 or 1. Let&#39;s look at the joint distribution of \(u\) and \(v\) in just the pairs with weights close to 1:</p>
 
 <pre><code class="r">pairsDF &lt;- data.frame(vRounded = round(pairsDF$v), pairsDF)
 pairsHighWeightsDF &lt;- subset(pairsDF, Weight &gt; 0.9)
@@ -112,10 +116,9 @@ ddply(pairsHighWeightsDF,
 
 <p>We see that \(v\)&#39;s near 7 makes up only about 5.7% of the pairs. (It would be exactly \((.2)(.2) = 4\)%, except that when we form pairs to compute the APC we don&#39;t pair any row with itself.)</p>
 
-<p>If we form the APC based on these pairs and these Weights, we Weight the \(v\)&#39;s near 3 too much, so our APC is too low:</p>
+<p>If we form the APC based on these pairs and these weights, we weight the \(v\)&#39;s near 3 too much, so our APC is too low:</p>
 
-<pre><code class="r">
-pairsDF$yHat1 &lt;- f(pairsDF$u, pairsDF$v)
+<pre><code class="r">pairsDF$yHat1 &lt;- f(pairsDF$u, pairsDF$v)
 pairsDF$yHat2 &lt;- f(pairsDF$u.B, pairsDF$v)
 pairsDF$uDiff &lt;- pairsDF$u.B - pairsDF$u
 ApcApprox1 &lt;- 
@@ -127,7 +130,7 @@ ApcApprox1
 <pre><code>## [1] 3.364
 </code></pre>
 
-<p>I showed the computation above, but we can also use the <code>GetAPC</code> function:</p>
+<p>I showed the full computation above, but we can also use the <code>GetAPC</code> function from this package:</p>
 
 <pre><code class="r">GetAPC(function(df) return(df$u * df$v), exampleDF2, u=&quot;u&quot;, v=&quot;v&quot;, renormalizeWeights=FALSE)
 </code></pre>
