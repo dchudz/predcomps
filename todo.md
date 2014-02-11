@@ -1,5 +1,9 @@
 Todo
 
+- need a system for easiling copying the html files and adding the bit at the top that they need
+
+- need to edit the layout to include navigation
+
 - clean up naming -- casing convention's should match Kaggle's or else I'll go crazy -- probably use a recursive find/replace
 
 - FINISH EXAMPLE: demos/SimpleSimulatedLinearModelInteractionsDemo.R
