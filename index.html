@@ -1,11 +1,40 @@
 ---
 layout: page
-title: Your New Jekyll Site
 ---
 
-  <h1>Blog Posts</h1>
-  <ul class="posts">
-    {% for post in site.posts %}
-      <li><span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ post.url }}">{{ post.title }}</a></li>
-    {% endfor %}
-  </ul>
+<h2>Average Predictive Comparisons</h2>
+
+<p>This is an R package implementing some of the ideas in <a href="http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9531.2007.00181.x/abstract">Gelman and Pardoe 2007</a>. <strong>The package is not ready to use.</strong> But if you want it anyway, you can install it with:</p>
+
+<pre><code class="r">library(devtools)  # first install devtools if you haven&#39;t
+install_github(&quot;predcomps&quot;, user = &quot;dchudz&quot;)
+</code></pre>
+
+<pre><code>## Installing github repo predcomps/master from dchudz
+## Downloading predcomps.zip from https://github.com/dchudz/predcomps/archive/master.zip
+## Installing package from /var/folders/b9/f420rh1x69ldvhcpk8g1ssjw0000gn/T//Rtmp7rqT06/predcomps.zip
+## arguments &#39;minimized&#39; and &#39;invisible&#39; are for Windows only
+## Installing predcomps
+## &#39;/Library/Frameworks/R.framework/Resources/bin/R&#39; --vanilla CMD INSTALL  \
+##   &#39;/private/var/folders/b9/f420rh1x69ldvhcpk8g1ssjw0000gn/T/Rtmp7rqT06/devtools47c4f79a06d/predcomps-master&#39;  \
+##   --library=&#39;/Library/Frameworks/R.framework/Versions/3.0/Resources/library&#39;  \
+##   --install-tests
+</code></pre>
+
+<p><strong>The package is not ready to use.</strong></p>
+
+<p>When the package is ready to use, a short explanation of the ideas will go here. Until then, you&#39;ll have to read the paper to have any idea what&#39;s going on.</p>
+
+<h3>Differences from the paper</h3>
+
+<p>There are plenty of ideas in the paper not implemented yet, but as far as what is implemented, there are only a couple differences from the paper (unless I&#39;ve messed up):</p>
+
+<ul>
+<li><a href="renormalize-weights.html">renormalizing weights</a></li>
+<li>absolute average predictive comparisons: as well as the usual APCs, I&#39;m computing an &ldquo;absolute&rdquo; version that operates on the absolute value of the predictive comparison rather than the (signed) predictive comparison itself. This will show you if effects with different signs are canceling out in the signed version. Here&#39;s <a href="simulated-linear-model-interactions.html">an example</a></li>
+</ul>
+
+<h2>Contact</h2>
+
+<p>If you&#39;re interested in trying this out, send me a note: <a href="mailto:dchudz@gmail.com">dchudz@gmail.com</a></p>
+
