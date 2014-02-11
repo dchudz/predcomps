@@ -14,7 +14,7 @@ library(plyr)
 
 ## Input Generation
 
-This example will have 9 inputs: $v$ and $u_1$, $u_2$, ..., $u_8$. The input $v$ is uniformly distributed between 7 values, $-3, -2, \ldots, 2, 3$. Each $u$ is mostly constant (at 0) but at one value of $v$ (which is $v=-3$ for $u_1$, $v=-2$ for $u_2$, etc), $u$ can be either $0$ and $10$. The input $u_8$ can transition at two values of $v$: At either $v=-3$ or $v=3$, $u_8$ can be $0$ or $10$; otherwise, $u_8$ is 0. I'll construct the data and plot the relationship between the $u$'s and $v$. 
+This example will have 9 inputs: $v$ and $u_1$, $u_2$, ..., $u_8$. The input $v$ is uniformly distributed between 7 values, $-3, -2, \ldots, 2, 3$. Each $u$ is mostly constant (at $0$) but at one value of $v$ (which is $v=-3$ for $u_1$, $v=-2$ for $u_2$, etc), $u$ can be either $0$ and $10$. The input $u_8$ can transition at two values of $v$: At either $v=-3$ or $v=3$, $u_8$ can be $0$ or $10$; otherwise, $u_8$ is 0. I'll construct the data and plot the relationship between the $u$'s and $v$. 
 
 ```{r}
 N <- 200
