@@ -1,3 +1,7 @@
+---
+layout: page
+---
+
 <h2>Toy example with exact transitions</h2>
 
 <p>If \(u\) is an input of interest and \(v\) are the other inputs, recall that we compute the APC by sampling twice from \(u\) conditional on \(v\), and average over the distribution of \(v\) (equation (5) in <a href="http://www.stat.columbia.edu/%7Egelman/research/published/ape17.pdf">the APC paper</a> defines the quantity we wish to approximate). So we&#39;re interested in the distribution of \(u\) given \(v\). </p>
@@ -64,18 +68,18 @@ ApcExact
 
 <pre><code>## |      v|   u|  OriginalRowNumber|    v.B|  u.B|  OriginalRowNumber.B|  Weight|
 ## |------:|---:|------------------:|------:|----:|--------------------:|-------:|
-## |  3.002|  20|                 70|  3.000|   20|                   69|  1.0000|
-## |  6.999|  12|                 85|  3.002|   10|                   10|  0.1393|
-## |  3.001|  20|                 80|  3.000|   10|                   29|  1.0000|
+## |  3.000|  20|                 60|  3.000|   20|                   78|  1.0000|
+## |  3.002|  20|                 68|  3.000|   20|                   69|  1.0000|
+## |  6.999|  12|                 85|  3.001|   10|                   10|  0.1392|
+## |  3.001|  20|                 80|  3.001|   10|                   29|  1.0000|
 ## |  3.000|  10|                  8|  3.001|   20|                   54|  1.0000|
-## |  3.001|  20|                 68|  3.001|   20|                   73|  1.0000|
-## |  3.001|  20|                 68|  2.999|   20|                   47|  1.0000|
-## |  7.000|  12|                 83|  3.001|   10|                   15|  0.1392|
-## |  3.001|  10|                 35|  3.001|   10|                   37|  1.0000|
-## |  7.001|  22|                 99|  2.998|   20|                   67|  0.1389|
-## |  2.999|  20|                 78|  3.001|   20|                   72|  1.0000|
-## |  7.000|  22|                 98|  3.002|   20|                   52|  0.1392|
-## |  2.998|  20|                 58|  2.999|   20|                   76|  1.0000|
+## |  3.001|  20|                 67|  2.999|   20|                   73|  1.0000|
+## |  3.002|  20|                 68|  3.000|   20|                   47|  1.0000|
+## |  7.000|  12|                 83|  2.999|   10|                   15|  0.1391|
+## |  3.000|  10|                 35|  2.999|   10|                   37|  1.0000|
+## |  7.000|  22|                 98|  3.001|   20|                   67|  0.1392|
+## |  2.999|  20|                 77|  3.001|   20|                   72|  1.0000|
+## |  7.001|  22|                 97|  3.001|   20|                   52|  0.1391|
 </code></pre>
 
 <p>Now pairs with nearby \(v\)&#39;s (which would have been the same \(v\)&#39;s previously) have high Weights, where pairs from far-away \(v\)&#39;s (which were different \(v\)&#39;s in the previous example) have low Weights. That&#39;s good.</p>
