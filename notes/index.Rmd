@@ -2,7 +2,7 @@
 
 This is an R package implementing some of the ideas in [Gelman and Pardoe 2007](http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9531.2007.00181.x/abstract). **The package is not ready to use.** But if you want it anyway, you can install it with:
 
-```{r}
+```{r eval=FALSE}
 library(devtools) # first install devtools if you haven't
 install_github("predcomps", user="dchudz")
 ```
