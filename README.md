@@ -53,9 +53,9 @@ There's nothing but R code here, so I should be able to find simple instructions
 
 Comments from a friend:
 
-	1. Installing devtools required installing RCurl which required installing curl-config with the debian libcurl4-openssl-dev package
-	2. I also had to install the R package assertthat and gridExtra for your package
-	3. Some of the functions depend on reshape and ggplot2, which would make them fail mysteriously if you weren't familiar with them.
+1. Installing devtools required installing RCurl which required installing curl-config with the debian libcurl4-openssl-dev package
+2. I also had to install the R package assertthat and gridExtra for your package
+3. Some of the functions depend on reshape and ggplot2, which would make them fail mysteriously if you weren't familiar with them.
 
 
 ## Maybe should be done before releasing it to the world
