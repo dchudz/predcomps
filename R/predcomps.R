@@ -4,5 +4,5 @@
 #' @import grid
 #' @import gridExtra
 #' @import assertthat
-#' @import reshape
+#' @import reshape2
 NULL
