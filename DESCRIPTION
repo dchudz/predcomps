@@ -9,5 +9,6 @@ Depends:
     R (>= 3.0.2)
 Imports:
     plyr,
-    ggplot2
+    ggplot2,
+    reshape
 License: I haven't decided yet. Hopefully BSD or MIT will make sense.
