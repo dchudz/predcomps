@@ -10,5 +10,6 @@ Depends:
 Imports:
     plyr,
     ggplot2,
+    gridExtra
     reshape
 License: I haven't decided yet. Hopefully BSD or MIT will make sense.
