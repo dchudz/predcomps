@@ -6,10 +6,10 @@ Author: David Chudzicki
 Maintainer: David Chudzicki <dchudz@gmail.com>
 VignetteBuilder: knitr
 Depends:
-    R (>= 3.0.2)
-Imports:
-    plyr,
+    R (>= 3.0.2),
     ggplot2,
     gridExtra
+Imports:
+    plyr,
     reshape
 License: I haven't decided yet. Hopefully BSD or MIT will make sense.
