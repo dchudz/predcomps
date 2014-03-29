@@ -47,17 +47,6 @@ What could make this fail? Some possibilities:
 - add an example function that would just show off the functionality.  For example, try running > library(glmnet), > example(glmnet)
 
 
-### Make installation easier
-
-There's nothing but R code here, so I should be able to find simple instructions that don't require going through CRAN, which I don't want to do to start with (while it's still changing quickly). 
-
-Comments from a friend:
-
-1. Installing devtools required installing RCurl which required installing curl-config with the debian libcurl4-openssl-dev package
-2. I also had to install the R package assertthat and gridExtra for your package
-3. Some of the functions depend on reshape and ggplot2, which would make them fail mysteriously if you weren't familiar with them.
-
-
 ## Maybe should be done before releasing it to the world
 
 
