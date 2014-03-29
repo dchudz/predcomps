@@ -12,4 +12,5 @@ Depends:
 Imports:
     plyr,
     reshape
+    assertthat
 License: I haven't decided yet. Hopefully BSD or MIT will make sense.
