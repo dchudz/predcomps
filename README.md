@@ -19,10 +19,15 @@ What could make this fail? Some possibilities:
 
 ## Must be done before releasing to the world
 
+### Impact plots with arrows
+
+- start with example based on GetPairs applied to y = v1*v2, with and without v2 & v2 correlated
+
+
 ### Examples Needed
 
 - demonstrate on simulated logistic regression example
-	- should see effect of shape of logistic curve... ie, if one feature only varies at high values of another, less effect than if it varies at middle values of the other
+	- (todo) plot the curves for better intuition
 
 - a motivating real data example -- can get data sets with data()
 

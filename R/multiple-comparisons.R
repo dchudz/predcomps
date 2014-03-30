@@ -43,7 +43,8 @@ PlotApcDF <- function(apcDF) {
       geom_point(aes(y = Input, x=APC, color=Type, shape=Type, size=Type)) +
       scale_x_continuous(limits=c(-maxAPC, maxAPC)) +
       scale_size_discrete(range=c(3,4)) +
-      ggtitle("APCs")
+      ggtitle("APCs") +
+      geom_vline(aes(xintercept=0), alpha=.5)
   )  
 }
 
@@ -59,8 +60,12 @@ PlotApcDF2 <- function(apcDF) {
   longAPCs <- melt(apcDF, id="Input", value.name = "APC", variable.name = "Type")
   apcDFList <- split(longAPCs, longAPCs$Type)
   p <- arrangeGrob(
-    ggplot(apcDFList$Signed) + geom_point(aes(y = Input, x=APC)) + ggtitle("Signed APC") +  scale_x_continuous(limits=c(-maxAPC, maxAPC)),
-    ggplot(apcDFList$Absolute) + geom_point(aes(y = Input, x=APC)) + ggtitle("Absolute APC"),
+    ggplot(apcDFList$Signed) + 
+      geom_point(aes(y = Input, x=APC)) + 
+      ggtitle("Signed APC") +  
+      scale_x_continuous(limits=c(-maxAPC, maxAPC)) +
+      geom_vline(aes(xintercept=0), alpha=.5),
+    ggplot(apcDFList$Absolute) + geom_point(aes(y = Input, x=APC)) + ggtitle("Absolute APC") + scale_x_continuous(limits=c(-maxAPC, maxAPC)),
     ncol=2,nrow=1
   ) 
   print(p)
