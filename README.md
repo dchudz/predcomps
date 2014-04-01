@@ -21,7 +21,7 @@ What could make this fail? Some possibilities:
 
 ### Impact plots with arrows
 
-- start with example based on GetPairs applied to y = v1*v2, with and without v2 & v2 correlated
+- add to all examples
 
 
 ### Examples Needed
@@ -29,8 +29,9 @@ What could make this fail? Some possibilities:
 - demonstrate on simulated logistic regression example
 	- (todo) plot the curves for better intuition
 
-- a motivating real data example -- can get data sets with data()
-
+- real world examples
+	- (to finish) diamonds
+	- look at give me some credit or another?
 
 ### Other documentation needed
 
@@ -45,11 +46,15 @@ What could make this fail? Some possibilities:
 
 ### More functionality
 
-- APC "variable importance" -- essentially APC without the denominator. instead of expected change in y per unit change in u conditonal on a u transition, this is just expected change in y given two draws from u (which needed be a "transition" -- the two could be the same value, in which case). 
-  - this is a natural way to combine change in output per unit change in input with how much the inputs are actually going to change
-  - it's not completely clear that this needs to be done before launch (it's not in the paper after), but I suspect this will be important to the package's usefulness, so maybe it does. for example, this is the only thing I can think of that that can naturally put categorical and continuous variables on the same scale. (using the absolute value version of this)
-
+- make the plots work again
 - add an example function that would just show off the functionality.  For example, try running > library(glmnet), > example(glmnet)
+
+
+
+
+
+
+
 
 
 ## Maybe should be done before releasing it to the world

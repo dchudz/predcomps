@@ -49,5 +49,5 @@ GetPairs <- function(X, u, v,
   if (renormalizeWeights) {
     pairsNoId <- ddply(pairsNoId, "OriginalRowNumber", transform, Weight = Weight/sum(Weight))
   } #normalizing AFTER removing pairs from same row as each other
-  return(pairsNoId) 
+  return(pairsNoId[c("OriginalRowNumber",u,v,paste0(u,".B"),"Weight")]) 
 }

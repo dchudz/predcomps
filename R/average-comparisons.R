@@ -53,9 +53,11 @@ GetAPC <- function(predictionFunction, X, u, v, ...) {
 GetAPCWithAbsolute <- function(predictionFunction, X, u, v, ...) {
   pairs <- GetPairs(X, u, v, ...)
   return(
-    list(Signed = ComputeAPCFromPairs(predictionFunction, pairs, u, v),
-         Absolute = ComputeAPCFromPairs(predictionFunction, pairs, u, v, absolute=TRUE))
-  )
+    list(ApcSigned = ComputeAPCFromPairs(predictionFunction, pairs, u, v),
+         ApcAbsolute = ComputeAPCFromPairs(predictionFunction, pairs, u, v, absolute=TRUE),
+         ImpactSigned = ComputeAPCFromPairs(predictionFunction, pairs, u, v, impact=TRUE),
+         ImpactAbsolute = ComputeAPCFromPairs(predictionFunction, pairs, u, v, absolute=TRUE, impact=TRUE))
+    )
 }
 
 #' ComputeAPCFromPairs
@@ -63,13 +65,13 @@ GetAPCWithAbsolute <- function(predictionFunction, X, u, v, ...) {
 #' (abstracted this into a separate function from \code{GetAPC} so we can more easily do things 
 #' like \code{GetAPCWithAbsolute})
 #' @export
-ComputeAPCFromPairs <- function(predictionFunction, pairs, u, v, absolute=FALSE) UseMethod("ComputeAPCFromPairs")
+ComputeAPCFromPairs <- function(predictionFunction, pairs, u, v, absolute=FALSE, impact=FALSE) UseMethod("ComputeAPCFromPairs")
   
 # Two methods:
 #  one for predictionFunction (df |--> predictions)
 #  another for a glm object
 
-ComputeAPCFromPairs.function <- function(predictionFunction, pairs, u, v, absolute=FALSE) {
+ComputeAPCFromPairs.function <- function(predictionFunction, pairs, u, v, absolute=FALSE, impact=FALSE) {
   uNew <- paste(u,".B",sep="")
   yHat1 <- predictionFunction(pairs)
   pairsNew <- structure(pairs[,c(v,uNew)], names=c(v,u)) #renaming u in pairsNew so we can call predictionFunction
@@ -77,11 +79,12 @@ ComputeAPCFromPairs.function <- function(predictionFunction, pairs, u, v, absolu
   uDiff <- pairs[[uNew]] - pairs[[u]]
   w <- pairs$Weight
   absoluteOrIdentity <- if (absolute) abs else identity
-  APC <- sum(absoluteOrIdentity(w * (yHat2 - yHat1) * sign(uDiff))) / sum(w * uDiff * sign(uDiff))
+  denom <- if (impact) sum(w) else sum(w * uDiff * sign(uDiff))
+  APC <- sum(absoluteOrIdentity(w * (yHat2 - yHat1) * sign(uDiff))) / denom
   return(APC)
 }
 
-ComputeAPCFromPairs.glm <- function(glmFit, pairs, u, v, absolute=FALSE) {
+ComputeAPCFromPairs.glm <- function(glmFit, pairs, u, v, absolute=FALSE, impact=FALSE) {
   predictionFunction <- function(df) predict.glm(glmFit, newdata=df, type="response")
   return(
     ComputeAPCFromPairs.function(predictionFunction, pairs, u, v, absolute=FALSE)

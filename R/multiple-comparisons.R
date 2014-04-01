@@ -17,10 +17,7 @@ GetApcDF <- function(predictionFunction, df, inputVars, ...) {
                        ...)},
     inputVars
   )
-  apcDF <- rename(ldply(apcList, data.frame), c(".id"="Input"))
-  
-  apcDF$Input <- reorder(factor(apcDF$Input), apcDF$Absolute, FUN = function(x) mean(abs(x))) 
-  
+  apcDF <- rename(ldply(apcList, data.frame), c(".id"="Input"))  
   return(apcDF)
 }
 
