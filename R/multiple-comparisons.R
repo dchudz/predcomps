@@ -27,43 +27,26 @@ GetApcDF <- function(predictionFunction, df, inputVars, ...) {
 #' 
 #' @param apcDF the output of GetApcDF
 #' @export
-PlotApcDF <- function(apcDF) {
+PlotApcDF <- function(apcDF, variant="Impact") {
+  
+  apcDF <- apcDF[c("Input", grep(paste0("^",variant,"\\."), names(apcDF), value=TRUE))]
+  names(apcDF) <- gsub(paste0("^",variant,"\\."), "", names(apcDF))
+  
+  print(apcDF)
+  
   maxAPC <- max(abs(apcDF$Absolute))  
-  longAPCs <- melt(apcDF, id="Input", value.name = "APC", variable.name = "Type")
+  longAPCs <- melt(apcDF, id="Input", value.name = "Value", variable.name = "Type")
   longAPCs2 <- rbind(
     longAPCs,
-    transform(subset(longAPCs, Type=="Absolute"), APC=-APC)
+    transform(subset(longAPCs, Type=="Absolute"), Value=-Value)
   )
   longAPCs2 <- longAPCs2[order(factor(longAPCs2$Type, levels=c("Absolute", "Signed"))), ]  
   print(
     ggplot(longAPCs2) +
-      geom_point(aes(y = Input, x=APC, color=Type, shape=Type, size=Type)) +
+      geom_point(aes(y = Input, x=Value, color=Type, shape=Type, size=Type)) +
       scale_x_continuous(limits=c(-maxAPC, maxAPC)) +
       scale_size_discrete(range=c(3,4)) +
-      ggtitle("APCs") +
+      ggtitle(variant) +
       geom_vline(aes(xintercept=0), alpha=.5)
   )  
-}
-
-
-#' PlotApcDF
-#' 
-#' plots the output of GetApcDF -- this is not my preferred display but may be more self-explanatory
-#' 
-#' @param apcDF the output of GetApcDF
-#' @export
-PlotApcDF2 <- function(apcDF) {
-  maxAPC <- max(abs(apcDF$Absolute))
-  longAPCs <- melt(apcDF, id="Input", value.name = "APC", variable.name = "Type")
-  apcDFList <- split(longAPCs, longAPCs$Type)
-  p <- arrangeGrob(
-    ggplot(apcDFList$Signed) + 
-      geom_point(aes(y = Input, x=APC)) + 
-      ggtitle("Signed APC") +  
-      scale_x_continuous(limits=c(-maxAPC, maxAPC)) +
-      geom_vline(aes(xintercept=0), alpha=.5),
-    ggplot(apcDFList$Absolute) + geom_point(aes(y = Input, x=APC)) + ggtitle("Absolute APC") + scale_x_continuous(limits=c(-maxAPC, maxAPC)),
-    ncol=2,nrow=1
-  ) 
-  print(p)
 }

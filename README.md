@@ -46,7 +46,6 @@ What could make this fail? Some possibilities:
 
 ### More functionality
 
-- make the plots work again
 - add an example function that would just show off the functionality.  For example, try running > library(glmnet), > example(glmnet)
 
 

@@ -32,4 +32,7 @@ paper. returns a list with the APC and the APC applied to
 the absolute value of the prediction function Only works
 fore continuous inputs right now
 }
+\examples{
+print("hi")
+}
 

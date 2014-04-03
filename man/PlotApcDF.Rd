@@ -2,7 +2,7 @@
 \alias{PlotApcDF}
 \title{PlotApcDF}
 \usage{
-PlotApcDF(apcDF)
+PlotApcDF(apcDF, variant = "Impact")
 }
 \arguments{
   \item{apcDF}{the output of GetApcDF}

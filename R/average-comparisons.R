@@ -50,13 +50,16 @@ GetAPC <- function(predictionFunction, X, u, v, ...) {
 #' @param k Weights are (1 / (k + Mahalanobis distance))
 #' @return a list with: \code{signed} (the usual APC) and \code{absolute} (APC applied to the absolute value of the differences)
 #' @export
+#' @examples
+#' print("hi")
+
 GetAPCWithAbsolute <- function(predictionFunction, X, u, v, ...) {
   pairs <- GetPairs(X, u, v, ...)
   return(
-    list(ApcSigned = ComputeAPCFromPairs(predictionFunction, pairs, u, v),
-         ApcAbsolute = ComputeAPCFromPairs(predictionFunction, pairs, u, v, absolute=TRUE),
-         ImpactSigned = ComputeAPCFromPairs(predictionFunction, pairs, u, v, impact=TRUE),
-         ImpactAbsolute = ComputeAPCFromPairs(predictionFunction, pairs, u, v, absolute=TRUE, impact=TRUE))
+    list(Apc.Signed = ComputeAPCFromPairs(predictionFunction, pairs, u, v),
+         Apc.Absolute = ComputeAPCFromPairs(predictionFunction, pairs, u, v, absolute=TRUE),
+         Impact.Signed = ComputeAPCFromPairs(predictionFunction, pairs, u, v, impact=TRUE),
+         Impact.Absolute = ComputeAPCFromPairs(predictionFunction, pairs, u, v, absolute=TRUE, impact=TRUE))
     )
 }
 

@@ -16,6 +16,9 @@ diamondsSmall <- diamonds3[sample.int(nrow(diamonds3), size=200), ]
 
 
 apcDf <- GetApcDF(function(df) predict(rf, df), diamondsSmall, inputVars=row.names(rf$importance))
+PlotApcDF(apcDf)
+  PlotApcDF(apcDf, variant="Apc")
+
 
 
 p <- ArrowPlot(function(df) predict(rf, df), diamondsSmall, "carat", c("cut", "color", "clarity"))
