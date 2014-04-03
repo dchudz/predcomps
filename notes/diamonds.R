@@ -1,29 +1,21 @@
+library(randomForest)
 library(plyr)
 library(predcomps)
 library(ggplot2)
-diamonds
 diamonds <- transform(diamonds, clarity = 
                         factor(clarity, levels =c("SI1", "SI2", "VS1", "VS2", "VVS1", "VVS2", "IF")))
-
-
-diamonds$cut
 diamonds2 <- transform(diamonds,
                        clarity = as.integer(clarity),
                        cut = as.integer(cut),
                        color = as.integer(color),
                        volume = x*y*z)
-
 diamonds3 <- subset(diamonds2, !is.na(clarity))
 
-
-library(randomForest)
 rf <- randomForest(price ~ carat + cut + color + clarity, data=diamonds3, ntree=20)
-
-
 diamondsSmall <- diamonds3[sample.int(nrow(diamonds3), size=200), ]
 
 
-GetApcDF(function(df) predict(rf, df), diamondsSmall, inputVars=row.names(rf$importance))
+apcDf <- GetApcDF(function(df) predict(rf, df), diamondsSmall, inputVars=row.names(rf$importance))
 
 
 p <- ArrowPlot(function(df) predict(rf, df), diamondsSmall, "carat", c("cut", "color", "clarity"))

@@ -2,7 +2,8 @@
 \alias{ComputeAPCFromPairs}
 \title{ComputeAPCFromPairs}
 \usage{
-ComputeAPCFromPairs(predictionFunction, pairs, u, v, absolute = FALSE)
+ComputeAPCFromPairs(predictionFunction, pairs, u, v, absolute = FALSE,
+  impact = FALSE)
 }
 \description{
 (abstracted this into a separate function from
