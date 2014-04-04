@@ -19,25 +19,7 @@ AverageSpecifiedComparison <- function(fit, df, input, low, high) {
 }
 
 
-#' GetAPC
-#' 
-#' makes average predictive comparison (based on Gelman/Pardoe) by forming pairs with two versions of the input of interest and averaging the predictive difference using Weights. I think Weights should be an approximation of the density p(u1,u2|v) or something like that... I need to look back at this. At present, I believe this is probably implementing the version in the Gelman/Pardoe paper.
-#' 
-#' Only works fore continuous inputs right now
-#' 
-#' 
-#' @param predictionFunction
-#' @param X 
-#' @param u input of interest
-#' @param v other inputs
-#' @param ... extra parguments passed to GetPairs used to control Weight function
-#' @export
-GetAPC <- function(predictionFunction, X, u, v, ...) {
-  pairs <- GetPairs(X, u, v, ...)
-  return(ComputeAPCFromPairs(predictionFunction, pairs, u, v))
-}
-
-#' GetAPCWithAbsolute
+#' GetPredCompsDF
 #' 
 #' makes average predictive comparison (based on Gelman/Pardoe) by forming pairs with two versions of the input of interest and averaging the predictive difference using Weights. I think Weights should be an approximation of the density p(u1,u2|v) or something like that... I need to look back at this. At present, I believe this is probably implementing the version in the Gelman/Pardoe paper.
 #' returns a list with the APC and the APC applied to the absolute value of the prediction function
@@ -50,10 +32,7 @@ GetAPC <- function(predictionFunction, X, u, v, ...) {
 #' @param k Weights are (1 / (k + Mahalanobis distance))
 #' @return a list with: \code{signed} (the usual APC) and \code{absolute} (APC applied to the absolute value of the differences)
 #' @export
-#' @examples
-#' print("hi")
-
-GetAPCWithAbsolute <- function(predictionFunction, X, u, v, ...) {
+GetSingleInputPredComps <- function(predictionFunction, X, u, v, ...) {
   pairs <- GetPairs(X, u, v, ...)
   return(
     list(Apc.Signed = ComputeAPCFromPairs(predictionFunction, pairs, u, v),

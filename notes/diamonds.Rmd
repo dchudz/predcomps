@@ -1,3 +1,17 @@
+# A new way to visualize models
+
+```{r message=FALSE, echo=FALSE}
+library(knitr)
+knitr::opts_chunk$set(tidy = FALSE, message=FALSE, warning=FALSE, fig.align='center')
+```
+
+```{r echo=TRUE}
+library(predcomps)
+library(ggplot2)
+```
+
+```{r}
+
 library(randomForest)
 library(plyr)
 library(predcomps)
@@ -15,9 +29,9 @@ rf <- randomForest(price ~ carat + cut + color + clarity, data=diamonds3, ntree=
 diamondsSmall <- diamonds3[sample.int(nrow(diamonds3), size=200), ]
 
 
-apcDf <- GetApcDF(function(df) predict(rf, df), diamondsSmall, inputVars=row.names(rf$importance))
-PlotApcDF(apcDf)
-  PlotApcDF(apcDf, variant="Apc")
+apcDf <- GetPredCompsDF(function(df) predict(rf, df), diamondsSmall, inputVars=row.names(rf$importance))
+PlotPredCompsDF(apcDf)
+PlotPredCompsDF(apcDf, variant="Apc")
 
 
 
@@ -34,3 +48,4 @@ hist(diamonds$price)
 
 
 
+```

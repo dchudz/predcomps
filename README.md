@@ -19,12 +19,7 @@ What could make this fail? Some possibilities:
 
 ## Must be done before releasing to the world
 
-### Impact plots with arrows
-
-- add to all examples
-
-
-### Examples Needed
+### Examples
 
 - demonstrate on simulated logistic regression example
 	- (todo) plot the curves for better intuition
@@ -32,6 +27,9 @@ What could make this fail? Some possibilities:
 - real world examples
 	- (to finish) diamonds
 	- look at give me some credit or another?
+
+- add to all examples Impact plots with arrows
+
 
 ### Other documentation needed
 
@@ -46,12 +44,12 @@ What could make this fail? Some possibilities:
 
 ### More functionality
 
-- add an example function that would just show off the functionality.  For example, try running > library(glmnet), > example(glmnet)
+Make it work for RF or GLM objects.
 
+### Documentation
 
-
-
-
+- check every function other people would use
+- give examples for every function other people would use
 
 
 

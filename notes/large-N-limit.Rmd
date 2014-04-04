@@ -1,16 +1,9 @@
 ```{r echo=FALSE, message=FALSE}
-#TODO: change this before publicizing
-library(methods)
-library(utils)
-library(roxygen2)
-library("devtools")
-setwd("~/predcomps")
-load_all()
-library("knitr")
-opts_chunk$set(tidy=FALSE)
-library("plyr")
+library("predcomps")
 print.data.frame <- function(...) base::print.data.frame(..., row.names=FALSE)
 ```
+
+**This is a note about how the weights are (should be) constructed. The observation here is that our estimated APCs do not approach the theoretical APCs in the limit as we get more data. This is a clue that we should tweak the definition of the weights, but I haven't implemented such an improvement yet.**
 
 ## Large $N$ Limit
 
@@ -34,8 +27,8 @@ $$.8 \delta_u(10 \rightarrow 20, 3, f) + 0.2 \delta_u(12 \rightarrow 22, 7, f) =
 We get almost the same APC with 300 data points as 100:
 
 ```{r}
-GetAPC(function(df) return(df$u * df$v), makeExampleDF(100), u="u", v="v")
-GetAPC(function(df) return(df$u * df$v), makeExampleDF(300), u="u", v="v")
+GetSingleInputPredComps(function(df) return(df$u * df$v), makeExampleDF(100), u="u", v="v")$Apc.Signed
+GetSingleInputPredComps(function(df) return(df$u * df$v), makeExampleDF(300), u="u", v="v")$Apc.Signed
 ```
 
 If we're looking at one value for $v$, $v=v_0$, the tradeoff in determining the weights is:

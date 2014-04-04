@@ -7,10 +7,10 @@
 #' @param inputVars inputs to the model
 #' @param ... extra parguments passed to GetPairs used to control Weight function
 #' @export
-GetApcDF <- function(predictionFunction, df, inputVars, ...) {
+GetPredCompsDF <- function(predictionFunction, df, inputVars, ...) {
   apcList <-  Map(function(currentVar) {
     cat(paste("Working on:", currentVar, "\n"))
-    GetAPCWithAbsolute(predictionFunction, 
+    GetSingleInputPredComps(predictionFunction, 
                        df, 
                        currentVar, 
                        c(setdiff(inputVars, currentVar)),
@@ -27,14 +27,13 @@ GetApcDF <- function(predictionFunction, df, inputVars, ...) {
 #' 
 #' @param apcDF the output of GetApcDF
 #' @export
-PlotApcDF <- function(apcDF, variant="Impact") {
+PlotPredCompsDF <- function(apcDF, variant="Impact") {
   
   apcDF <- apcDF[c("Input", grep(paste0("^",variant,"\\."), names(apcDF), value=TRUE))]
   names(apcDF) <- gsub(paste0("^",variant,"\\."), "", names(apcDF))
   
-  print(apcDF)
-  
   maxAPC <- max(abs(apcDF$Absolute))  
+  apcDF$Input <- reorder(apcDF$Input, apcDF$Absolute)
   longAPCs <- melt(apcDF, id="Input", value.name = "Value", variable.name = "Type")
   longAPCs2 <- rbind(
     longAPCs,
