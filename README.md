@@ -1,4 +1,4 @@
-This README is mainly for people developing the project (which is just me, at the moment). Everything for users is at the [Project Page](http://dchudz.github.io/predcomps/).
+	This README is mainly for people developing the project (which is just me, at the moment). Everything for users is at the [Project Page](http://dchudz.github.io/predcomps/).
 
 # Motivation
 
@@ -18,6 +18,11 @@ What could make this fail? Some possibilities:
 # Todo
 
 ## Must be done before releasing to the world
+
+- pages to write
+	- Introduction to APCs
+	- Impact (scale-insensitive version of APCs)
+	- Transition Plots 
 
 - logistic regression example plot the curves for better intuition
 	- make it presentable
@@ -47,15 +52,12 @@ What could make this fail? Some possibilities:
 			- simulated linear w/ interaction
 			- diamonds
 			- give me some credit?
-		- technical
+		- more
 			- Extensions/changes from paper (absolute, impact, transition)
 			- Future work (maybe combine with next) -- weights, efficiency
 			- Wrongness doesn't go to zero!
+			- justificatiob for w change
 
-- pages to write
-	- Introduction to APCs
-	- Impact (scale-insensitive version of APCs)
-	- Transition Plots 
 
 ## Future work
 
