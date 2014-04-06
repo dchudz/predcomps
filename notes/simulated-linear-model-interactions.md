@@ -44,7 +44,7 @@ Note that each $u$ has the same role in this function. Differences between their
 
 For simplicity this demonstration, I'll assume that $\mathbb{E}[y \mid v, u_1, \ldots, u_8]$ is known rather than estimated.
 
-(**Todo: Find a way to map these inputs and to a possible story with meaningful features and outcome. That would make it more interesting, easier to follow, and maybe generate more insight.**)
+(**Todo: Find a way to map these inputs/output to a possible story with meaningful features and outcome. That would make it more interesting, easier to follow, and maybe generate more insight.**)
 
 
 ```r
@@ -66,7 +66,7 @@ For example, we can more quickly notice in the second version that the signed AP
 
 ```r
 inputVars <- c("v",paste0("u",1:8))
-apcDF <- GetApcDF(outcomeGenerationFunction, df, inputVars)
+apcDF <- GetPredCompsDF(outcomeGenerationFunction, df, inputVars)
 ```
 
 ```
@@ -86,36 +86,30 @@ print(apcDF)
 ```
 
 ```
-##  Input   Signed Absolute
-##      v  4.81631   4.8163
-##     u1 -2.14070   2.5994
-##     u2 -1.22273   1.8594
-##     u3 -0.68995   1.3228
-##     u4  0.01158   0.8904
-##     u5  0.70664   1.3396
-##     u6  1.31842   1.8738
-##     u7  2.09419   2.5586
-##     u8  0.28046   2.5770
+##   Input Apc.Signed Apc.Absolute Impact.Signed Impact.Absolute
+## 1     v    5.14896       5.1490       7.98190          7.9819
+## 2    u1   -2.07558       2.5368      -1.96163          2.3976
+## 3    u2   -1.31554       1.8051      -1.39112          1.9088
+## 4    u3   -0.62120       1.2686      -1.16857          2.3865
+## 5    u4    0.02169       0.7452       0.02243          0.7705
+## 6    u5    0.67189       1.2506       1.09032          2.0295
+## 7    u6    1.36226       1.8153       1.06856          1.4239
+## 8    u7    2.10920       2.5580       1.78675          2.1670
+## 9    u8   -0.02600       2.5371      -0.04720          4.6050
 ```
 
 ```r
-PlotApcDF2(apcDF)
+PlotPredCompsDF(apcDF, variant="Apc")
 ```
 
-<img src="figure/ApcPlotsTwoWays1.png" title="plot of chunk ApcPlotsTwoWays" alt="plot of chunk ApcPlotsTwoWays" style="display: block; margin: auto;" />
-
-```r
-PlotApcDF(apcDF)
-```
-
-<img src="figure/ApcPlotsTwoWays2.png" title="plot of chunk ApcPlotsTwoWays" alt="plot of chunk ApcPlotsTwoWays" style="display: block; margin: auto;" />
+<img src="figure/ApcPlotsTwoWays.png" title="plot of chunk ApcPlotsTwoWays" alt="plot of chunk ApcPlotsTwoWays" style="display: block; margin: auto;" />
 
 
 These APCs are just what we would expect from the setup of the synthetic examples. When $u$-transitions are at small $v$, the APCs are small due to the $u$/$v$ interaction effect (and vice versa). Even though we know the prediction function exactly, the APCs are a bit off due to errors in our estimates of the distribution of each input conditional on the others. We can mitigate that in this case by increasing the weight given to closer points when assigning weights based on the Mahalanobis distance. The weights are $\frac{1}{\text{mahalanobisConstantTerm}+d}$ where $d$ is the distance, so we can do this by decreasing $\text{mahalanobisConstantTerm}$:
 
 
 ```r
-apcDF <- GetApcDF(outcomeGenerationFunction, df, inputVars, mahalanobisConstantTerm=.01)
+apcDF <- GetPredCompsDF(outcomeGenerationFunction, df, inputVars, mahalanobisConstantTerm=.01)
 ```
 
 ```
@@ -131,7 +125,7 @@ apcDF <- GetApcDF(outcomeGenerationFunction, df, inputVars, mahalanobisConstantT
 ```
 
 ```r
-PlotApcDF(apcDF)
+PlotPredCompsDF(apcDF, variant="Apc")
 ```
 
 <img src="figure/DecreasedMahalanobisConstantTerm.png" title="plot of chunk DecreasedMahalanobisConstantTerm" alt="plot of chunk DecreasedMahalanobisConstantTerm" style="display: block; margin: auto;" />

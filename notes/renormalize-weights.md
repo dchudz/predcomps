@@ -87,20 +87,20 @@ pairsDF <- GetPairs(exampleDF2, u="u", v="v", renormalizeWeights=FALSE)
 
 
 ```
-## |      v|   u|  OriginalRowNumber|    v.B|  u.B|  OriginalRowNumber.B|  Weight|
-## |------:|---:|------------------:|------:|----:|--------------------:|-------:|
-## |  3.000|  20|                 60|  3.000|   20|                   78|  1.0000|
-## |  3.002|  20|                 68|  3.000|   20|                   69|  1.0000|
-## |  6.999|  12|                 85|  3.001|   10|                   10|  0.1392|
-## |  3.001|  20|                 80|  3.001|   10|                   29|  1.0000|
-## |  3.000|  10|                  8|  3.001|   20|                   54|  1.0000|
-## |  3.001|  20|                 67|  2.999|   20|                   73|  1.0000|
-## |  3.002|  20|                 68|  3.000|   20|                   47|  1.0000|
-## |  7.000|  12|                 83|  2.999|   10|                   15|  0.1391|
-## |  3.000|  10|                 35|  2.999|   10|                   37|  1.0000|
-## |  7.000|  22|                 98|  3.001|   20|                   67|  0.1392|
-## |  2.999|  20|                 77|  3.001|   20|                   72|  1.0000|
-## |  7.001|  22|                 97|  3.001|   20|                   52|  0.1391|
+## |  OriginalRowNumber|   u|      v|  u.B|  Weight|
+## |------------------:|---:|------:|----:|-------:|
+## |                 60|  20|  3.000|   20|  1.0000|
+## |                 68|  20|  3.002|   20|  1.0000|
+## |                 85|  12|  6.999|   10|  0.1392|
+## |                 80|  20|  3.001|   10|  1.0000|
+## |                  8|  10|  3.000|   20|  1.0000|
+## |                 67|  20|  3.001|   20|  1.0000|
+## |                 68|  20|  3.002|   20|  1.0000|
+## |                 83|  12|  7.000|   10|  0.1391|
+## |                 35|  10|  3.000|   10|  1.0000|
+## |                 98|  22|  7.000|   20|  0.1392|
+## |                 77|  20|  2.999|   20|  1.0000|
+## |                 97|  22|  7.001|   20|  0.1391|
 ```
 
 
@@ -158,7 +158,7 @@ I showed the full computation above, but we can also use the ```GetAPC``` functi
 
 
 ```r
-GetAPC(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=FALSE)
+GetSingleInputPredComps(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=FALSE)$Apc.Signed
 ```
 
 ```
@@ -186,7 +186,7 @@ These renormalized Weights are the ones returned from ```GetPairs``` by default,
 
 
 ```r
-GetAPC(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=TRUE)
+GetSingleInputPredComps(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=TRUE)$Apc.Signed
 ```
 
 ```

@@ -1,12 +1,12 @@
-```{r message=FALSE, echo=FALSE}
-library(knitr)
-knitr::opts_chunk$set(tidy = FALSE, message=FALSE, warning=FALSE, fig.align='center')
-```
 
-```{r echo=TRUE}
+
+
+
+```r
 library(predcomps)
 library(ggplot2)
 ```
+
 
 
 # Transition Plots: A new way to visualize models
@@ -23,32 +23,70 @@ The simulated examples here will have $u$ and $v$ independent, and the first mod
 
 $$\mathcal{E}[y_1] = 2v_1 + 2v_2$$
 
-```{r CreateInputFeatures}
+
+```r
 N <- 100
 df <- data.frame(u=rnorm(N), v=rnorm(N))
 df$y1 = 2*df$u + 2*df$v + rnorm(N)
 lm1 <- lm(y1 ~ u + v, data=df)
 print(lm1)
+```
+
+```
+## 
+## Call:
+## lm(formula = y1 ~ u + v, data = df)
+## 
+## Coefficients:
+## (Intercept)            u            v  
+##     -0.0712       1.9311       1.7189
+```
+
+```r
 TransitionPlot(function(df) predict(lm1, df), df, "u", "v") + ylab("y1")
 ```
 
+<img src="figure/CreateInputFeatures1.png" title="plot of chunk CreateInputFeatures" alt="plot of chunk CreateInputFeatures" style="display: block; margin: auto;" /><img src="figure/CreateInputFeatures2.png" title="plot of chunk CreateInputFeatures" alt="plot of chunk CreateInputFeatures" style="display: block; margin: auto;" />
+
+
 Here is an example with an interaction:
 
-$$\mathcal{E}[y_1] =  v_1 + v_2 + 2u_1v_1$$
+$$\mathcal{E}[y_1] v_1 + v_2 + 2u_1v_1$$
 
-```{r}
+
+```r
 df$y2 = df$u + df$v + 2*df$v*df$u + rnorm(N)
 lm2 <- lm(y2 ~ u*v, data=df)
 print(lm2)
+```
+
+```
+## 
+## Call:
+## lm(formula = y2 ~ u * v, data = df)
+## 
+## Coefficients:
+## (Intercept)            u            v          u:v  
+##      0.0639       0.9620       1.0303       1.7846
+```
+
+```r
 TransitionPlot(function(df) predict(lm2, df), df, "u", "v") + ylab("y2")
 ```
 
+<img src="figure/unnamed-chunk-31.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" /><img src="figure/unnamed-chunk-32.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" />
+
+
 Since the plot object returned by `TransitionPlot` includes its data, we can examine things in more detail by drawing our own arrows:
 
-```{r}
+
+```r
 p <- TransitionPlot(function(df) predict(lm2, df), df, "u", "v", plot=FALSE)
 
 ggplot(p$data) +
   geom_segment(aes(x = u, y = output, xend = u.B, yend = outputNew, color=v), arrow = arrow()) +
   ylab("y2")
 ```
+
+<img src="figure/unnamed-chunk-4.png" title="plot of chunk unnamed-chunk-4" alt="plot of chunk unnamed-chunk-4" style="display: block; margin: auto;" />
+

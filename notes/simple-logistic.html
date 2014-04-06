@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <meta http-equiv="x-ua-compatible" content="IE=9" >
 
-<title>Large \( N \) Limit</title>
+<title>APCs in a simple logistic regression example</title>
 
 <style type="text/css">
 body, td {
@@ -174,62 +174,192 @@ hljs.initHighlightingOnLoad();
 </script>
 
 
-<!-- MathJax scripts -->
-<script type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-
 
 
 </head>
 
 <body>
-<p><strong>This is a note about how the weights are (should be) constructed. The observation here is that our estimated APCs do not approach the theoretical APCs in the limit as we get more data. This is a clue that we should tweak the definition of the weights, but I haven&#39;t implemented such an improvement yet.</strong></p>
+<h1>APCs in a simple logistic regression example</h1>
 
-<h2>Large \( N \) Limit</h2>
-
-<p>As we get more data, it would be nice if the APC we compute tends toward the right answer, equation (2) of <a href="http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9531.2007.00181.x/abstract">Gelman and Pardoe 2007</a>. I don&#39;t care about asymptotics as much as some people, but if we don&#39;t get the right answer in the limit, that&#39;s at least a clue that we might not be doing as well as we can for smaller \( N \). This note shows that unless we adjust the weighting function as we get more data, we won&#39;t have that nice property.</p>
-
-<pre><code class="r">makeExampleDF &lt;- function(N) {
-    exampleDF &lt;- data.frame(v = c(3, 3, 7, 7), u = c(10, 20, 12, 22))[rep(c(1, 
-        2, 3, 4), c(0.4 * N, 0.4 * N, 0.1 * N, 0.1 * N)), ]
-    exampleDF &lt;- transform(exampleDF, v = v + rnorm(nrow(exampleDF), sd = 0.001))
-    return(exampleDF)
-}
+<pre><code class="r">library(predcomps)
+library(ggplot2)
 </code></pre>
 
-<p>Just as in the note &ldquo;Normalizing Weights&rdquo;, the APC should be:</p>
+<h2>Input Generation</h2>
 
-<p>\[ .8 \delta_u(10 \rightarrow 20, 3, f) + 0.2 \delta_u(12 \rightarrow 22, 7, f) = (.8)(3) + (.2)(6) = 3.8 \]</p>
+<pre><code>
 
-<p>We get almost the same APC with 300 data points as 100:</p>
+## Outcome Generation
 
-<pre><code class="r">GetSingleInputPredComps(function(df) return(df$u * df$v), makeExampleDF(100), 
-    u = &quot;u&quot;, v = &quot;v&quot;)$Apc.Signed
+
+```r
+N &lt;- 200
+logit &lt;- function(x) 1/(1+exp(-x))
+outcomeGenerationFunction &lt;- function(df) {
+  with(df, logit(v1 + v2*2))
+  }
 </code></pre>
 
-<pre><code>## [1] 3.855
+<h2>Computing and Plotting the APC</h2>
+
+<pre><code class="r">
+GetPredCompsDF(outcomeGenerationFunction, data.frame(v1=rnorm(N)*.1, v2=rnorm(N)*.1), c(&quot;v1&quot;,&quot;v2&quot;))
 </code></pre>
 
-<pre><code class="r">GetSingleInputPredComps(function(df) return(df$u * df$v), makeExampleDF(300), 
-    u = &quot;u&quot;, v = &quot;v&quot;)$Apc.Signed
+<pre><code>## Working on: v1 
+## Working on: v2
 </code></pre>
 
-<pre><code>## [1] 3.845
+<pre><code>##   Input Apc.Signed Apc.Absolute Impact.Signed Impact.Absolute
+## 1    v1     0.2469       0.2469       0.03016         0.03016
+## 2    v2     0.4937       0.4937       0.05766         0.05766
 </code></pre>
 
-<p>If we&#39;re looking at one value for \( v \), \( v=v_0 \), the tradeoff in determining the weights is:</p>
+<pre><code class="r">
+GetPredCompsDF(outcomeGenerationFunction, data.frame(v1=rnorm(N), v2=rnorm(N)), c(&quot;v1&quot;,&quot;v2&quot;))
+</code></pre>
 
-<ol>
-<li>\( v \)&#39;s closer to \( v_0 \) will do a better job representing the distribution of \( u \) conditional on \( v=v_0 \)</li>
-<li>but if too few \( v \)&#39;s get too much of the weight, our estimate for the conditional distribution of \( u \) will be too noisy</li>
-</ol>
+<pre><code>## Working on: v1 
+## Working on: v2
+</code></pre>
 
-<p>The reason our estimate didn&#39;t improve with more data is that we&#39;re not moving more weight to nearby points as we get more data. For any \( N \), we&#39;re presently putting roughly the same amount of mass at the same distances. As we get more data, we can afford to put more weight closer to \( v \), because (2) becomes less of a problem. A couple ideas are:</p>
+<pre><code>##   Input Apc.Signed Apc.Absolute Impact.Signed Impact.Absolute
+## 1    v1     0.1516       0.1516        0.1544          0.1544
+## 2    v2     0.2947       0.2947        0.3495          0.3495
+</code></pre>
 
-<ul>
-<li>With the weights as \( \frac{1}{k+d} \) (\( d \) is the Mahalanobis distance), we could scale \( k \) down as \( N \) goes up.</li>
-<li>Or we could use the weights we are now (\( k=1 \)), except we drop (equivalent to setting the weight to 0) all but the closest \( s(N) \) points to each \( v \). The function \( s \) needs to increases with \( N \), but not as fast as \( N \), e.g. maybe \( s(N) = sqrt(N) \) probably works. This means we&#39;re always decreasing bias (sampling from closer to the right \( v \)) and also decreasing variance (more samples) as N increases. This would also be good for keeping run-times and memory usage under control as \( N \) increases.</li>
-</ul>
+<pre><code class="r">
+GetPredCompsDF(outcomeGenerationFunction, data.frame(v1=rnorm(N)*10, v2=rnorm(N)*10), c(&quot;v1&quot;,&quot;v2&quot;))
+</code></pre>
+
+<pre><code>## Working on: v1 
+## Working on: v2
+</code></pre>
+
+<pre><code>##   Input Apc.Signed Apc.Absolute Impact.Signed Impact.Absolute
+## 1    v1    0.02144      0.02144        0.2390          0.2390
+## 2    v2    0.04098      0.04098        0.4104          0.4104
+</code></pre>
+
+<pre><code class="r">
+GetPredCompsDF(outcomeGenerationFunction, data.frame(v1=rnorm(N)*100, v2=rnorm(N)*100), c(&quot;v1&quot;,&quot;v2&quot;))
+</code></pre>
+
+<pre><code>## Working on: v1 
+## Working on: v2
+</code></pre>
+
+<pre><code>##   Input Apc.Signed Apc.Absolute Impact.Signed Impact.Absolute
+## 1    v1   0.001960     0.001960        0.2117          0.2117
+## 2    v2   0.003775     0.003775        0.4397          0.4397
+</code></pre>
+
+<pre><code class="r">
+
+set.seed(889)
+(GetPredCompsDF(outcomeGenerationFunction, data.frame(v1=rnorm(N)*1000, v2=rnorm(N)*1000), c(&quot;v1&quot;,&quot;v2&quot;), 
+          mahalanobisConstantTerm = .1))
+</code></pre>
+
+<pre><code>## Working on: v1 
+## Working on: v2
+</code></pre>
+
+<pre><code>##   Input Apc.Signed Apc.Absolute Impact.Signed Impact.Absolute
+## 1    v1  0.0001873    0.0001873        0.2291          0.2291
+## 2    v2  0.0003820    0.0003820        0.4414          0.4414
+</code></pre>
+
+<pre><code class="r">
+# something is wrong. shouldn&#39;t these APCs become similar for v1 and v2 as the 
+# no b/c the one with the larger effect can better overcome, more likely to cause a 1/-1 flip
+
+
+N=500
+v1 &lt;- rnorm(N)*3
+v2 &lt;- rnorm(N) * (abs(v1) &gt; 2)
+v3 &lt;- rnorm(N) * (abs(v1) &lt; .5)
+
+df &lt;- data.frame(v1,v2,v3)
+df$y &lt;- rbinom(n=nrow(df), size=1, prob=with(df, logit(v1+v2+v3)))
+
+fittedLogit &lt;- glm(y ~ v1 + v2 + v3, data = df, family = &quot;binomial&quot;)
+
+GetPredCompsDF(function(df) with(df, logit(v1+v2+v3)), 
+         data.frame(v1, v2, v3), 
+         c(&quot;v1&quot;,&quot;v2&quot;,&quot;v3&quot;))
+</code></pre>
+
+<pre><code>## Working on: v1 
+## Working on: v2 
+## Working on: v3
+</code></pre>
+
+<pre><code>##   Input Apc.Signed Apc.Absolute Impact.Signed Impact.Absolute
+## 1    v1     0.1200       0.1200       0.39392         0.39392
+## 2    v2     0.0728       0.0728       0.04801         0.04801
+## 3    v3     0.1660       0.1660       0.03661         0.03661
+</code></pre>
+
+<pre><code class="r">
+GetPredCompsDF(fittedLogit, 
+         data.frame(v1, v2, v3), 
+         c(&quot;v1&quot;,&quot;v2&quot;,&quot;v3&quot;))
+</code></pre>
+
+<pre><code>## Working on: v1 
+## Working on: v2 
+## Working on: v3
+</code></pre>
+
+<pre><code>##   Input Apc.Signed Apc.Absolute Impact.Signed Impact.Absolute
+## 1    v1    0.12068      0.12068       0.12068         0.12068
+## 2    v2    0.06334      0.06334       0.06334         0.06334
+## 3    v3    0.19817      0.19817       0.19817         0.19817
+</code></pre>
+
+<pre><code class="r">
+
+
+GetPredCompsDF
+</code></pre>
+
+<pre><code>## function (predictionFunction, df, inputVars, ...) 
+## {
+##     apcList &lt;- Map(function(currentVar) {
+##         cat(paste(&quot;Working on:&quot;, currentVar, &quot;\n&quot;))
+##         GetSingleInputPredComps(predictionFunction, df, currentVar, 
+##             c(setdiff(inputVars, currentVar)), ...)
+##     }, inputVars)
+##     apcDF &lt;- rename(ldply(apcList, data.frame), c(.id = &quot;Input&quot;))
+##     return(apcDF)
+## }
+## &lt;environment: namespace:predcomps&gt;
+</code></pre>
+
+<pre><code class="r">
+
+apcDf
+</code></pre>
+
+<pre><code>## Error: object &#39;apcDf&#39; not found
+</code></pre>
+
+<pre><code class="r">PlotApcDF(apcDf)
+</code></pre>
+
+<pre><code>## Error: could not find function &quot;PlotApcDF&quot;
+</code></pre>
+
+<pre><code class="r">PlotApcDF2(apcDf)
+</code></pre>
+
+<pre><code>## Error: could not find function &quot;PlotApcDF2&quot;
+</code></pre>
+
+<pre><code class="r">
+## plot the curves
+</code></pre>
 
 </body>
 

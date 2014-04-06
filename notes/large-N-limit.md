@@ -1,6 +1,8 @@
 
 
 
+**This is a note about how the weights are (should be) constructed. The observation here is that our estimated APCs do not approach the theoretical APCs in the limit as we get more data. This is a clue that we should tweak the definition of the weights, but I haven't implemented such an improvement yet.**
+
 ## Large $N$ Limit
 
 As we get more data, it would be nice if the APC we compute tends toward the right answer, equation (2) of [Gelman and Pardoe 2007](http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9531.2007.00181.x/abstract). I don't care about asymptotics as much as some people, but if we don't get the right answer in the limit, that's at least a clue that we might not be doing as well as we can for smaller $N$. This note shows that unless we adjust the weighting function as we get more data, we won't have that nice property.
@@ -8,12 +10,10 @@ As we get more data, it would be nice if the APC we compute tends toward the rig
 
 ```r
 makeExampleDF <- function(N) {
-  exampleDF <- data.frame(
-    v=c(3,3,7,7),  
-    u=c(10,20,12,22) 
-    )[rep(c(1,2,3,4),c(.4*N,.4*N,.1*N,.1*N)),]
-  exampleDF <- transform(exampleDF, v = v + rnorm(nrow(exampleDF), sd=.001))
-  return(exampleDF)
+    exampleDF <- data.frame(v = c(3, 3, 7, 7), u = c(10, 20, 12, 22))[rep(c(1, 
+        2, 3, 4), c(0.4 * N, 0.4 * N, 0.1 * N, 0.1 * N)), ]
+    exampleDF <- transform(exampleDF, v = v + rnorm(nrow(exampleDF), sd = 0.001))
+    return(exampleDF)
 }
 ```
 
@@ -26,7 +26,8 @@ We get almost the same APC with 300 data points as 100:
 
 
 ```r
-GetAPC(function(df) return(df$u * df$v), makeExampleDF(100), u="u", v="v")
+GetSingleInputPredComps(function(df) return(df$u * df$v), makeExampleDF(100), 
+    u = "u", v = "v")$Apc.Signed
 ```
 
 ```
@@ -34,7 +35,8 @@ GetAPC(function(df) return(df$u * df$v), makeExampleDF(100), u="u", v="v")
 ```
 
 ```r
-GetAPC(function(df) return(df$u * df$v), makeExampleDF(300), u="u", v="v")
+GetSingleInputPredComps(function(df) return(df$u * df$v), makeExampleDF(300), 
+    u = "u", v = "v")$Apc.Signed
 ```
 
 ```

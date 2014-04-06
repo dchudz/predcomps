@@ -1,15 +1,8 @@
 ```{r echo=FALSE, message=FALSE}
 set.seed(89890)
-#TODO: change this before publicizing
-library(methods)
-library(utils)
-library(roxygen2)
-library("devtools")
-setwd("~/predcomps")
-load_all()
-library("knitr")
 opts_chunk$set(tidy=FALSE)
 library("plyr")
+library(predcomps)
 print.data.frame <- function(...) base::print.data.frame(..., row.names=FALSE)
 ```
 
@@ -120,7 +113,7 @@ ApcApprox1
 I showed the full computation above, but we can also use the ```GetAPC``` function from this package:
 
 ```{r}
-GetAPC(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=FALSE)
+GetSingleInputPredComps(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=FALSE)$Apc.Signed
 ```
 
 Instead, we can normalize Weights so that within each first element of the pair. 
@@ -136,6 +129,6 @@ ApcApprox2
 These renormalized Weights are the ones returned from ```GetPairs``` by default, and used in ```GetAPC``` by default:
 
 ```{r}
-GetAPC(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=TRUE)
+GetSingleInputPredComps(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=TRUE)$Apc.Signed
 ```
 

@@ -19,61 +19,54 @@ What could make this fail? Some possibilities:
 
 ## Must be done before releasing to the world
 
-### Examples
+- logistic regression example plot the curves for better intuition
+	- make it presentable
+	- add more intuition (e.g. with u vs. response at various v's)
+	- add transition plot?
 
-- demonstrate on simulated logistic regression example
-	- (todo) plot the curves for better intuition
+- diamonds
+	- make it presentable
 
-- real world examples
-	- (to finish) diamonds
-	- look at give me some credit or another?
+- another real-world example
+	- give me some credit? nice b/c it's logistic
 
-- add to all examples Impact plots with arrows
+- common functions should work on RF and GLM objects. Shouldn't need to specify inputs (should be inferred from the object)
 
+- document every function other people would use, with example
 
-### Other documentation needed
+- website structure - add new pages to index, even blank ones
+	- sections:
+		- top level
+			- github link
+			- home / outline  - include warning that it's not very polished -- e.g. slow, not much checking that inputs are appropriate, etc. It's mainly a proof of concept and will stay that way until I see other people being interested.
+			- Introduction to APCs
+			- Impact (scale-insensitive version of APCs)
+			- Transition Plots 
+		- examples
+			- simulated logistic regression
+			- simulated linear w/ interaction
+			- diamonds
+			- give me some credit?
+		- technical
+			- Extensions/changes from paper (absolute, impact, transition)
+			- Future work (maybe combine with next) -- weights, efficiency
+			- Wrongness doesn't go to zero!
 
-- explanation of Gelman & Pardoe paper (or at least the parts of it that are necessary to understand the package)
+- pages to write
+	- Introduction to APCs
+	- Impact (scale-insensitive version of APCs)
+	- Transition Plots 
 
-- a page isolating differences and/or extensions from what's described in the Gelman/Pardoe paper
-
-- a general overview of how to use the package 
-  - include warning that it's not very polished -- e.g. slow, not much checking that inputs are appropriate, etc. It's mainly a proof of concept and will stay that way until I see other people being interested.
-
-
-
-### More functionality
-
-Make it work for RF or GLM objects.
-
-### Documentation
-
-- check every function other people would use
-- give examples for every function other people would use
-
-
-
-
-## Maybe should be done before releasing it to the world
+## Future work
 
 
 - make it work if categorical variables are includes in the inputs that aren't of interest
 - make it work for categorical variables as input of interest
-
-### Better unit testing
-
-
-## Doesn't need to be done before releasing it to the world
-
-
-### Uncertainty
-
-- it would be pretty easy to allow for multiple samples of parameters and plot uncertainties as in the paper
-- I'm also interested in the uncertainty that arises from the density estimation as. I'm not that excited about displaying one source of uncertainty without at least having a sense for the other.
-
-
-## Some other stuff
-
+- better unit testing
+- uncertainty 
+	- it would be pretty easy to allow for multiple samples of parameters and plot uncertainties as in the paper
+	- I'm also interested in the uncertainty that arises from the density estimation as. I'm not that excited about displaying one source of uncertainty without at least having a sense for the other.
 - deal with potential column name conflicts in data frames (e.g. what if "weight" is already a column of X, but I try to use it...)
 - make it faster -- with large N, we should make distance matrix (much faster than I am now) and only keep a smaller number of the closest points
+- better choice of weights
 

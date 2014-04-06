@@ -29,17 +29,17 @@ outcomeGenerationFunction <- function(df) {
 
 ```{r ApcPlotsTwoWays}
 
-GetApcDF(outcomeGenerationFunction, data.frame(v1=rnorm(N)*.1, v2=rnorm(N)*.1), c("v1","v2"))
+GetPredCompsDF(outcomeGenerationFunction, data.frame(v1=rnorm(N)*.1, v2=rnorm(N)*.1), c("v1","v2"))
 
-GetApcDF(outcomeGenerationFunction, data.frame(v1=rnorm(N), v2=rnorm(N)), c("v1","v2"))
+GetPredCompsDF(outcomeGenerationFunction, data.frame(v1=rnorm(N), v2=rnorm(N)), c("v1","v2"))
 
-GetApcDF(outcomeGenerationFunction, data.frame(v1=rnorm(N)*10, v2=rnorm(N)*10), c("v1","v2"))
+GetPredCompsDF(outcomeGenerationFunction, data.frame(v1=rnorm(N)*10, v2=rnorm(N)*10), c("v1","v2"))
 
-GetApcDF(outcomeGenerationFunction, data.frame(v1=rnorm(N)*100, v2=rnorm(N)*100), c("v1","v2"))
+GetPredCompsDF(outcomeGenerationFunction, data.frame(v1=rnorm(N)*100, v2=rnorm(N)*100), c("v1","v2"))
 
 
 set.seed(889)
-(GetApcDF(outcomeGenerationFunction, data.frame(v1=rnorm(N)*1000, v2=rnorm(N)*1000), c("v1","v2"), 
+(GetPredCompsDF(outcomeGenerationFunction, data.frame(v1=rnorm(N)*1000, v2=rnorm(N)*1000), c("v1","v2"), 
           mahalanobisConstantTerm = .1))
 
 # something is wrong. shouldn't these APCs become similar for v1 and v2 as the 
@@ -56,17 +56,17 @@ df$y <- rbinom(n=nrow(df), size=1, prob=with(df, logit(v1+v2+v3)))
 
 fittedLogit <- glm(y ~ v1 + v2 + v3, data = df, family = "binomial")
 
-GetApcDF(function(df) with(df, logit(v1+v2+v3)), 
+GetPredCompsDF(function(df) with(df, logit(v1+v2+v3)), 
          data.frame(v1, v2, v3), 
          c("v1","v2","v3"))
 
-GetApcDF(fittedLogit, 
+GetPredCompsDF(fittedLogit, 
          data.frame(v1, v2, v3), 
          c("v1","v2","v3"))
 
 
 
-GetApcDF
+GetPredCompsDF
 
 
 apcDf
