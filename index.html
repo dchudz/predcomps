@@ -6,7 +6,15 @@ layout: page
 
 <p>As complex models become widely used, it&#39;s more important than ever to have ways of understanding them. Whether a model is built primarily for prediction or primarily for understanding, we need to know what it&#39;s telling us. It&#39;s (relatively) clear how to interpret the coefficients of a linear regression, at least when there are few inputs and no interaction terms. </p>
 
-<p>This R package is a collection of tools that are meant to generalize the idea of these coefficients to arbitrary predictive models: Holding all else equal, how does the output vary with the input of interest? </p>
+<p>This R package is a collection of tools that are meant to generalize the idea of these coefficients to arbitrary predictive models: Holding all else equal, how does the output vary with the input of interest? The tools here apply to any model, whether it takes the form of: </p>
+
+<ul>
+<li>a linear model with interactions</li>
+<li>a GLM (with any link function)</li>
+<li>a neural network</li>
+<li>a random forest</li>
+<li>etc. (any learned function mapping the appropriate input types to a real-valued output)</li>
+</ul>
 
 <h3>Inspiration</h3>
 
@@ -26,7 +34,7 @@ install_github(&quot;predcomps&quot;, user = &quot;dchudz&quot;)
 
 <p><strong>Computational efficiency</strong>: At the moment, the package&#39;s implementation is not particularly efficient. You should probably not ask it to handle more than 200-500 observations. (Note however that your model may be trained on any number of observations.) </p>
 
-<p>Both of these are priorities.</p>
+<p>Both of these are priorities to fix.</p>
 
 <h2>Contact</h2>
 
