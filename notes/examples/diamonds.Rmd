@@ -41,9 +41,6 @@ p <- ArrowPlot(function(df) predict(rf, df), diamondsSmall, "carat", c("cut", "c
 partialPlot(rf, diamonds3, "clarity")
 
 
-?diamonds
-
-
 hist(diamonds$price)
 
 

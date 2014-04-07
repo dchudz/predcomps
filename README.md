@@ -54,6 +54,7 @@ What could make this fail? Some possibilities:
 			- give me some credit?
 		- more
 			- Extensions/changes from paper (absolute, impact, transition)
+			- Comparison with tools in the randomForest package
 			- Future work (maybe combine with next) -- weights, efficiency
 			- Wrongness doesn't go to zero!
 			- justificatiob for w change
