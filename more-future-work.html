@@ -2,5 +2,21 @@
 layout: page
 ---
 
-<p>Nothing here</p>
+<h2>Future work</h2>
+
+<ul>
+<li>Comparison with tools in the randomForest package</li>
+<li>make it work if categorical variables are includes in the inputs that aren&#39;t of interest</li>
+<li>make it work for categorical variables as input of interest</li>
+<li>unit testing</li>
+<li>uncertainty 
+
+<ul>
+<li>it would be pretty easy to allow for multiple samples of parameters and plot uncertainties as in the paper</li>
+<li>I&#39;m also interested in the uncertainty that arises from the density estimation as. I&#39;m not that excited about displaying one source of uncertainty without at least having a sense for the other.</li>
+</ul></li>
+<li>deal with potential column name conflicts in data frames (e.g. what if &ldquo;weight&rdquo; is already a column of X, but I try to use it&hellip;)</li>
+<li>make it faster &ndash; with large N, we should make distance matrix (much faster than I am now) and only keep a smaller number of the closest points</li>
+<li>better &amp; more automated choice of weights</li>
+</ul>
 
