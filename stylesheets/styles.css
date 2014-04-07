@@ -45,7 +45,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 p, ul, ol, table, pre, dl {
-  margin:0 0 20px;
+  margin:0 0 10px;
 }
 
 h1, h2, h3 {
@@ -213,6 +213,7 @@ footer {
   float:left; 
   position:fixed;
   bottom:50px;
+  font-size: 8px;
 }
 
 @media print, screen and (max-width: 960px) {

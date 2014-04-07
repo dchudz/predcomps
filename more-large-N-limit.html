@@ -2,17 +2,17 @@
 layout: page
 ---
 
+<p><strong>This is a note about how the weights are (should be) constructed. The observation here is that our estimated APCs do not approach the theoretical APCs in the limit as we get more data. This is a clue that we should tweak the definition of the weights, but I haven&#39;t implemented such an improvement yet.</strong></p>
+
 <h2>Large \(N\) Limit</h2>
 
 <p>As we get more data, it would be nice if the APC we compute tends toward the right answer, equation (2) of <a href="http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9531.2007.00181.x/abstract">Gelman and Pardoe 2007</a>. I don&#39;t care about asymptotics as much as some people, but if we don&#39;t get the right answer in the limit, that&#39;s at least a clue that we might not be doing as well as we can for smaller \(N\). This note shows that unless we adjust the weighting function as we get more data, we won&#39;t have that nice property.</p>
 
 <pre><code class="r">makeExampleDF &lt;- function(N) {
-  exampleDF &lt;- data.frame(
-    v=c(3,3,7,7),  
-    u=c(10,20,12,22) 
-    )[rep(c(1,2,3,4),c(.4*N,.4*N,.1*N,.1*N)),]
-  exampleDF &lt;- transform(exampleDF, v = v + rnorm(nrow(exampleDF), sd=.001))
-  return(exampleDF)
+    exampleDF &lt;- data.frame(v = c(3, 3, 7, 7), u = c(10, 20, 12, 22))[rep(c(1, 
+        2, 3, 4), c(0.4 * N, 0.4 * N, 0.1 * N, 0.1 * N)), ]
+    exampleDF &lt;- transform(exampleDF, v = v + rnorm(nrow(exampleDF), sd = 0.001))
+    return(exampleDF)
 }
 </code></pre>
 
@@ -22,13 +22,15 @@ layout: page
 
 <p>We get almost the same APC with 300 data points as 100:</p>
 
-<pre><code class="r">GetAPC(function(df) return(df$u * df$v), makeExampleDF(100), u=&quot;u&quot;, v=&quot;v&quot;)
+<pre><code class="r">GetSingleInputPredComps(function(df) return(df$u * df$v), makeExampleDF(100), 
+    u = &quot;u&quot;, v = &quot;v&quot;)$Apc.Signed
 </code></pre>
 
-<pre><code>## [1] 3.855
+<pre><code>## [1] 3.854
 </code></pre>
 
-<pre><code class="r">GetAPC(function(df) return(df$u * df$v), makeExampleDF(300), u=&quot;u&quot;, v=&quot;v&quot;)
+<pre><code class="r">GetSingleInputPredComps(function(df) return(df$u * df$v), makeExampleDF(300), 
+    u = &quot;u&quot;, v = &quot;v&quot;)$Apc.Signed
 </code></pre>
 
 <pre><code>## [1] 3.845
