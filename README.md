@@ -24,52 +24,10 @@ What could make this fail? Some possibilities:
 	- Impact (scale-insensitive version of APCs)
 	- Transition Plots 
 
-- logistic regression example plot the curves for better intuition
-	- make it presentable
-	- add more intuition (e.g. with u vs. response at various v's)
-	- add transition plot?
-
-- diamonds
-	- make it presentable
-
-- another real-world example
-	- give me some credit? nice b/c it's logistic
+- examples
+	- make make diamonds presentable
+	- another example give me some credit nice b/c it's logistic
 
 - common functions should work on RF and GLM objects. Shouldn't need to specify inputs (should be inferred from the object)
 
 - document every function other people would use, with example
-
-- website structure - add new pages to index, even blank ones
-	- sections:
-		- top level
-			- github link
-			- home / outline  - include warning that it's not very polished -- e.g. slow, not much checking that inputs are appropriate, etc. It's mainly a proof of concept and will stay that way until I see other people being interested.
-			- Introduction to APCs
-			- Impact (scale-insensitive version of APCs)
-			- Transition Plots 
-		- examples
-			- simulated logistic regression
-			- simulated linear w/ interaction
-			- diamonds
-			- give me some credit?
-		- more
-			- Extensions/changes from paper (absolute, impact, transition)
-			- Comparison with tools in the randomForest package
-			- Future work (maybe combine with next) -- weights, efficiency
-			- Wrongness doesn't go to zero!
-			- justificatiob for w change
-
-
-## Future work
-
-
-- make it work if categorical variables are includes in the inputs that aren't of interest
-- make it work for categorical variables as input of interest
-- better unit testing
-- uncertainty 
-	- it would be pretty easy to allow for multiple samples of parameters and plot uncertainties as in the paper
-	- I'm also interested in the uncertainty that arises from the density estimation as. I'm not that excited about displaying one source of uncertainty without at least having a sense for the other.
-- deal with potential column name conflicts in data frames (e.g. what if "weight" is already a column of X, but I try to use it...)
-- make it faster -- with large N, we should make distance matrix (much faster than I am now) and only keep a smaller number of the closest points
-- better choice of weights
-

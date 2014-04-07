@@ -1,23 +1,30 @@
-## Average Predictive Comparisons 
+## An R Package for Understanding Arbitrary Complex Models
 
-This is an R package implementing some of the ideas in [Gelman and Pardoe 2007](http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9531.2007.00181.x/abstract). **The package is not ready to use.** But if you want it anyway, you can install it with:
+As complex models become widely used, it's more important than ever to have ways of understanding them. Whether a model is built primarily for prediction or primarily for understanding, we need to know what it's telling us. It's (relatively) clear how to interpret the coefficients of a linear regression, at least when there are few inputs and no interaction terms. 
+
+This R package is a collection of tools that are meant to generalize the idea of these coefficients to arbitrary predictive models: Holding all else equal, how does the output vary with the input of interest? 
+
+### Inspiration
+
+The ideas implemented here originate in [Gelman and Pardoe 2007](http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9531.2007.00181.x/abstract). If you are already familiar with the paper, you can [skip to the differences between that and what's here](more-compared-with-paper.html). As far as I know, this is the only implementation intended for general use.
+
+### Installation
+
+The package is not hosted on CRAN, but it's still easy to install:
 
 ```{r eval=FALSE}
 library(devtools) # first install devtools if you haven't
 install_github("predcomps", user="dchudz")
 ```
 
-**The package is not ready to use.**
+### Limitations
 
-When the package is ready to use, a short explanation of the ideas will go here. Until then, you'll have to read the paper to have any idea what's going on.
+**Input types**: At the time of this writing, all inputs to the model must be numerical (or coercable to such). In practice this means that binary or ordered categorical inputs are okay, but unordered categorical inputs are not.
 
-### Differences from the paper
+**Computational efficiency**: At the moment, the package's implementation is not particularly efficient. You should probably not ask it to handle more than 200-500 observations. (Note however that your model may be trained on any number of observations.) 
 
-There are plenty of ideas in the paper not implemented yet, but as far as what is implemented, there are only a couple differences from the paper (unless I've messed up):
-
-- [renormalizing weights](renormalize-weights.html)
-- absolute average predictive comparisons: as well as the usual APCs, I'm computing an "absolute" version that operates on the absolute value of the predictive comparison rather than the (signed) predictive comparison itself. This will show you if effects with different signs are canceling out in the signed version. Here's [an example](simulated-linear-model-interactions.html)
+Both of these are priorities to fix.
 
 ## Contact
 
-If you're interested in trying this out, send me a note: dchudz@gmail.com
+I'm very interested in feedback from folks who are trying this out. Please get in touch with me at dchudz@gmail.com.}
