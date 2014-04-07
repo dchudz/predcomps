@@ -2,7 +2,13 @@
 
 As complex models become widely used, it's more important than ever to have ways of understanding them. Whether a model is built primarily for prediction or primarily for understanding, we need to know what it's telling us. It's (relatively) clear how to interpret the coefficients of a linear regression, at least when there are few inputs and no interaction terms. 
 
-This R package is a collection of tools that are meant to generalize the idea of these coefficients to arbitrary predictive models: Holding all else equal, how does the output vary with the input of interest? 
+This R package is a collection of tools that are meant to generalize the idea of these coefficients to arbitrary predictive models: Holding all else equal, how does the output vary with the input of interest? The tools here apply to any model, whether it takes the form of: 
+
+- a linear model with interactions
+- a GLM (with any link function)
+- a neural network
+- a random forest
+- etc. (any learned function mapping the appropriate input types to a real-valued output)
 
 ### Inspiration
 
