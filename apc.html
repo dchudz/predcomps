@@ -4,5 +4,25 @@ layout: page
 
 <h2>APCs</h2>
 
-<p>nothing here yet</p>
+<h3>Predictive Comparisons Generalize Regression Coefficients</h3>
+
+<p>At the heart of this package is the idea of a <em>predictive comparison</em>: We vary the input of interest holding the other inputs constant, and look at the differences in predicted values. Let \(u\) represent the input of interest and \(v\) the (vector of) other inputs. Let \(f\) be a functinon making predictions, so</p>
+
+<p>\[\hat{y} = f(u,v)\]</p>
+
+<p>Our \(f\) could come from any predictive model. If we have a statistical model, then probably we would choose </p>
+
+<p>\[f(u,v) = \mathcal{E}[y \mid u, v, \theta]\]</p>
+
+<p>(where \(\theta\) are the parameters of the model). But we need not have a statistical model at all. The prediction function \(f\) could come from a random forest, or a support vector machine.</p>
+
+<p>Given the function \(f\) and a choice of \(u_1\), \(u_2\), and \(v\), we can compute</p>
+
+<p>\[\frac{f(u_2, v) - f(u_1, v)}{u_2-u_1}\]</p>
+
+<p>If \(f\) were a linear model with no interactions, the above would not depend on the particular choices of \(u_1\), \(u_2\), and \(v\) and would be the regression coefficient corresponding to \(u\). This is the formal sense in which predictive comparisons generalize regression coefficients.</p>
+
+<h2>Choice of Inputs</h2>
+
+<h3>Input Transformations</h3>
 
