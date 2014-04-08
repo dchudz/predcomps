@@ -1,3 +1,22 @@
-## Impact
+## Impact: A variation on APCs with comparable units
 
-nothing here yet
+*Impact* is a statistic similar to the APC, but which addresses two issues I've had with APCs:
+
+1. APCs are good for their purpose (the expected difference in outcome per unit change in input), but it doesn't tell me the what difference an input makes to my predictions. The APC could be high while the variation in the input is so small that it doesn't make a difference.
+
+2. APCs across inputs with different units have different units themselves and so are not directly comparable. The example in the paper (see p. 47) uses mostly binary inputs, so this is mostly not a problem there. But I'm not sure the other inputs belong on the same chart.
+
+Both (1) and (2) could be addressed by standardizing the coefficients before computing the APC, but this feels a bit ad hoc and arbitrary. Instead, I take the simpler and more elegant approach of just not dividing by the difference in inputs. That is, impact is just the expectation of
+
+$\Delta_f = f(u_2,v) - f(u_1,v)$
+
+(with $u_2 > u_1$) under the process as in the APC:
+
+1. sample $v$ from the (marginal) distribution of the corresponding inputs
+2. sample $u_1$ and $u_2$ independently from the distribution of $u$ conditional on $v$
+
+The computed quantity is therefore the expected value of the predictive difference caused by a random transition for the input of interest. The units are the same as the output variable. This statistic depends on the model, the variation in the input of interest, and the relationship between that inputs and the other inputs.
+
+### Example (cont.)
+
+Logistic regression example continued

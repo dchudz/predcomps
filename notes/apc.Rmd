@@ -14,12 +14,32 @@ $$f(u,v) = \mathcal{E}[y \mid u, v, \theta]$$
 
 Given the function $f$ and a choice of $u_1$, $u_2$, and $v$, we can compute
 
-$$\frac{f(u_2, v) - f(u_1, v)}{u_2-u_1}$$
+$$\delta_{u_1 \rightarrow u_2, v} = \frac{f(u_2, v) - f(u_1, v)}{u_2-u_1}$$
 
-If $f$ were a linear model with no interactions, the above would not depend on the particular choices of $u_1$, $u_2$, and $v$ and would be the regression coefficient corresponding to $u$. This is the formal sense in which predictive comparisons generalize regression coefficients.
+If $f$ were a linear model with no interactions, the above would not depend on the particular choices of $u_1$, $u_2$, and $v$ and would be the regression coefficient corresponding to $u$. This is the formal sense in which predictive comparisons generalize regression coefficients. Since for more complicated models this varies as the inputs vary, we will take an average across a well chosen set of inputs. 
 
-## Choice of Inputs
+### Choice of Inputs
 
+The APC is
 
-### Input Transformations
+$$\frac{\mathcal{E}[\Delta_f]}{\mathcal{E}[\Delta_u]}$$
+
+where $\Delta_f = f(u_2,v) - f(u_1,v)$, $\Delta_u = u_2 - u_1$, and $\mathcal{E}$ is expectation under the following process:
+
+1. sample $v$ from the (marginal) distribution of the corresponding inputs
+2. sample $u_1$ and $u_2$ independently from the distribution of $u$ conditional on $v$
+
+The reason for this definition is that we want to use values of $v$ that are representative of our data generation process, and transitions in $u$ that are representative of what really occurs at those values of $v$.
+
+Computing the numerator and denominator separately rather than taking an expected value of $\delta_{u_1 \rightarrow u_2, v}$ amounts to weighting by the size of $(u_2 - u_1)$. This avoids having the result excessively influenced by small changes in $u$.
+
+### Estimation
+
+The rows of our data represent samples from the joint distribution $u$, $v$, so each row amounts to a sample from $v$ followed by a sample $u_1$ conditional on $v$. The difficult thing is drawing another sample $u_2$ conditional on $v$. We approximate these by assigning weights to rows based on the proximity of the $v$ in that row to the $v$ in the row in question.
+
+For more details, see [Gelman and Pardoe 2007](http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9531.2007.00181.x/abstract) (section 4), [my note](more-renormalize-weights.html) explaining a small change from the weights described in the paper, or [my code](https://github.com/dchudz/predcomps/blob/master/R/pairs.R) that computes the appropriate weights.
+
+### A Small Example
+
+(logistic regression example with correlation and no interaction)
 
