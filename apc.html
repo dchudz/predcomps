@@ -18,11 +18,22 @@ layout: page
 
 <p>Given the function \(f\) and a choice of \(u_1\), \(u_2\), and \(v\), we can compute</p>
 
-<p>\[\frac{f(u_2, v) - f(u_1, v)}{u_2-u_1}\]</p>
+<p>\[\delta_{u_1 \rightarrow u_2, v} = \frac{f(u_2, v) - f(u_1, v)}{u_2-u_1}\]</p>
 
-<p>If \(f\) were a linear model with no interactions, the above would not depend on the particular choices of \(u_1\), \(u_2\), and \(v\) and would be the regression coefficient corresponding to \(u\). This is the formal sense in which predictive comparisons generalize regression coefficients.</p>
+<p>If \(f\) were a linear model with no interactions, the above would not depend on the particular choices of \(u_1\), \(u_2\), and \(v\) and would be the regression coefficient corresponding to \(u\). This is the formal sense in which predictive comparisons generalize regression coefficients. Since for more complicated models this varies as the inputs vary, we will take an average across a well chosen set of inputs. </p>
 
 <h2>Choice of Inputs</h2>
+
+<p>The APC is of the form </p>
+
+<p>\[\frac{\mathcal{E}[\Delta_f]}{\mathcal{E}[\Delta_u]}\]</p>
+
+<p>where \(\Delta_f = f(u_2,v) - f(u_1,v)\), \(\Delta_u = u_2 - u_1\), and \(\mathcal{E}\) is expectation under the following process:</p>
+
+<ol>
+<li>sample \(v\) from the (marginal) distribution of the corresponding inputs</li>
+<li>sample \(u_1\) and \(u_2\) independently from the distribution of \(u\) conditional on \(v\)</li>
+</ol>
 
 <h3>Input Transformations</h3>
 
