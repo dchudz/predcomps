@@ -19,15 +19,18 @@ What could make this fail? Some possibilities:
 
 ## Must be done before releasing to the world
 
-- pages to write
-	- Introduction to APCs
-	- Impact (scale-insensitive version of APCs)
-	- Transition Plots 
+Finishing pages:
+
+- add example in quickstart section to index.
+- Introduction to APCs -- add example
+- Impact (scale-insensitive version of APCs) -- finish text, add example
+- Transition Plots -- maybe add another way to visualize the same effect? work on this one (opacity?)
+
 
 - examples
+
 	- make make diamonds presentable
 	- another example give me some credit nice b/c it's logistic
 
 - common functions should work on RF and GLM objects. Shouldn't need to specify inputs (should be inferred from the object)
-
 - document every function other people would use, with example
