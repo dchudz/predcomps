@@ -4,7 +4,7 @@ There is only one outright difference between APCs as described in [Gelman and P
 
 ### Absolute APCs
 
-Gelman & Pardoe mention absolute APCs in the case where the input of interest is an unordered categorical variable (in which case signs wouldn't make sense). I believe this absolute-values version (which is computed just like the signed version, except that the absolute value of the predictive difference is taken. By default, I always compute and display an absolute version of the APC alongside the signed version. See e.g. the input $u_8$ in my [simulated linear model with interactions](examples-simulated-linear-model-interactions.html) for an example demonstrating the importance of this notion, and [my explanation of APCs](apc.html) for more detail.
+Gelman & Pardoe mention an unsigned version APCs in the case where the input of interest is an unordered categorical variable (in which case signs wouldn't make sense). They propose a root mean squared APC (equaton 4), but I prefer absolute values and I believe this absolute-values version is more generally useful. By default, I always compute and display an absolute version of the APC alongside the signed version. See e.g. the input $u_8$ in my [simulated linear model with interactions](examples-simulated-linear-model-interactions.html) for an example demonstrating the importance of this notion, and [my explanation of APCs](apc.html) for more detail.
 
 ### Impact: A variation on APCs with comparable units
 

@@ -41,11 +41,17 @@ For more details, see [Gelman and Pardoe 2007](http://onlinelibrary.wiley.com/do
 
 ### Absolute Version
 
-(copy from "differences" page?)
+The absolute APC (as opposed to the signed version described above) replaces $\Delta_f = f(u_2,v) - f(u_1,v)$ above with $|\Delta_f| = |f(u_2,v) - f(u_1,v)|$. See e.g. the input $u_8$ in my [simulated linear model with interactions](examples-simulated-linear-model-interactions.html) for an example where the signed APC is roughly 0 but the absolute APC is large.
+
+By default, I always compute and display an absolute version of the APC alongside the signed version. 
 
 ### A Small Example
 
 This is a example running APCs on a simulated linear model with independent inputs and no interactions. For more involved examples, see the [examples](examples-overview.html) section.
+
+The inputs ($x_1$, $x_2$, $x_3$) are independent, with
+
+$$y \sim 2x_1 - 2x_2 + x_3 + \mathcal{N}(0,.1)$$
 
 First we set up the data:
 
@@ -54,7 +60,7 @@ n <- 200
 x1 <- runif(n=n, min=0, max=1)
 x2 <- runif(n=n, min=0, max=1)
 x3 <- runif(n=n, min=0, max=10)
-y <- 2*x1 + (-2)*x2 + 1*x3
+y <- 2*x1 + (-2)*x2 + 1*x3 + rnorm(n, sd=.1)
 df <- data.frame(x1, x2, x3, y)
 ```
 
@@ -67,13 +73,15 @@ fittedLm
 
 We can then plot the average predictive comparisons:
 
-```{r}
+```{r results='hide', message=FALSE}
 library(predcomps)
 apcDF <- GetPredCompsDF(fittedLm, df=df)
-PlotPredCompsDF(apcDF, variant="Apc")
+PlotPredCompsDF(apcDF, variant="Apc") + theme_gray(base_size = 18)
 ```
 
-Using different shapes / colors, both the absolute and signed versions are plotted. This is what the returned data frame `apcDF` looks like:
+Using different shapes / colors, both the absolute and signed versions are plotted. For symmetry, the absolute version is plotted with both a positive and negative sign. Since this is a linear model with no interactions, the signed APCs match those from the fitted linear model. 
+
+This is what the returned data frame `apcDF` looks like:
 
 ```{r}
 apcDF

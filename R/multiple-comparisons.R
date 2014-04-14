@@ -9,7 +9,7 @@
 #' @export
 GetPredCompsDF <- function(model, df, inputVars = NULL, ...) {
   
-# If inputVars is null, we can try to get the list of inputs from the model:
+  # If inputVars is null, we can try to get the list of inputs from the model:
   if (is.null(inputVars)) {
     inputVars <- GetInputVarsFromModel(model)
   }
@@ -17,10 +17,10 @@ GetPredCompsDF <- function(model, df, inputVars = NULL, ...) {
   apcList <-  Map(function(currentVar) {
     cat(paste("Working on:", currentVar, "\n"))
     GetSingleInputPredComps(model, 
-                       df, 
-                       currentVar, 
-                       c(setdiff(inputVars, currentVar)),
-                       ...)},
+                            df, 
+                            currentVar, 
+                            c(setdiff(inputVars, currentVar)),
+                            ...)},
     inputVars
   )
   apcDF <- rename(ldply(apcList, data.frame), c(".id"="Input"))  
@@ -46,12 +46,12 @@ PlotPredCompsDF <- function(apcDF, variant="Impact") {
     transform(subset(longAPCs, Type=="Absolute"), Value=-Value)
   )
   longAPCs2 <- longAPCs2[order(factor(longAPCs2$Type, levels=c("Absolute", "Signed"))), ]  
-  print(
+  return(
     ggplot(longAPCs2) +
       geom_point(aes(y = Input, x=Value, color=Type, shape=Type, size=Type)) +
       scale_x_continuous(limits=c(-maxAPC, maxAPC)) +
       scale_size_discrete(range=c(3,4)) +
       ggtitle(variant) +
       geom_vline(aes(xintercept=0), alpha=.5)
-  )  
+  )
 }

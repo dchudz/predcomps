@@ -1,13 +1,37 @@
 ## Future work
 
-- Comparison with tools in the randomForest package
-- make it work if categorical variables are includes in the inputs that aren't of interest
-- make it work for categorical variables as input of interest
-- unit testing
-- uncertainty 
-	- it would be pretty easy to allow for multiple samples of parameters and plot uncertainties as in the paper
-	- I'm also interested in the uncertainty that arises from the density estimation as. I'm not that excited about displaying one source of uncertainty without at least having a sense for the other.
-- deal with potential column name conflicts in data frames (e.g. what if "weight" is already a column of X, but I try to use it...)
-- make it faster -- with large N, we should make distance matrix (much faster than I am now) and only keep a smaller number of the closest points
-- better & more automated choice of weights
+### Comparison with other approaches
 
+For example, I'd like to compare with the tools (variable importance and partial plots) available in the `randomForest` package. I would guess that those tools are the most similar thing to this that's in common use.
+
+Other notions of variable importance to compare with:
+
+- the one in the `earth` package (implementing MARS)
+- I should look through `caret` to see what's available there
+
+### Categorical inputs
+
+I'm not quite sure about the best way to sample from the distribution for an input of interest, conditional on the other inputs, when those other inputs include categorical variables.
+
+Gelman & Pardoe 2007 discuss what to do when the input of interest is an unordered categorical variable, but I'm mainly interested in applying the statistic I'm calling [*impact*](impact.html) to categorical variables, since *impact* is comparable across all types of inputs.
+
+
+### Uncertainty
+
+As discussed in the paper, it is entirely natural to allow for multiple samples of parameters and plot these measures with their uncertainties as in the paper.
+
+I'm also interested in the uncertainty that arises from the density estimation. 
+
+### Weights
+
+We should have better & more automated choice of weights. Weights should be chosen in such a way that our estimates of conditional distributions approach the true distributions [in the limit as we get more data](more-large-N-limit.html).
+
+### Speed/scalability
+
+I should make it faster / work with more data.
+
+### Code robustness
+
+I should deal with potential column name conflicts in data frames (e.g. I use a "weight" column, so I'll have problems if one of the inputs has that name).
+
+I should add unit tests to make further development more efficient.
