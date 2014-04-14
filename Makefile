@@ -2,7 +2,9 @@ all: root examples more
 
 root: index.html apc.html impact.html transition-plots.html
 
-examples: examples-diamonds.html examples-simulated-linear-model-interactions.html examples-loan-defaults.html
+examples: examples-diamonds.html examples-simulated-linear-model-interactions.html examples-loan-defaults.html \
+	examples-logistic-regression.html examples-overview.html
+
 
 more: more-compared-with-paper.html more-future-work.html more-large-N-limit.html more-renormalize-weights.html
 
@@ -18,12 +20,18 @@ apc.html: ../predcomps/notes/apc.Rmd
 impact.html: ../predcomps/notes/impact.Rmd
 	Rscript -e "library(knitr); knit2html('../predcomps/notes/impact.Rmd', template='../predcomps/notes/template', output='impact.html')"
 
+transition-plots.html: ../predcomps/notes/transition-plots.Rmd
+	Rscript -e "library(knitr); knit2html('../predcomps/notes/transition-plots.Rmd', template='../predcomps/notes/template', output='transition-plots.html')"
+
 
 ### Examples
 ###
 
-transition-plots.html: ../predcomps/notes/transition-plots.Rmd
-	Rscript -e "library(knitr); knit2html('../predcomps/notes/transition-plots.Rmd', template='../predcomps/notes/template', output='transition-plots.html')"
+examples-overview.html: ../predcomps/notes/examples/overview.Rmd
+	Rscript -e "library(knitr); knit2html('../predcomps/notes/examples/overview.Rmd', template='../predcomps/notes/template', output='examples-overview.html');"
+
+examples-logistic-regression.html: ../predcomps/notes/examples/logistic-regression.Rmd
+	Rscript -e "library(knitr); knit2html('../predcomps/notes/examples/logistic-regression.Rmd', template='../predcomps/notes/template', output='examples-logistic-regression.html');"
 
 examples-diamonds.html: ../predcomps/notes/examples/diamonds.Rmd
 	Rscript -e "library(knitr); knit2html('../predcomps/notes/examples/diamonds.Rmd', template='../predcomps/notes/template', output='examples-diamonds.html');"
