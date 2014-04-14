@@ -11,6 +11,6 @@ Depends:
     gridExtra
 Imports:
     plyr,
-    reshape2
+    reshape2,
     assertthat
 License: I haven't decided yet. Hopefully BSD or MIT will make sense.

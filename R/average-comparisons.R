@@ -53,6 +53,7 @@ ComputeAPCFromPairs <- function(predictionFunction, pairs, u, v, absolute=FALSE,
 #  one for predictionFunction (df |--> predictions)
 #  another for a glm object
 
+#' @export
 ComputeAPCFromPairs.function <- function(predictionFunction, pairs, u, v, absolute=FALSE, impact=FALSE) {
   uNew <- paste(u,".B",sep="")
   yHat1 <- predictionFunction(pairs)
@@ -66,9 +67,35 @@ ComputeAPCFromPairs.function <- function(predictionFunction, pairs, u, v, absolu
   return(APC)
 }
 
+#' @export
 ComputeAPCFromPairs.glm <- function(glmFit, pairs, u, v, absolute=FALSE, impact=FALSE) {
   predictionFunction <- function(df) predict.glm(glmFit, newdata=df, type="response")
   return(
-    ComputeAPCFromPairs.function(predictionFunction, pairs, u, v, absolute=FALSE)
+    ComputeAPCFromPairs.function(predictionFunction, pairs, u, v, absolute=absolute, impact=impact)
     ) 
+}
+
+#' @export
+ComputeAPCFromPairs.lm <- function(lmFit, pairs, u, v, absolute=FALSE, impact=FALSE) {
+  predictionFunction <- function(df) predict.glm(lmFit, newdata=df)
+  return(
+    ComputeAPCFromPairs.function(predictionFunction, pairs, u, v, absolute=absolute, impact=impact)
+  ) 
+}
+
+#' @export
+ComputeAPCFromPairs.randomForest <- function(rfFit, pairs, u, v, absolute=FALSE, impact=FALSE) {
+  # For classification, we need to specify that the predictions should be probabilties (not classes)
+  if (rfFit$type == "classification") { 
+    if (length(rfFit$classes) > 2) {
+      stop("Sorry, I don't know what to do when there are more than 2 classes.")
+    }
+    predictionFunction <- function(df) predict(rfFit, newdata=df, type="prob")
+  } else
+  {
+    predictionFunction <- function(df) predict(rfFit, newdata=df)
+  }
+  return(
+    ComputeAPCFromPairs.function(predictionFunction, pairs, u, v, absolute=absolute, impact=impact)
+  ) 
 }

@@ -22,15 +22,13 @@ What could make this fail? Some possibilities:
 Finishing pages:
 
 - add example in quickstart section to index.
-- Introduction to APCs -- add example
-- Impact (scale-insensitive version of APCs) -- finish text, add example
-- Transition Plots -- maybe add another way to visualize the same effect? work on this one (opacity?)
-
+- Introduction to APCs -- explain absolute APCs briefly
+- Impact (scale-insensitive version of APCs) -- finish text, add example (same example as in previous section)
+- Transition Plots -- maybe add another way to visualize the same effect, e.g. input vs. delta output? and/or improve the original one (opacity?)
 
 - examples
 
 	- make make diamonds presentable
 	- another example give me some credit nice b/c it's logistic
 
-- common functions should work on RF and GLM objects. Shouldn't need to specify inputs (should be inferred from the object)
 - document every function other people would use, with example

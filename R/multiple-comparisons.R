@@ -2,15 +2,21 @@
 #' 
 #' makes average predictive comparison for all specified inputs
 #' 
-#' @param predictionFunction
+#' @param model Either a function (from a data frame to vector of predictions) or a model we know how to deal with (lm, glm)
 #' @param df data frame with data
 #' @param inputVars inputs to the model
 #' @param ... extra parguments passed to GetPairs used to control Weight function
 #' @export
-GetPredCompsDF <- function(predictionFunction, df, inputVars, ...) {
+GetPredCompsDF <- function(model, df, inputVars = NULL, ...) {
+  
+# If inputVars is null, we can try to get the list of inputs from the model:
+  if (is.null(inputVars)) {
+    inputVars <- GetInputVarsFromModel(model)
+  }
+  
   apcList <-  Map(function(currentVar) {
     cat(paste("Working on:", currentVar, "\n"))
-    GetSingleInputPredComps(predictionFunction, 
+    GetSingleInputPredComps(model, 
                        df, 
                        currentVar, 
                        c(setdiff(inputVars, currentVar)),
