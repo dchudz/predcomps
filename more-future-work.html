@@ -4,19 +4,40 @@ layout: page
 
 <h2>Future work</h2>
 
-<ul>
-<li>Comparison with tools in the randomForest package</li>
-<li>make it work if categorical variables are includes in the inputs that aren&#39;t of interest</li>
-<li>make it work for categorical variables as input of interest</li>
-<li>unit testing</li>
-<li>uncertainty 
+<h3>Comparison with other approaches</h3>
+
+<p>For example, I&#39;d like to compare with the tools (variable importance and partial plots) available in the <code>randomForest</code> package. I would guess that those tools are the most similar thing to this that&#39;s in common use.</p>
+
+<p>Other notions of variable importance to compare with:</p>
 
 <ul>
-<li>it would be pretty easy to allow for multiple samples of parameters and plot uncertainties as in the paper</li>
-<li>I&#39;m also interested in the uncertainty that arises from the density estimation as. I&#39;m not that excited about displaying one source of uncertainty without at least having a sense for the other.</li>
-</ul></li>
-<li>deal with potential column name conflicts in data frames (e.g. what if &ldquo;weight&rdquo; is already a column of X, but I try to use it&hellip;)</li>
-<li>make it faster &ndash; with large N, we should make distance matrix (much faster than I am now) and only keep a smaller number of the closest points</li>
-<li>better &amp; more automated choice of weights</li>
+<li>the one in the <code>earth</code> package (implementing MARS)</li>
+<li>I should look through <code>caret</code> to see what&#39;s available there</li>
 </ul>
+
+<h3>Categorical inputs</h3>
+
+<p>I&#39;m not quite sure about the best way to sample from the distribution for an input of interest, conditional on the other inputs, when those other inputs include categorical variables.</p>
+
+<p>Gelman &amp; Pardoe 2007 discuss what to do when the input of interest is an unordered categorical variable, but I&#39;m mainly interested in applying the statistic I&#39;m calling <a href="impact.html"><em>impact</em></a> to categorical variables, since <em>impact</em> is comparable across all types of inputs.</p>
+
+<h3>Uncertainty</h3>
+
+<p>As discussed in the paper, it is entirely natural to allow for multiple samples of parameters and plot these measures with their uncertainties as in the paper.</p>
+
+<p>I&#39;m also interested in the uncertainty that arises from the density estimation. </p>
+
+<h3>Weights</h3>
+
+<p>We should have better &amp; more automated choice of weights. Weights should be chosen in such a way that our estimates of conditional distributions approach the true distributions <a href="more-large-N-limit.html">in the limit as we get more data</a>.</p>
+
+<h3>Speed/scalability</h3>
+
+<p>I should make it faster / work with more data.</p>
+
+<h3>Code robustness</h3>
+
+<p>I should deal with potential column name conflicts in data frames (e.g. I use a &ldquo;weight&rdquo; column, so I&#39;ll have problems if one of the inputs has that name).</p>
+
+<p>I should add unit tests to make further development more efficient.</p>
 

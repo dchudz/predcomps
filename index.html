@@ -28,13 +28,13 @@ install_github(&quot;predcomps&quot;, user = &quot;dchudz&quot;)
 .
 .</p>
 
-<h3>Limitations</h3>
+<h3>Current Limitations</h3>
 
 <p><strong>Input types</strong>: At the time of this writing, all inputs to the model must be numerical (or coercable to such). In practice this means that binary or ordered categorical inputs are okay, but unordered categorical inputs are not.</p>
 
 <p><strong>Computational efficiency</strong>: At the moment, the package&#39;s implementation is not particularly efficient. You should probably not ask it to handle more than 200-500 observations. (Note however that your model may be trained on any number of observations.) </p>
 
-<p>Both of these are priorities to fix.</p>
+<p><strong>Weight function</strong>: The weight function used to estimate conditional distributions doesn&#39;t get much attention in the paper, and I haven&#39;t given it much more here (yet).</p>
 
 <h2>Contact</h2>
 
