@@ -1,6 +1,6 @@
 This README is mainly for people developing the project (which is just me, at the moment). Everything for users is at the [Project Page](http://www.davidchudzicki.com/predcomps/).
 
-Lots of people are using complicated/non-parametric models for lots of things, but it’s hard to understand what complicated models are telling you telling you. This may be a general-purpose way to extract understanding from a very large class of complicated models.
+Lots of people are using complicated/non-parametric models for lots of things, but it’s hard to understand what complicated models are telling you. This is general-purpose way to extract understanding from a very large class of complicated models.
 
 # Todo 
 
@@ -8,11 +8,9 @@ Lots of people are using complicated/non-parametric models for lots of things, b
 
 Finishing pages:
 - add example in quickstart section to index.
-- examples
-	- finish simulated logistic regression example
-	- make make diamonds presentable
-	- another example, e.g. give me some credit (nice b/c it's logistic)
-
+- finish simulated logistic regression example
+- make make diamonds presentable
+- another example, e.g. give me some credit (nice b/c it's logistic)
 - document every function other people would use, with example
 - Transition Plots -- maybe add another way to visualize the same effect, e.g. input vs. delta output? and/or improve the original one (opacity?)
 

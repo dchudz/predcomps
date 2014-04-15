@@ -1,1 +1,15 @@
 ## Examples Overview
+
+### Simulated Examples
+
+The simulated examples are constructed to demonstrate a property of predictive comparisons.  Simulated examples are nice because (since we set up the data-generating process and we really know what's going on) it's easier to know of the predictive comparisons are telling us what they should be. 
+
+- [Logistic regression with related inputs](examples-logistic-regression.html): This is a logistic regression model with no interactions, and where the coefficients are all the same. The distribution of the inputs leads to differences in the predictive comparisons (both APC and impact).
+
+- [Linear model with interactions](examples-simulated-linear-model-interactions.html): This is a linear model with 9 features and 8 interaction terms (an interaction between $v$ and each of $u_1 \ldots u_8$) which are all the same. The way the $u_i$'s are related to $v$ in the distribution of the inputs gives rise to differences in the APC.
+
+### Real Examples
+
+Simulated examples are good for gaining understanding of how the package works and what it's doing, but they don't help us understand how it is useful in the real world. These are examples with real-world data sets:
+
+- [Diamond prices](examples-diamonds.html): In this example, applying predictive comparisons to a random forest helps understand the influence of carat, cut, color, and clarity on prices.

@@ -28,6 +28,8 @@ If you want to get started quickly before reading about the functions in more de
 
 ### Current Limitations
 
+The package has some major limitations in its current form, but we have to start somewhere:
+
 **Input types**: At the time of this writing, all inputs to the model must be numerical (or coercable to such). In practice this means that binary or ordered categorical inputs are okay, but unordered categorical inputs are not.
 
 **Computational efficiency**: At the moment, the package's implementation is not particularly efficient. You should probably not ask it to handle more than 200-500 observations. (Note however that your model may be trained on any number of observations.) 
