@@ -13,4 +13,4 @@ Imports:
     plyr,
     reshape2,
     assertthat
-License: I haven't decided yet. Hopefully BSD or MIT will make sense.
+License: MIT
