@@ -210,7 +210,7 @@ footer {
   width:200px;
   float:left; 
   position:fixed;
-  bottom:50px;
+  bottom:-10px;
   font-size: 8px;
 }
 
@@ -229,6 +229,7 @@ footer {
   
   header {
     padding-right:320px;
+    padding-bottom:320px;
   }
   
   section {
