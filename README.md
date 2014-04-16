@@ -17,3 +17,7 @@ Finishing pages:
 ## Todo later
 
 See the [future work](http://www.davidchudzicki.com/predcomps/more-future-work.html) section of the documentation.
+
+## Documentation
+
+The [documentation](http://www.davidchudzicki.com/predcomps/) is hosted on Github pages using a theme by [orderedlist](https://github.com/orderedlist).
