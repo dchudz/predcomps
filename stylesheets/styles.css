@@ -193,6 +193,7 @@ section {
   width:700px;
   float:right;
   padding-bottom:50px;
+  margin:0 -10px 0 0;
 }
 
 small {
@@ -229,7 +230,6 @@ footer {
   
   header {
     padding-right:320px;
-    padding-bottom:320px;
   }
   
   section {
