@@ -1,0 +1,58 @@
+```{r echo=FALSE, results='hide', message=FALSE}
+library(predcomps)
+library(ggplot2)
+library(boot)
+```
+
+
+## A Logistic Regression with Related Inputs
+
+I will set up a simulated data set that we use for modeling the probability a candidate wins an election, given how much time they spend campaigning and how much money is spend on their campaign. The data will be entirely simulated. I'll set up and compare a few variations in which the relationship between time and money vary. The coefficients of the logistic regression determining the relationship between the inputs and the probability of election success will not vary.
+
+### Variation 1
+
+In the first variation, time and money are independent:
+
+```{r}
+priceCoefficient <- -.1
+qualityCoefficient <- .1
+noiseRange <- 15
+
+nWines=10000 # we'll use a sample of 10k wines
+price <- sample(20:120, nWines, replace=TRUE)
+quality <- price * .4 + 22 + runif(nWines, min=-noiseRange/2, max=noiseRange/2)
+
+qplot(price, quality) + expand_limits(y=c(0,100))
+
+
+purchaseProbability = inv.logit( priceCoefficient*(price - 70) + qualityCoefficient*(quality - 50)  )
+
+df <- data.frame(Quality = quality, Price = price, PurchaseProbability = purchaseProbability)
+
+ggplot(subset(df, Price %in% seq(20, 120, by=20))) + 
+  geom_point(aes(x = Quality, y = PurchaseProbability, color = (Price)), )
+
+
+
+
+
+df$y <- rbinom(n=nrow(df), size=1, prob=with(df, inv.logit(v1+v2+v3)))
+
+fittedLogit <- glm(y ~ v1 + v2 + v3, data = df, family = "binomial")
+
+apcDF <- GetPredCompsDF(function(df) with(df, inv.logit(v1+v2+v3)), df, c("v1","v2","v3"))
+
+PlotPredCompsDF(apcDF)
+PlotPredCompsDF(apcDF, variant="Apc")
+
+
+GetPredCompsDF(fittedLogit, 
+               data.frame(v1, v2, v3), 
+               c("v1","v2","v3"))
+
+
+
+GetPredCompsDF
+
+```
+
