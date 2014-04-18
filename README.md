@@ -13,6 +13,7 @@ Finishing pages:
 - another example, e.g. give me some credit (nice b/c it's logistic)
 - document every function other people would use, with example
 - Transition Plots -- maybe add another way to visualize the same effect, e.g. input vs. delta output? and/or improve the original one (opacity?)
+	- something like this?: make 30 pairings for each of 100 original points. Draw lines instead of arrows. (include the original point for this! current pairs DF excludes original point.) maybe very thin lines with large and somewhat transparent points? for a sense of the density. 
 
 ## Todo later
 

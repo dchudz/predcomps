@@ -14,25 +14,47 @@ I will set up a simulated data set that we use for modeling the probability a ca
 In the first variation, time and money are independent:
 
 ```{r}
-priceCoefficient <- -.1
+priceCoefficient <- -.12
 qualityCoefficient <- .1
-noiseRange <- 15
+noiseSD <- 5
 
-nWines=10000 # we'll use a sample of 10k wines
+nWines=50000  # we'll use a sample of 10k wines
 price <- sample(20:120, nWines, replace=TRUE)
-quality <- price * .4 + 22 + runif(nWines, min=-noiseRange/2, max=noiseRange/2)
-
-qplot(price, quality) + expand_limits(y=c(0,100))
-
-
+quality <- price * .4 + 22 + rnorm(nWines, sd=noiseSD)
 purchaseProbability = inv.logit( priceCoefficient*(price - 70) + qualityCoefficient*(quality - 50)  )
 
-df <- data.frame(Quality = quality, Price = price, PurchaseProbability = purchaseProbability)
+df1 <- data.frame(Quality = quality, 
+                 Price = price, 
+                 PurchaseProbability = purchaseProbability, 
+                 Purchased = rbinom(n = length(purchaseProbability), size=1, prob=purchaseProbability))
 
-ggplot(subset(df, Price %in% seq(20, 120, by=20))) + 
-  geom_point(aes(x = Quality, y = PurchaseProbability, color = (Price)), )
 
+```
 
+Here is the (admittedly unrealistic) relationship between price and quality:
+
+```{r}
+df1Sample <- df1[sample.int(nWines, size=1000), ]
+qplot(Price, Quality, alpha=I(.5), data = df1Sample) + 
+  expand_limits(y=c(0,100))
+```
+
+When I fit a logistic regression, the coefficients are what we'd expect (since we set them up):
+
+ 
+```{r}
+logitFit1 <- glm(Purchased ~ Price + Quality, data = df1, family = "binomial")
+logitFit1
+
+```
+
+This plot shows the relationship between quality and predicted pir
+  
+```{r}
+
+ggplot(subset(df1, Price %in% seq(20, 120, by=10))) + 
+  geom_point(aes(x = Quality, y = PurchaseProbability, color = factor(Price)),
+             size = 3, alpha = .1)
 
 
 
