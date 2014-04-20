@@ -2,79 +2,150 @@
 library(predcomps)
 library(ggplot2)
 library(boot)
+library(knitr)
+opts_chunk$set(tidy = FALSE)
+set.seed(87678)
 ```
 
 
 ## A Logistic Regression with Related Inputs
 
-I will set up a simulated data set that we use for modeling the probability a candidate wins an election, given how much time they spend campaigning and how much money is spend on their campaign. The data will be entirely simulated. I'll set up and compare a few variations in which the relationship between time and money vary. The coefficients of the logistic regression determining the relationship between the inputs and the probability of election success will not vary.
+I will set up a simulated data set that we use for modeling the probability a customer buys a bottle of wine, given its price and quality. The data will be entirely simulated. I'll set up and compare a few variations in which the joint distribution of price ($P$) and quality ($Q$) varies. The coefficients of the logistic regression determining the relationship between the inputs and the probability of purchase will not vary.
+
+In each variation, the probability of purchase is governed by the following logistic regression:
+
+$$logit(P(\text{wine is purchased})) = 0.1 Q - 0.12 P$$
+
+- *Variation 1*: Price is uniform; quality is price plus noise. Quality increases with price, but not enough make up for price, so the expensive wines are rarely purchased and the cheap wines are almost always purchased.
+- *Variation 2*: Just like *Variation 1*, but price is more densely concentrated in its middle range. This leads to price and quality both having a larger APC because the inverse logistic curve is steeper in this middle range.
+- *Variation 3*: Just like *Variation 1*, but price is more densely concentrated in its high range. This leads to price and quality both having a smaller APC because the inverse logistic curve is shallower in this middle range.
+- *Variation 4*: Just like *Variation 1*, but there is more variation in quality at the middle price ranges than the edges. This leads to quality having a larger APC, because the APC weights large changes more than small ones, and here large changes are happening in the region where the inverse logistic curve is steepest.
+- *Variation 4*: Like *Variation 1*, but quality varies more strongly with price. The inverse logistic curve is now steeper at almost all price/quality combinations.
+
+The APC varies across these variations, but the logistic regression coefficients remain the same. The changes in APC in each of these variations are driven entirely by changes in the distribution of the inputs. The model relating inputs to outputs is unchanged.
 
 ### Variation 1
 
-In the first variation, time and money are independent:
+In the first variation, quality and price are independent, with price uniformly distributed and quality set to price plus Gaussian noise:
 
 ```{r}
-priceCoefficient <- -.12
-qualityCoefficient <- .1
-noiseSD <- 5
-
+priceCoef <- -.12
+qualityCoef <- .1
+qualituNoiseStdDev <- 5
 nWines=50000  # we'll use a sample of 10k wines
-price <- sample(20:120, nWines, replace=TRUE)
-quality <- price * .4 + 22 + rnorm(nWines, sd=noiseSD)
-purchaseProbability = inv.logit( priceCoefficient*(price - 70) + qualityCoefficient*(quality - 50)  )
+nRowsForPlottingSample <- 1000
+nRowsForApcSample <- 300
 
-df1 <- data.frame(Quality = quality, 
-                 Price = price, 
-                 PurchaseProbability = purchaseProbability, 
-                 Purchased = rbinom(n = length(purchaseProbability), size=1, prob=purchaseProbability))
-
-
+df1 <- local({
+  price <- sample(20:120, nWines, replace=TRUE)
+  quality <- price * .4 + 22 + rnorm(nWines, sd=qualituNoiseStdDev)
+  purchaseProbability <- inv.logit(priceCoef*(price - 70) + qualityCoef*(quality - 50)  )
+  purchased  <- rbinom(n = length(purchaseProbability), size=1, prob=purchaseProbability)
+  data.frame(Quality = quality, 
+             Price = price, 
+             PurchaseProbability = purchaseProbability, 
+             Purchased = purchased)
+  })
 ```
 
-Here is the (admittedly unrealistic) relationship between price and quality:
+A scatter plot (with a random subset to avoid overplotting) shows us the relationship between price and quality:
 
 ```{r}
-df1Sample <- df1[sample.int(nWines, size=1000), ]
+df1Sample <- df1[sample.int(nWines, size=nRowsForPlottingSample), ]
 qplot(Price, Quality, alpha=I(.5), data = df1Sample) + 
   expand_limits(y=c(0,100))
 ```
 
 When I fit a logistic regression, the coefficients are what we'd expect (since we set them up):
 
- 
+
 ```{r}
 logitFit1 <- glm(Purchased ~ Price + Quality, data = df1, family = "binomial")
 logitFit1
-
 ```
 
-This plot shows the relationship between quality and predicted pir
-  
+This plot shows the relationship between quality and probability of purchase for a few prices:
+
 ```{r}
-
-ggplot(subset(df1, Price %in% seq(20, 120, by=10))) + 
-  geom_point(aes(x = Quality, y = PurchaseProbability, color = factor(Price)),
-             size = 3, alpha = .1)
-
-
-
-df$y <- rbinom(n=nrow(df), size=1, prob=with(df, inv.logit(v1+v2+v3)))
-
-fittedLogit <- glm(y ~ v1 + v2 + v3, data = df, family = "binomial")
-
-apcDF <- GetPredCompsDF(function(df) with(df, inv.logit(v1+v2+v3)), df, c("v1","v2","v3"))
-
-PlotPredCompsDF(apcDF)
-PlotPredCompsDF(apcDF, variant="Apc")
-
-
-GetPredCompsDF(fittedLogit, 
-               data.frame(v1, v2, v3), 
-               c("v1","v2","v3"))
-
-
-
-GetPredCompsDF
-
+ggplot(subset(df1Sample, Price %in% seq(20, 120, by=10))) + 
+  geom_point(aes(x = Quality, y = PurchaseProbability, color = factor(Price)), 
+             size = 3, alpha = 1) + 
+  ggtitle("Quality vs. Purchase Probability at Various Prices")
 ```
 
+Each colored set of points is one portion of a shifted inverse logistic curve, determined by which Price/Quality combinations actually occur in our data.
+
+We can also see the portion of the curve that isn't represented in our data:
+
+```{r}
+linesDF <- expand.grid(Price = seq(20, 120, by=10), Quality = 0:100)
+linesDF$PurchaseProbability <- with(linesDF,
+                                    inv.logit(priceCoef*(Price - 70) + qualityCoef*(Quality - 50)))
+last_plot() + geom_line(aes(x = Quality, y = PurchaseProbability, color = factor(Price)), 
+                        data = linesDF,
+                        size=.2)
+```
+
+We can get average predictive comparisons from our fitted regression:
+
+```{r}
+apc1 <- GetPredCompsDF(logitFit1, df1[sample.int(nrow(df1), nRowsForApcSample),])
+apc1[c("Input", "Apc.Signed")]
+```
+
+This means that (on average) the probability of purchase increases by about 1% per 1-point increase in quality.
+
+### Variation 2
+
+This variation will add some additional wines to the middle range of prices:
+
+```{r}
+nAdditionalWines <- nWines
+supplementForDF2 <- local({
+  price <- sample(55:85, nWines, replace=TRUE)
+  quality <- price * .4 + 22 + rnorm(nWines, sd=qualituNoiseStdDev)
+  purchaseProbability <- inv.logit(priceCoef*(price - 70) + qualityCoef*(quality - 50)  )
+  purchased  <- rbinom(n = length(purchaseProbability), size=1, prob=purchaseProbability)
+  data.frame(Quality = quality, 
+             Price = price, 
+             PurchaseProbability = purchaseProbability, 
+             Purchased = purchased)
+  })
+df2 <- rbind(df1, supplementForDF2)
+```
+
+A scatter plot (with a random subset to avoid overplotting) shows us the relationship between price and quality:
+
+```{r}
+df2Sample <- df2[sample.int(nrow(df2), size=nRowsForPlottingSample), ]
+qplot(Price, Quality, alpha=I(.5), data = df2Sample) + 
+  expand_limits(y=c(0,100))
+```
+
+When I fit a logistic regression, the coefficients are similar to before, since we haven't changed the underlying model:
+
+
+```{r}
+logitFit1 <- glm(Purchased ~ Price + Quality, data = df1, family = "binomial")
+logitFit1
+```
+
+In the plot showing the relationship between quality and probability of purchase, we see more points at the steep section of the inverse logit curve:
+
+```{r}
+ggplot(subset(df2Sample, Price %in% seq(20, 120, by=10))) + 
+  geom_point(aes(x = Quality, y = PurchaseProbability, color = factor(Price)), 
+             size = 3, alpha = 1) + 
+  ggtitle("Quality vs. Purchase Probability at Various Prices")
+```
+
+The APC for quality is correspondingly larger:
+
+```{r}
+apc2 <- GetPredCompsDF(logitFit1, df2[sample.int(nrow(df2), nRowsForApcSample),])
+apc2[c("Input",  "Apc.Signed")]
+```
+
+This means that in this variation the probability of purchase increases (on average) by about FILLMEIN per 1-point increase in quality.
+
+### Variation 4
