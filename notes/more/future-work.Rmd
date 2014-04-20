@@ -1,5 +1,12 @@
 ## Future work
 
+### Speed/scalability
+
+I often find myself cutting down the data set size for computational reasons. E.g. starting with 10k rows and looking only at 300. It might be better to use different numbers of rows in different roles, e.g. pairs between 300 rows and 1000 other rows.
+
+I should make it faster / work with more data.
+
+
 ### Comparison with other approaches
 
 For example, I'd like to compare with the tools (variable importance and partial plots) available in the `randomForest` package. I would guess that those tools are the most similar thing to this that's in common use.
@@ -25,10 +32,6 @@ I'm also interested in the uncertainty that arises from the density estimation.
 ### Weights
 
 We should have better & more automated choice of weights. Weights should be chosen in such a way that our estimates of conditional distributions approach the true distributions [in the limit as we get more data](more-large-N-limit.html).
-
-### Speed/scalability
-
-I should make it faster / work with more data.
 
 ### Code robustness
 

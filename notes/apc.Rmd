@@ -35,7 +35,11 @@ Computing the numerator and denominator separately rather than taking an expecte
 
 ### Estimation
 
-The rows of our data represent samples from the joint distribution $u$, $v$, so each row amounts to a sample from $v$ followed by a sample $u_1$ conditional on $v$. The difficult thing is drawing another sample $u_2$ conditional on $v$. We approximate these by assigning weights to rows based on the proximity of the $v$ in that row to the $v$ in the row in question.
+The rows of our data represent samples from the joint distribution $u$, $v$, so each row amounts to a sample from $v$ followed by a sample $u_1$ conditional on $v$. The difficult thing is drawing another sample $u_2$ conditional on $v$. We approximate these by assigning weights to rows based on the proximity of the $v$ in that row to the $v$ in the row in question. The weights are:
+
+$$\frac{1}{\text{mahalanobisConstantTerm} + \text{(mahalanobis distance)}}$$
+
+The [*mahalanobis distance*](https://en.wikipedia.org/wiki/Mahalanobis_distance) is a unitless version of distance that takes into account the correlation structure of $v$. The *mahalanobisConstantTerm* (which defaults to 1, but this is not always an appropriate choice) prevents all of the weight from going to the closest points. More work needs to be done in thinking about the weights.
 
 For more details, see [Gelman and Pardoe 2007](http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9531.2007.00181.x/abstract) (section 4), [my note](more-renormalize-weights.html) explaining a small change from the weights described in the paper, or [my code](https://github.com/dchudz/predcomps/blob/master/R/pairs.R) that computes the appropriate weights.
 

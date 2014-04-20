@@ -4,7 +4,7 @@ library(ggplot2)
 library(boot)
 library(knitr)
 opts_chunk$set(tidy = FALSE)
-set.seed(87678)
+set.seed(1)
 ```
 
 ## A Logistic Regression with Related Inputs
@@ -34,7 +34,13 @@ qualityCoef <- .1
 qualityNoiseStdDev <- 5
 nWines=50000
 nRowsForPlottingSample <- 1000
-nRowsForApcSample <- 300
+nRowsForApcSample <- 400
+
+# This is used in determining the weights that go into computing the APC.
+# The default value of 1 gives unintuitive results 
+# (the difference between Variation 1 and 3 is not as expected using 1)
+# We need to think more about the weights! Maybe default should not be 1.
+mahalanobisConstantTerm = .1
 
 df1 <- local({
   price <- sample(20:120, nWines, replace=TRUE)
@@ -89,7 +95,7 @@ last_plot() + geom_line(aes(x = Quality, y = PurchaseProbability, color = factor
 We can get average predictive comparisons from our fitted regression:
 
 ```{r}
-apc1 <- GetPredCompsDF(model=logitFit1, df=df1, numRowsToUse = nRowsForApcSample)
+apc1 <- GetPredCompsDF(model=logitFit1, df=df1, numRowsToUse = nRowsForApcSample, mahalanobisConstantTerm = mahalanobisConstantTerm)
 ```
 
 The `GetPredCompsDF` function produces a few kinds of outputs, but for now let's just focus on the signed average predictive comparison:
@@ -131,8 +137,8 @@ When we fit a logistic regression, the coefficients are similar to before, since
 
 
 ```{r}
-logitFit1 <- glm(Purchased ~ Price + Quality, data = df1, family = "binomial")
-logitFit1
+logitFit2 <- glm(Purchased ~ Price + Quality, data = df2, family = "binomial")
+logitFit2
 ```
 
 In the plot showing the relationship between quality and probability of purchase, we see more points at the steep section of the inverse logit curve:
@@ -147,10 +153,63 @@ ggplot(subset(df2Sample, Price %in% seq(20, 120, by=10))) +
 The APC for quality is correspondingly larger:
 
 ```{r}
-apc2 <- GetPredCompsDF(model=logitFit1, df=df2, numRowsToUse = nRowsForApcSample)
+apc2 <- GetPredCompsDF(model=logitFit2, df=df2, numRowsToUse = nRowsForApcSample, mahalanobisConstantTerm = mahalanobisConstantTerm)
 apc2[c("Input",  "Apc.Signed")]
 ```
 
 This means that in this variation the probability of purchase increases (on average) by about 1.2% (vs. 1.0% in *Variation 1*) per 1-point increase in quality. The magnitude of the APC for price is also larger.
 
-### Variation 4
+### Variation 3
+
+In this variation, prices are distributed uniformly as in *Variation 1*, but quality varies more in the middle range of prices. Since the APC weights large transitions more than small ones, this gives more weight to transitions where the slope is large, so the APC is larger than in *Variation 1*.
+
+```{r}
+
+
+df3 <- local({
+  price <- sample(20:120, nWines, replace=TRUE)
+  quality <- price * .4 + 22 + ifelse(55 <= price & price <= 85, 
+                                      rnorm(nWines, sd=qualityNoiseStdDev*1.5),
+                                      rnorm(nWines, sd=qualityNoiseStdDev))
+  purchaseProbability <- inv.logit(priceCoef*(price - 70) + qualityCoef*(quality - 50)  )
+  purchased  <- rbinom(n = length(purchaseProbability), size=1, prob=purchaseProbability)
+  data.frame(Quality = quality, 
+             Price = price, 
+             PurchaseProbability = purchaseProbability, 
+             Purchased = purchased)
+  })
+```
+
+A scatter plot (again, using a random subset to avoid overplotting) shows us the relationship between price and quality:
+
+```{r}
+df3Sample <- df3[sample.int(nrow(df3), size=nRowsForPlottingSample), ]
+qplot(Price, Quality, alpha=I(.5), data = df3Sample) + 
+  expand_limits(y=c(0,100))
+```
+
+When we fit a logistic regression, the coefficients are similar to before, since we haven't changed the underlying model:
+
+
+```{r}
+logitFit3 <- glm(Purchased ~ Price + Quality, data = df3, family = "binomial")
+logitFit3
+```
+
+In the plot showing the relationship between quality and probability   of purchase, we see more points at the steep section of the inverse logit curve:
+
+```{r}
+ggplot(subset(df3Sample, Price %in% seq(20, 120, by=10))) + 
+  geom_point(aes(x = Quality, y = PurchaseProbability, color = factor(Price)), 
+             size = 3, alpha = 1) + 
+  ggtitle("Quality vs. Purchase Probability at Various Prices")
+```
+
+The APC for quality is correspondingly larger:
+
+```{r}
+apc3 <- GetPredCompsDF(model=logitFit1, df=df3, numRowsToUse = nRowsForApcSample, mahalanobisConstantTerm = mahalanobisConstantTerm)
+apc3[c("Input",  "Apc.Signed")]
+```
+
+This means that in this variation the probability of purchase increases (on average) by about 1.2% (vs. 1.0% in *Variation 1*) per 1-point increase in quality. The magnitude of the APC for price is also larger.
