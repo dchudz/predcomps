@@ -8,8 +8,8 @@ Lots of people are using complicated/non-parametric models for lots of things, b
 
 Finishing pages:
 - add example in quickstart section to index.
-- finish simulated logistic regression example
-- make make diamonds presentable
+- make make diamonds presentable 
+	- including maybe transition curves? (arrow plots are not so nice)
 - another example, e.g. give me some credit (nice b/c it's logistic)
 - document every function other people would use, with example
 - Transition Plots -- maybe add another way to visualize the same effect, e.g. input vs. delta output? and/or improve the original one (opacity?)
