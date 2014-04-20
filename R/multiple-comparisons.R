@@ -7,7 +7,11 @@
 #' @param inputVars inputs to the model
 #' @param ... extra parguments passed to GetPairs used to control Weight function
 #' @export
-GetPredCompsDF <- function(model, df, inputVars = NULL, ...) {
+GetPredCompsDF <- function(model, df, numRowsToUse = NULL, inputVars = NULL, ...) {
+  
+  if (!is.null(numRowsToUse)) {
+    df <- df[sample.int(nrow(df), size=numRowsToUse), ]
+  }
   
   # If inputVars is null, we can try to get the list of inputs from the model:
   if (is.null(inputVars)) {

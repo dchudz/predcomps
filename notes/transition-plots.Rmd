@@ -8,6 +8,8 @@ library(predcomps)
 library(ggplot2)
 ```
 
+- remove arrow heads -- dots at both ends maybe
+
 
 # Transition Plots: A new way to visualize models
 
