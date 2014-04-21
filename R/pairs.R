@@ -47,6 +47,7 @@ GetPairs <- function(X, u, v,
   X$OriginalRowNumber <- 1:nrow(X)
   pairs <- merge(X,X,by=c(), suffixes=c("",".B"))
   covV=cov(as.matrix(X[,v]))
+  browser()
   mahalanobis <- Mahal(pairs[,v], pairs[,paste0(v,".B")], covV)
   pairs$Weight <- 1/(mahalanobisConstantTerm + mahalanobis)
   if (removeDiagonal) {

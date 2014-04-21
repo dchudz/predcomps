@@ -29,8 +29,9 @@ The [documentation](http://www.davidchudzicki.com/predcomps/) is hosted on Githu
 
 Next steps for me:
 
-1. Write a unit test for GetPairs (so I'll be more comfortable changing it)
-2. Profiling below shows that `ddply` in GetPairs is the part slowing everything down. Replace with something from dplyr.
+- Profiling shows that now Mahal and ComputeAPCFromPairs are the slowest parts.
+- Mahal we can do as a matrix multiplication instead of apply
+- ComputeAPCFromPairs will be much smaller if we only keep some of the pairs. Presumably most of the weight is in a few pairs, and we need only keep those.
 
 ```
 # devtools::install_github("hadley/lineprof")

@@ -95,7 +95,11 @@ last_plot() + geom_line(aes(x = Quality, y = PurchaseProbability, color = factor
 We can get average predictive comparisons from our fitted regression:
 
 ```{r}
+x <- lineprof({
 apc1 <- GetPredCompsDF(model=logitFit1, df=df1, numRowsToUse = nRowsForApcSample, mahalanobisConstantTerm = mahalanobisConstantTerm)
+})
+shine(x)
+
 ```
 
 The `GetPredCompsDF` function produces a few kinds of outputs, but for now let's just focus on the signed average predictive comparison:
