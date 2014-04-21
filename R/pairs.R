@@ -15,7 +15,6 @@ Mahal <- function(matrix1, matrix2, covariance) {
   
   # making this a matrix multication instead of an apply would be the next optimization after removing ddply, I think
   # 
-  browser()
   return(
     apply(matrix1-matrix2, 1, function(oneRowDiff) t(oneRowDiff) %*% covarianceInv %*% oneRowDiff)
   )
@@ -54,7 +53,11 @@ GetPairs <- function(X, u, v,
     pairs <- subset(pairs, OriginalRowNumber != OriginalRowNumber.B) #remove pairs where both elements are the same
   }
   if (renormalizeWeights) {
-    pairs <- ddply(pairs, "OriginalRowNumber", transform, Weight = Weight/sum(Weight))
+#     pairs <- pairs %.% group_by(OriginalRowNumber) %.% mutate(Weight = Weight/sum(Weight))
+#     browser()
+    pairs <- mutate(group_by(pairs, OriginalRowNumber),
+                    Weight = Weight/sum(Weight))
+    pairs <- data.frame(pairs)
   } #normalizing AFTER removing pairs from same row as each other
   return(pairs[c("OriginalRowNumber",u,v,paste0(u,".B"),"Weight")]) 
 }

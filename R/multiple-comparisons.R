@@ -17,17 +17,17 @@ GetPredCompsDF <- function(model, df, numRowsToUse = NULL, inputVars = NULL, ...
   if (is.null(inputVars)) {
     inputVars <- GetInputVarsFromModel(model)
   }
-  
   apcList <-  Map(function(currentVar) {
     cat(paste("Working on:", currentVar, "\n"))
-    GetSingleInputPredComps(model, 
+    data.frame(Input = currentVar,
+               GetSingleInputPredComps(model, 
                             df, 
                             currentVar, 
                             c(setdiff(inputVars, currentVar)),
-                            ...)},
+                            ...))},
     inputVars
   )
-  apcDF <- rename(ldply(apcList, data.frame), c(".id"="Input"))  
+  apcDF <- do.call(rbind, apcList)
   return(apcDF)
 }
 

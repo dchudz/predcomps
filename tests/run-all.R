@@ -2,6 +2,11 @@
 library(testthat)
 library(devtools)
 
+setwd("~/github/predcomps")
+document(".")
+install(".")
+test_package("predcomps")
+
 document()
 load_all()
 

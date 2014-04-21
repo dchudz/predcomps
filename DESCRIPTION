@@ -8,9 +8,9 @@ VignetteBuilder: knitr
 Depends:
     R (>= 3.0.2),
     ggplot2,
-    gridExtra
+    gridExtra,
+    dplyr
 Imports:
-    plyr,
     reshape2,
     assertthat
 License: MIT
