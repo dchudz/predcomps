@@ -1,3 +1,4 @@
+
 This README is mainly for people developing the project (which is just me, at the moment). Everything for users is at the [Project Page](http://www.davidchudzicki.com/predcomps/).
 
 Lots of people are using complicated/non-parametric models for lots of things, but it’s hard to understand what complicated models are telling you. This is general-purpose way to extract understanding from a very large class of complicated models.
@@ -22,3 +23,26 @@ See the [future work](http://www.davidchudzicki.com/predcomps/more-future-work.h
 ## Documentation
 
 The [documentation](http://www.davidchudzicki.com/predcomps/) is hosted on Github pages using a theme by [orderedlist](https://github.com/orderedlist).
+
+
+-----
+
+Next steps for me:
+
+1. Write a unit test for GetPairs (so I'll be more comfortable changing it)
+2. Profiling below shows that `ddply` in GetPairs is the part slowing everything down. Replace with something from dplyr.
+
+```
+# devtools::install_github("hadley/lineprof")
+# devtools::install_github(c("wch/shiny-slickgrid"))
+library(shinySlickgrid)
+library(lineprof)
+df1Small <- df1[sample.int(nrow(df1), size=500), ]
+
+x <- lineprof({
+  GetSingleInputPredComps(logitFit1, df1Small, "Price", "Quality")
+})
+shine(x)
+```
+
+3. Investigate credit scoring results more carefully.

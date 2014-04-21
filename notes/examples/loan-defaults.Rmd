@@ -1,1 +1,55 @@
+# A new way to visualize models
+
+```{r message=FALSE, echo=FALSE}
+library(knitr)
+knitr::opts_chunk$set(tidy = FALSE, message=FALSE, warning=FALSE, fig.align='center')
+library(randomForest)
+library(plyr)
+library(predcomps)
+library(ggplot2)
+theme_set(theme_gray(base_size = 18))
+
+```
+
+
 Will be based on this data set: https://www.kaggle.com/c/GiveMeSomeCredit
+
+```{r}
+libr
+credit <- read.csv("~/Downloads/cs-training.csv")[,-1]
+
+
+for (col in names(credit)) {
+  print(qplot(credit[[col]]) + ggtitle(col))
+  }
+
+
+
+credit2 <- credit
+credit2 <- subset(credit2, !is.na(MonthlyIncome) &
+                    NumberOfTime30.59DaysPastDueNotWorse < 5 & 
+                    RevolvingUtilizationOfUnsecuredLines <= 2 &
+                    NumberOfTime30.59DaysPastDueNotWorse <= 5 &
+                    NumberOfTime60.89DaysPastDueNotWorse <= 5 &
+                    NumberOfTimes90DaysLate <= 5 &
+                    MonthlyIncome < 5e4 &
+                    DebtRatio < 2 &
+                    NumberRealEstateLoansOrLines <= 12 &
+                    NumberOfDependents < 10                  
+                  )
+
+for (col in names(credit2)) {
+  print(qplot(credit2[[col]]) + ggtitle(col))
+  }
+
+credit2$SeriousDlqin2yrs <- factor(credit2$SeriousDlqin2yrs)
+rfFit <- randomForest(SeriousDlqin2yrs ~ ., data=credit2, ntree=100)
+
+
+predcompsDF <- GetPredCompsDF(rfFit, credit2, numRowsToUse=500)
+PlotPredCompsDF(predcompsDF)
+
+predcompsDF2 <- GetPredCompsDF(rfFit, credit2, numRowsToUse=500, mahalanobisConstantTerm = .01)
+PlotPredCompsDF(predcompsDF2)
+
+```

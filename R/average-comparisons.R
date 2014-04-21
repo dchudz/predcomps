@@ -90,7 +90,7 @@ ComputeAPCFromPairs.randomForest <- function(rfFit, pairs, u, v, absolute=FALSE,
     if (length(rfFit$classes) > 2) {
       stop("Sorry, I don't know what to do when there are more than 2 classes.")
     }
-    predictionFunction <- function(df) predict(rfFit, newdata=df, type="prob")
+    predictionFunction <- function(df) predict(rfFit, newdata=df, type="prob")[,2]
   } else
   {
     predictionFunction <- function(df) predict(rfFit, newdata=df)

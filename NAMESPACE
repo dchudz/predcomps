@@ -1,6 +1,7 @@
 S3method(ComputeAPCFromPairs,"function")
 S3method(ComputeAPCFromPairs,glm)
 S3method(ComputeAPCFromPairs,lm)
+S3method(ComputeAPCFromPairs,randomForest)
 export(AverageSpecifiedComparison)
 export(ComputeAPCFromPairs)
 export(GetPairs)

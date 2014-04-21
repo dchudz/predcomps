@@ -12,6 +12,10 @@ Mahal <- function(matrix1, matrix2, covariance) {
   matrix1 <- as.matrix(matrix1)
   matrix2 <- as.matrix(matrix2)
   covarianceInv <- solve(covariance) #invert covariance matrix
+  
+  # making this a matrix multication instead of an apply would be the next optimization after removing ddply, I think
+  # 
+  browser()
   return(
     apply(matrix1-matrix2, 1, function(oneRowDiff) t(oneRowDiff) %*% covarianceInv %*% oneRowDiff)
   )
@@ -37,17 +41,20 @@ Mahal <- function(matrix1, matrix2, covariance) {
 #' 
 #' @export
 GetPairs <- function(X, u, v,
-                      mahalanobisConstantTerm=1, 
-                      renormalizeWeights=TRUE) {
+                     mahalanobisConstantTerm=1, 
+                     renormalizeWeights=TRUE,
+                     removeDiagonal=TRUE) {
   X <- X[c(v,u)]
   X$OriginalRowNumber <- 1:nrow(X)
   pairs <- merge(X,X,by=c(), suffixes=c("",".B"))
   covV=cov(as.matrix(X[,v]))
   mahalanobis <- Mahal(pairs[,v], pairs[,paste0(v,".B")], covV)
   pairs$Weight <- 1/(mahalanobisConstantTerm + mahalanobis)
-  pairsNoId <- subset(pairs, OriginalRowNumber != OriginalRowNumber.B) #remove pairs where both elements are the same
+  if (removeDiagonal) {
+    pairs <- subset(pairs, OriginalRowNumber != OriginalRowNumber.B) #remove pairs where both elements are the same
+  }
   if (renormalizeWeights) {
-    pairsNoId <- ddply(pairsNoId, "OriginalRowNumber", transform, Weight = Weight/sum(Weight))
+    pairs <- ddply(pairs, "OriginalRowNumber", transform, Weight = Weight/sum(Weight))
   } #normalizing AFTER removing pairs from same row as each other
-  return(pairsNoId[c("OriginalRowNumber",u,v,paste0(u,".B"),"Weight")]) 
+  return(pairs[c("OriginalRowNumber",u,v,paste0(u,".B"),"Weight")]) 
 }

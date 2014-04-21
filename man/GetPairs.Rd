@@ -2,7 +2,8 @@
 \alias{GetPairs}
 \title{GetPairs}
 \usage{
-GetPairs(X, u, v, mahalanobisConstantTerm = 1, renormalizeWeights = TRUE)
+GetPairs(X, u, v, mahalanobisConstantTerm = 1, renormalizeWeights = TRUE,
+  removeDiagonal = TRUE)
 }
 \arguments{
   \item{X}{data frame}
