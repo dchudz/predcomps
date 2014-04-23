@@ -29,7 +29,7 @@ The [documentation](http://www.davidchudzicki.com/predcomps/) is hosted on Githu
 
 Next steps for me:
 
-- Profiling shows that now Mahal and ComputeAPCFromPairs are the slowest parts.
+- Profiling shows that now Mahal and ComputeAPCFromPairs are the slowest parts -- NOT TRUE in random forest example. Here making the predictions is too slow.
 - Mahal we can do as a matrix multiplication instead of apply
 - ComputeAPCFromPairs will be much smaller if we only keep some of the pairs. Presumably most of the weight is in a few pairs, and we need only keep those.
 
