@@ -15,15 +15,7 @@ theme_set(theme_gray(base_size = 18))
 Will be based on this data set: https://www.kaggle.com/c/GiveMeSomeCredit
 
 ```{r}
-libr
 credit <- read.csv("~/Downloads/cs-training.csv")[,-1]
-
-
-for (col in names(credit)) {
-  print(qplot(credit[[col]]) + ggtitle(col))
-  }
-
-
 
 credit2 <- credit
 credit2 <- subset(credit2, !is.na(MonthlyIncome) &
@@ -45,11 +37,50 @@ for (col in names(credit2)) {
 credit2$SeriousDlqin2yrs <- factor(credit2$SeriousDlqin2yrs)
 rfFit <- randomForest(SeriousDlqin2yrs ~ ., data=credit2, ntree=100)
 
+library(lineprof)
+profileResults <- lineprof({
+  predcompsDF <- GetPredCompsDF(rfFit, credit2, numRowsToUse=500)
+  })
 
-predcompsDF <- GetPredCompsDF(rfFit, credit2, numRowsToUse=500)
+shine(profileResults)
+
 PlotPredCompsDF(predcompsDF)
 
 predcompsDF2 <- GetPredCompsDF(rfFit, credit2, numRowsToUse=500, mahalanobisConstantTerm = .01)
 PlotPredCompsDF(predcompsDF2)
 
 ```
+
+
+
+```{r}
+getwd()
+setwd("../..")
+
+library(devtools)
+install(".")
+
+credit2Small <- credit2[sample.int(nrow(credit2), size = 500), ]
+pairs <- GetPairs(credit2Small, 
+                  u="age", 
+                  v = c("RevolvingUtilizationOfUnsecuredLines", "NumberOfTime30.59DaysPastDueNotWorse", 
+                        "DebtRatio", "MonthlyIncome", "NumberOfOpenCreditLinesAndLoans", 
+                        "NumberOfTimes90DaysLate", "NumberRealEstateLoansOrLines", "NumberOfTime60.89DaysPastDueNotWorse", 
+                        "NumberOfDependents"),
+                  mahalanobisConstantTerm = 1)
+
+
+rowNumSample <- sample(unique(pairs$OriginalRowNumber))[1:20]
+
+
+ggplot(subset(pairs, OriginalRowNumber %in% rowNumSample)) + geom_histogram(aes(x=Weight)) + facet_wrap(~ OriginalRowNumber)
+
+
+library(dplyr)
+
+pairs2 <- pairs %.% group_by(OriginalRowNumber) %.% arrange(OriginalRowNumber, -Weight) %.% mutate(CumulativeWeight = cumsum(Weight), Rank = 1:n())
+
+ggplot(subset(pairs2, OriginalRowNumber %in% rowNumSample)) + geom_line(aes(x=Rank, y=CumulativeWeight)) + facet_wrap(~ OriginalRowNumber)
+
+```
+

@@ -59,5 +59,6 @@ GetPairs <- function(X, u, v,
                     Weight = Weight/sum(Weight))
     pairs <- data.frame(pairs)
   } #normalizing AFTER removing pairs from same row as each other
+
   return(pairs[c("OriginalRowNumber",u,v,paste0(u,".B"),"Weight")]) 
 }
