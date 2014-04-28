@@ -29,7 +29,7 @@ The [documentation](http://www.davidchudzicki.com/predcomps/) is hosted on Githu
 
 Next steps for me:
 
-- Make sure changes to `GetPairs` result in expected behavior in examples I have so far.
+- Check on interactions (9 inputs) example.
 - More work on credit example, including:
 	- Visualizing distribution of transition-tos (as compared with original distribution)
 	- Predictive comparison curves

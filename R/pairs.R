@@ -35,7 +35,7 @@ GetPairs <- function(X, u, v,
   } else {
     X2 <- X[c(v,u)]
   }
-    
+  
   X1$OriginalRowNumber <- 1:nrow(X1)
   X2$OriginalRowNumber.B <- 1:nrow(X2)
   
@@ -53,17 +53,33 @@ GetPairs <- function(X, u, v,
   distDF <- as.data.frame(as.table(distMatrix))
   names(distDF) <- c("OriginalRowNumber.B", "OriginalRowNumber", "MahalanobisDistance")
   
+  #   browser()
+  # This isn't really doing its filter properly. Something is wrong!
   if (!is.null(onlyIncludeNearestN)) {
-    distDF <- distDF %.% group_by(OriginalRowNumber) %.% filter(rank(MahalanobisDistance) < onlyIncludeNearestN)
+    distDF <- distDF %.% 
+      group_by(OriginalRowNumber) %.% 
+      filter(rank(MahalanobisDistance, ties.method="random") < onlyIncludeNearestN)
   }
+  #   
+  #   distDF2 <- distDF %.% group_by(OriginalRowNumber) %.% mutate(rn = rank(MahalanobisDistance, ties.method="random"))  
+  #   
+  #   (subset(distDF, OriginalRowNumber == 1))
+  #   (subset(distDF2, OriginalRowNumber == 1))
+  #   
+  
+  #   sort(subset(distDF, OriginalRowNumber == 1)$MahalanobisDistance)
+  #   sort(subset(distDF2, OriginalRowNumber == 1)$MahalanobisDistance)
   
   pairs <- merge(X1, distDF, by = "OriginalRowNumber")
   pairs <- merge(X2, pairs, by = "OriginalRowNumber.B", suffixes = c(".B", ""))
   pairs$Weight <- 1/(mahalanobisConstantTerm + pairs$MahalanobisDistance)
   
-  # Remove pairs where both elements are the same
-  pairs <- subset(pairs, OriginalRowNumber != OriginalRowNumber.B)
-
+  # If we haven't sampled, then OriginalRowNumber == OriginalRowNumber.B means that 
+  # the transition start and end are the same, so we should remove those rows.
+  if (is.null(numForTransitionStart) && is.null(numForTransitionEnd)) {
+    pairs <- subset(pairs, OriginalRowNumber != OriginalRowNumber.B)
+  }
+  
   # Renormalize weights:
   pairs <- pairs %.% group_by(OriginalRowNumber) %.% mutate(Weight = Weight/sum(Weight))
   
