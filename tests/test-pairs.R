@@ -13,6 +13,6 @@ test_that("GetPairs works right in a small example", {
                               Y = c(2, 2, 2, 4, 4, 4, 2, 2, 2, 4, 4, 4), 
                               X.B = c(2, 1, 2, 1, 1, 2, 1, 2, 2, 1, 2, 1), 
                               Weight = c(0.166666666666667, 0.666666666666667, 0.166666666666667, 0.166666666666667, 0.166666666666667, 0.666666666666667, 0.666666666666667, 0.166666666666667, 0.166666666666667, 0.166666666666667, 0.666666666666667, 0.166666666666667))
-  #browser()
+  pairsActual <- pairsActual[names(pairsExpected)]
   expect_that(all.equal(MakeComparable(pairsActual), MakeComparable(pairsExpected)), is_true()) 
 })

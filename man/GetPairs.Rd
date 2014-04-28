@@ -2,8 +2,8 @@
 \alias{GetPairs}
 \title{GetPairs}
 \usage{
-GetPairs(X, u, v, mahalanobisConstantTerm = 1, renormalizeWeights = TRUE,
-  removeDiagonal = TRUE)
+GetPairs(X, u, v, numForTransitionStart = NULL, numForTransitionEnd = NULL,
+  onlyIncludeNearestN = NULL, mahalanobisConstantTerm = 1)
 }
 \arguments{
   \item{X}{data frame}
@@ -15,11 +15,9 @@ GetPairs(X, u, v, mahalanobisConstantTerm = 1, renormalizeWeights = TRUE,
   \item{mahalanobisConstantTerm}{Weights are (1 /
   (mahalanobisConstantTerm + Mahalanobis distance))}
 
-  \item{renormalizeWeights}{whether to renormalize the
-  Weights to that they sum to 1 within each group (groups
-  based on the first element of the pair). If I'm right,
-  there's no reason to use \code{FALSE} ever; I'm only
-  leaving the option in so I can compare with the paper.}
+  \item{numForTransitionStart}{}
+
+  \item{numForTransitionEnd}{}
 }
 \value{
 a data frame with the inputs \code{v} from the first of
@@ -28,15 +26,27 @@ the second), and the Mahalanobis distances between the
 pairs.
 }
 \description{
-Form all pairs of rows in X and compute Mahalanobis
+Form all pairs of rows in \code{X} and compute Mahalanobis
 distances based on \code{v}.
 }
+\details{
+To help with computational constraints, you have the option
+to not form pairs between all rows of \code{X} but instead
+of specify a certain number (\code{numForTransitionStart})
+to randomly be selected as rows from which transitions
+start, and another number (\code{numForTransitionEnd}) to
+be randomly selected as where transitions end. We then form
+all pairs between transition-start rows and transition-end
+rows.
+
+In order to get a smaller data frame for later
+manipulations (and maybe just because it's a good idea),
+you can also specify \code{onlyIncludeNearestN}, in which
+case we return only the nearest \code{onlyIncludeNearestN}
+transition ends for each transition start (instead of all
+pairs).
+}
 \examples{
-library("mvtnorm")
-sigma <- matrix(c(1,.5,-.5,
-                  .5,1,.5,
-                  -.5,.5,1), ncol=3)
-X <- data.frame(rmvnorm(n=10, sigma=sigma))
-GetPairs(X, u="X3", v=c("X1","X2"))
+# Should put unit test example here
 }
 

@@ -29,21 +29,8 @@ The [documentation](http://www.davidchudzicki.com/predcomps/) is hosted on Githu
 
 Next steps for me:
 
-- Profiling shows that now Mahal and ComputeAPCFromPairs are the slowest parts -- NOT TRUE in random forest example. Here making the predictions is too slow.
-- Mahal we can do as a matrix multiplication instead of apply
-- ComputeAPCFromPairs will be much smaller if we only keep some of the pairs. Presumably most of the weight is in a few pairs, and we need only keep those.
-
-```
-# devtools::install_github("hadley/lineprof")
-# devtools::install_github(c("wch/shiny-slickgrid"))
-library(shinySlickgrid)
-library(lineprof)
-df1Small <- df1[sample.int(nrow(df1), size=500), ]
-
-x <- lineprof({
-  GetSingleInputPredComps(logitFit1, df1Small, "Price", "Quality")
-})
-shine(x)
-```
-
-3. Investigate credit scoring results more carefully.
+- Make sure changes to `GetPairs` result in expected behavior in examples I have so far.
+- More work on credit example, including:
+	- Visualizing distribution of transition-tos (as compared with original distribution)
+	- Predictive comparison curves
+	- Finding the interactions that the absolute/signed differences suggest are there
