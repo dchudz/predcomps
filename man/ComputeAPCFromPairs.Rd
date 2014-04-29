@@ -1,13 +1,11 @@
-\name{ComputeAPCFromPairs}
-\alias{ComputeAPCFromPairs}
-\title{ComputeAPCFromPairs}
+\name{ComputeApcFromPairs}
+\alias{ComputeApcFromPairs}
+\title{ComputeApcFromPairs}
 \usage{
-ComputeAPCFromPairs(predictionFunction, pairs, u, v, absolute = FALSE,
+ComputeApcFromPairs(predictionFunction, pairs, u, v, absolute = FALSE,
   impact = FALSE)
 }
 \description{
-(abstracted this into a separate function from
-\code{GetAPC} so we can more easily do things like
-\code{GetAPCWithAbsolute})
+ComputeApcFromPairs
 }
 

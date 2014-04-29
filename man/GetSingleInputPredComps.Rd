@@ -1,6 +1,6 @@
 \name{GetSingleInputPredComps}
 \alias{GetSingleInputPredComps}
-\title{GetPredCompsDF}
+\title{GetComparisonDF}
 \usage{
 GetSingleInputPredComps(predictionFunction, X, u, v, ...)
 }
@@ -16,8 +16,8 @@ GetSingleInputPredComps(predictionFunction, X, u, v, ...)
   \item{k}{Weights are (1 / (k + Mahalanobis distance))}
 }
 \value{
-a list with: \code{signed} (the usual APC) and
-\code{absolute} (APC applied to the absolute value of the
+a list with: \code{signed} (the usual Apc) and
+\code{absolute} (Apc applied to the absolute value of the
 differences)
 }
 \description{
@@ -28,7 +28,7 @@ using Weights. I think Weights should be an approximation
 of the density p(u1,u2|v) or something like that... I need
 to look back at this. At present, I believe this is
 probably implementing the version in the Gelman/Pardoe
-paper. returns a list with the APC and the APC applied to
+paper. returns a list with the Apc and the Apc applied to
 the absolute value of the prediction function Only works
 fore continuous inputs right now
 }

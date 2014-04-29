@@ -23,6 +23,7 @@ GetPairs <- function(X, u, v,
                      onlyIncludeNearestN = NULL,
                      mahalanobisConstantTerm=1) {
   
+  assert_that(length(u) == 1) # make sure we have exactly 1 input var of interest
   
   if (!is.null(numForTransitionStart)) {
     X1 <- X[sample.int(nrow(X), size=numForTransitionStart), c(v,u)] 

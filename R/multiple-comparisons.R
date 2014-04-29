@@ -38,7 +38,6 @@ GetPredCompsDF <- function(model, df, numRowsToUse = NULL, inputVars = NULL, ...
 #' @param apcDF the output of GetApcDF
 #' @export
 PlotPredCompsDF <- function(apcDF, variant="Impact") {
-  
   apcDF <- apcDF[c("Input", grep(paste0("^",variant,"\\."), names(apcDF), value=TRUE))]
   names(apcDF) <- gsub(paste0("^",variant,"\\."), "", names(apcDF))
   

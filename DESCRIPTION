@@ -9,8 +9,7 @@ Depends:
     R (>= 3.0.2),
     ggplot2,
     gridExtra,
-    dplyr
-Imports:
+    dplyr,
     reshape2,
     assertthat
 License: MIT
