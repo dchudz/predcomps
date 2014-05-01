@@ -2,9 +2,8 @@ all: root examples more
 
 root: index.html apc.html impact.html transition-plots.html
 
-examples: examples-diamonds.html examples-simulated-linear-model-interactions.html examples-loan-defaults.html \
-	examples-wine-logistic-regression.html examples-overview.html
-
+examples: examples-diamonds.html examples-simulated-linear-model-interactions.html  \
+	examples-wine-logistic-regression.html examples-overview.html examples-loan-defaults.html
 
 more: more-compared-with-paper.html more-future-work.html more-large-N-limit.html more-renormalize-weights.html
 
