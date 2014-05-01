@@ -1,30 +1,39 @@
-# A new way to visualize models
+## Credit Default Example
 
 ```{r message=FALSE, echo=FALSE}
 library(knitr)
-knitr::opts_chunk$set(tidy = FALSE, message=FALSE, warning=FALSE, fig.align='center')
+knitr::opts_chunk$set(tidy = FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.width = 14)
 library(randomForest)
-library(plyr)
 library(predcomps)
 library(ggplot2)
 theme_set(theme_gray(base_size = 18))
-
+library(dplyr)
+library(gridExtra)
 ```
 
+This example is based on the training data set [found here](https://www.kaggle.com/c/GiveMeSomeCredit).
 
-Will be based on this data set: https://www.kaggle.com/c/GiveMeSomeCredit
+### Setup
+
+Parameters:
 
 ```{r}
-
-numForTransitionStart <- 500
+# Parameters controlling the predictive comparisons computation:
+#  We consider transitions starting at each of 500 random rows
+numForTransitionStart <- 500 
+#  ... going to each of 10,000 other random rows:
 numForTransitionEnd <- 10000
+#  ... keeping only the nearest 100 pairs for each start:
 onlyIncludeNearestN = 100
+
+# 100 trees for random forest 
 ntree = 100
+```
 
+Remove some outliers to get a more manageable data set:
 
-
+```{r}
 credit <- read.csv("~/Downloads/cs-training.csv")[,-1]
-
 credit2 <- credit
 credit2 <- subset(credit2, !is.na(MonthlyIncome) &
                     NumberOfTime30.59DaysPastDueNotWorse < 5 & 
@@ -37,32 +46,134 @@ credit2 <- subset(credit2, !is.na(MonthlyIncome) &
                     NumberRealEstateLoansOrLines <= 12 &
                     NumberOfDependents < 10                  
                   )
+```
 
+Here's how the features are distributed after the above filtering:
+
+```{r}
 for (col in names(credit2)) {
   print(qplot(credit2[[col]]) + ggtitle(col))
-  }
+}
+```
 
-plot(credit2[sample.int(nrow(credit2), size=1000), ])
+Build a random forest model:
 
+```{r}
+# Turning the response to type "factor" causes the RF to be build for classification:
+set.seed(1)
 credit2$SeriousDlqin2yrs <- factor(credit2$SeriousDlqin2yrs)
 rfFit <- randomForest(SeriousDlqin2yrs ~ ., data=credit2, ntree=ntree)
+```
 
+### Average Predictive Comparisons
 
+```{r}
+set.seed(1)
 apcDF <- GetPredCompsDF(rfFit, credit2,
                         numForTransitionStart = numForTransitionStart,
                         numForTransitionEnd = numForTransitionEnd,
                         onlyIncludeNearestN = onlyIncludeNearestN)
-
-PlotPredCompsDF(apcDF)
-
-pairs <- GetComparisonDF(rfFit, credit2, 
-                         u="age",
-                         numForTransitionStart = numForTransitionStart,
-                         numForTransitionEnd = numForTransitionEnd,
-                         onlyIncludeNearestN = onlyIncludeNearestN)
-
-
-
 ```
 
+This is the [impact](impact.html) chart. Its units are changes in probability, so we can compare it across all of the inputs:
 
+```{r}
+PlotPredCompsDF(apcDF)
+```
+
+Note that average absolute value of the change in probability associated with changes in age is much larger than the magnitude of the signed average. This indicates either an interact effect between age and other inputs, or a non-linear (non-monotonic) relationship between age an probability of default. We'll look into that a bit later.
+
+It wouldn't make sense to chart the average predictive comparisons in this way since they don't share units, but we can chart the inputs corresponding to a number of numbers late for various periods:
+
+```{r}
+PlotPredCompsDF(apcDF[grep("NumberOfTime", apcDF$Input), ],
+                variant = "Apc")
+```
+
+As you'd expect, greater periods of lateness are worse (per additional incident).
+
+However, `NumberOfTime30.59DaysPastDueNotWorse` makes more overall difference to the model, because its variation is larger (it's non-zero more often):
+
+```{r}
+PlotPredCompsDF(apcDF[grep("NumberOfTime", apcDF$Input), ])
+```
+
+### More Detailed Examination: `NumberOfTime30.59DaysPastDueNotWorse`
+
+Recall that data from which the summarized predictive comparisons are computed consists of groups of rows, where with in each group only the input of interest varies (for the point we imagine transitioning to) and the rest are held constant. We can work directly with this data, visualizing it in more detail to better understand our model:
+
+```{r}
+set.seed(6)
+pairs <- GetComparisonDF(rfFit, credit2, 
+                         u="NumberOfTime30.59DaysPastDueNotWorse",
+                         numForTransitionStart = 20,
+                         numForTransitionEnd = numForTransitionEnd*10,
+                         onlyIncludeNearestN = onlyIncludeNearestN*10)
+
+pairsSummarized <- pairs[c("OriginalRowNumber", "NumberOfTime30.59DaysPastDueNotWorse.B", "yHat2", "Weight")] %.% 
+  group_by(OriginalRowNumber, NumberOfTime30.59DaysPastDueNotWorse.B, yHat2) %.% summarise(Weight = sum(Weight))
+
+ggplot(pairsSummarized, aes(x=NumberOfTime30.59DaysPastDueNotWorse.B, y=yHat2, color=factor(OriginalRowNumber))) + 
+  geom_point(aes(size = Weight)) +
+  geom_line(size=.2) +
+  scale_x_continuous(limits=c(0,2)) +
+  scale_size_area()
+```
+
+I've made the size of the points proportional to weight that the point receives. The summarized predictive comparisons give more weight to points with more weight, and so should we.
+
+The relationship is mostly as you'd expect, but let's examine the highlighted one in more detail:
+
+```{r echo=FALSE}
+ggplot(pairsSummarized, aes(x=NumberOfTime30.59DaysPastDueNotWorse.B, y=yHat2, color=factor(OriginalRowNumber))) + 
+  geom_point(aes(size = n)) +
+  geom_line(aes(alpha=ifelse(OriginalRowNumber == 18, 1, .3))) +
+  scale_x_continuous(limits=c(0,2)) +
+  scale_alpha_identity()
+```
+
+Why does the default probability decrease when `NumberOfTime30.59DaysPastDueNotWorse` increases? Values for all the other inputs are held constant, so let's see what they are:
+
+```{r echo=FALSE}
+oneOriginalRowNumber <- subset(pairs, OriginalRowNumber == 18)
+oneRow <- t(oneOriginalRowNumber[1,intersect(names(oneOriginalRowNumber), names(credit2))])
+colnames(oneRow) <- "Input values for highlighted row"
+grid.newpage()
+grid.table(oneRow)
+```
+
+Hmm, note that `NumberOfTimes90DaysLate` (almost always $0$) is $1$ in this case. Looking at the definition of the target variable (`SeriousDlqin2yrs`), this makes a lot of sense:
+
+`SeriousDlqin2yrs`: "Person experienced 90 days past due delinquency or worse."
+
+As we'd expect, previous instances of 90-days-late are a strong indicator of future ones. Adding a previous 30-days-late (but not more) to a previous 90-days-late seems to decrease the chance of future 90-days-lates. This is sensible -- with both, we have evidence that when you're late, you at least *sometimes* pay back in under 60 days. 
+
+Further exploratory analysis would further improve our understanding:
+
+- Is this really primarily an interaction between `NumberOfTimes90DaysLate` and `NumberOfTime30.59DaysPastDueNotWorse`, or are other inputs involved? We could vary the other inputs and see if we still get this effect.
+- Is the effect validated on test data?
+
+### More Detailed Examination: `Age`
+ 
+For one more example, let's examine the `Age` input in more detail.
+
+```{r}
+set.seed(3)
+pairs <- GetComparisonDF(rfFit, credit2, 
+                         u="age",
+                         numForTransitionStart = 20,
+                         numForTransitionEnd = numForTransitionEnd*10,
+                         onlyIncludeNearestN = onlyIncludeNearestN*10)
+
+pairsSummarized <- pairs[c("OriginalRowNumber", "age.B", "yHat2", "Weight")] %.% 
+  group_by(OriginalRowNumber, age.B, yHat2) %.% 
+  summarise(Weight = sum(Weight))
+
+ggplot(pairsSummarized, aes(x=age.B, y=yHat2, color=factor(OriginalRowNumber))) + 
+  geom_point(aes(size = Weight)) +
+  geom_line(size=.2)
+```
+
+This is a bit of a mess, but we can at least see see that interaction effects and non-monotonicity are both going on.
+
+Further exploration would look into which other inputs age is interacting with to determine these differently shaped curves.

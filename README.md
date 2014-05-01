@@ -28,11 +28,12 @@ The [documentation](http://www.davidchudzicki.com/predcomps/) is hosted on Githu
 
 Next steps for me:
 
-- Check on interactions (9 inputs) example.
+- fix horizontal axis label for impact / APC charts
+
+- add chart to wine 
+
 - More work on credit example, including:
-	- Visualizing distribution of transition-tos (as compared with original distribution)
-	- Predictive comparison curves
-	- Finding the interactions that the absolute/signed differences suggest are there
+	- (just clean it up a bit -- it's mostly better)
  - document weights situation better
 	 - explain more concisely about renormalizing (it's obvious enough not to need long explanation)
 	 - explain about why 1/distance doesn't weight nearby points enough (sphere's surphace grows as distance^n)

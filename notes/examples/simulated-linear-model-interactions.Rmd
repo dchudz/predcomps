@@ -76,7 +76,7 @@ For example, we can more quickly notice in the second version that the signed AP
 
 ```{r ApcPlotsTwoWays}
 inputVars <- c("v",paste0("u",1:8))
-apcDF <- GetPredCompsDF(outcomeGenerationFunction, df, inputVars)
+apcDF <- GetPredCompsDF(outcomeGenerationFunction, df, inputVars = inputVars)
 print(apcDF)
 PlotPredCompsDF(apcDF, variant="Apc")
 ```
