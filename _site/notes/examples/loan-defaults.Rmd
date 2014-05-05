@@ -33,19 +33,20 @@ The input features are:
 These are some parameters controlling the aggregate predictive comparisons:
 
 ```{r}
-#  We will transitions starting at each of 500 random rows
-numForTransitionStart <- 500
+# Parameters controlling the predictive comparisons computation:
+#  We consider transitions starting at each of 500 random rows
+numForTransitionStart <- 50
 #  ... going to each of 10,000 other random rows:
-numForTransitionEnd <- 10000
+numForTransitionEnd <- 1000
 #  ... keeping only the nearest 100 pairs for each start:
-onlyIncludeNearestN = 100
+onlyIncludeNearestN = 10
 ```
 
 And for the random forest:
 
 ```{r}
 # 100 trees for random forest 
-ntree = 100
+ntree = 10
 ```
 
 
@@ -79,9 +80,7 @@ allHistograms <- do.call(arrangeGrob, c(histograms, ncol=2))
 print(allHistograms)
 ```
 
-### Model Building
-
-We'll use a random forest for this example:
+Build a random forest model:
 
 ```{r}
 set.seed(1)
@@ -100,41 +99,39 @@ apcDF <- GetPredCompsDF(rfFit, credit,
                         onlyIncludeNearestN = onlyIncludeNearestN)
 ```
 
-This is a table of the aggregate predictive comparisons:
+Hi
 
 ```{r echo=FALSE}
 kable(apcDF, row.names=FALSE)
 ```
 
-Since the [impact](impact.html) values all have the same units, it makes sense to chart them on the same axes:
+
+Here [impact](impact.html) chart. Its units are changes in probability, so we can compare it across all of the inputs:
 
 ```{r}
 PlotPredCompsDF(apcDF)
 ```
 
-Note (for example) that average absolute value of the change in probability associated with changes in age is much larger than the magnitude of the signed average. This indicates either an interaction effect between age and other inputs, or a non-linear (non-monotonic) relationship between age an probability of default. We'll go into more detail on that in a bit.
+Note that average absolute value of the change in probability associated with changes in age is much larger than the magnitude of the signed average. This indicates either an interact effect between age and other inputs, or a non-linear (non-monotonic) relationship between age an probability of default. We'll look into that a bit later.
 
-It wouldn't make sense to chart the average predictive comparisons (which are per unit change in input) in this way since they don't share units, but we can chart the inputs corresponding to a number of times late for various periods:
+It wouldn't make sense to chart the average predictive comparisons in this way since they don't share units, but we can chart the inputs corresponding to a number of numbers late for various periods:
 
 ```{r}
 PlotPredCompsDF(apcDF[grep("NumberOfTime", apcDF$Input), ],
                 variant = "Apc")
 ```
 
-As you'd expect, this shows that the effect size (per additional incident) increases with the length of lateness, while the previous chart shows that `NumberOfTime30.59DaysPastDueNotWorse` makes more overall difference to the model than `NumberOfTime60.89DaysPastDueNotWorse`. This is because its variation is larger (it's non-zero more often). We can see this more clearly looking at the *impact* chart for just these inputs:
+As you'd expect, greater periods of lateness are worse (per additional incident).
 
+However, `NumberOfTime30.59DaysPastDueNotWorse` makes more overall difference to the model, because its variation is larger (it's non-zero more often):
 
 ```{r}
 PlotPredCompsDF(apcDF[grep("NumberOfTime", apcDF$Input), ])
 ```
 
-The difference between the absolute and signed versions show that there must be some observations where adding an incident of lateness *decreases* the default probability. This is most pronounced for `NumberOfTime30.59DaysPastDueNotWorse`, so we'll look at this input in a bit more detail.
+### More Detailed Examination: `NumberOfTime30.59DaysPastDueNotWorse`
 
-### Looking at `NumberOfTime30.59DaysPastDueNotWorse` in more detail
-
-Recall that the data from which the summarized predictive comparisons are computed consists of groups of rows, where with in each group only the input of interest varies (for the point we imagine transitioning to) and the rest are held constant. We can work directly with this data, visualizing it in more detail to better understand our model.
-
-I'll plot the predicted default probability vs. `NumberOfTime30.59DaysPastDueNotWorse`, holding the other inputs constant. Each line corresponds to one choice of values for the other inputs:
+Recall that data from which the summarized predictive comparisons are computed consists of groups of rows, where with in each group only the input of interest varies (for the point we imagine transitioning to) and the rest are held constant. We can work directly with this data, visualizing it in more detail to better understand our model:
 
 ```{r}
 set.seed(6)
@@ -160,7 +157,7 @@ The relationship is mostly as you'd expect, but let's examine the highlighted on
 
 ```{r echo=FALSE}
 ggplot(pairsSummarized, aes(x=NumberOfTime30.59DaysPastDueNotWorse.B, y=yHat2, color=factor(OriginalRowNumber))) + 
-  geom_point(aes(size = Weight)) +
+  geom_point(aes(size = n)) +
   geom_line(aes(alpha=ifelse(OriginalRowNumber == 18, 1, .3))) +
   scale_x_continuous(limits=c(0,2)) +
   scale_alpha_identity()
@@ -170,14 +167,17 @@ Why does the default probability decrease when `NumberOfTime30.59DaysPastDueNotW
 
 ```{r echo=FALSE}
 oneOriginalRowNumber <- subset(pairs, OriginalRowNumber == 18)
-kable(oneOriginalRowNumber[1,intersect(names(oneOriginalRowNumber), names(credit))])
+oneRow <- t(oneOriginalRowNumber[1,intersect(names(oneOriginalRowNumber), names(credit))])
+colnames(oneRow) <- "Input values for highlighted row"
+grid.newpage()
+grid.table(oneRow)
 ```
 
-Hmm, note that `NumberOfTimes90DaysLate` (almost always $0$) is $1$ in this case. Looking at the definition of the target variable (`SeriousDlqin2yrs`):
+Hmm, note that `NumberOfTimes90DaysLate` (almost always $0$) is $1$ in this case. Looking at the definition of the target variable (`SeriousDlqin2yrs`), this makes a lot of sense:
 
 `SeriousDlqin2yrs`: "Person experienced 90 days past due delinquency or worse."
 
-As we'd expect, previous instances of 90-days-late are a strong indicator of future ones. But adding a previous 30-days-late (but not more) to someone with a previous 90-days-late seems to decrease the chance of future 90-days-lates. This is sensible -- with the 30-days-late (but not more), we have evidence that when you're late, you at least sometimes pay back in under 60 days. 
+As we'd expect, previous instances of 90-days-late are a strong indicator of future ones. Adding a previous 30-days-late (but not more) to a previous 90-days-late seems to decrease the chance of future 90-days-lates. This is sensible -- with both, we have evidence that when you're late, you at least *sometimes* pay back in under 60 days. 
 
 Further exploratory analysis would further improve our understanding:
 
@@ -205,6 +205,6 @@ ggplot(pairsSummarized, aes(x=age.B, y=yHat2, color=factor(OriginalRowNumber))) 
   geom_line(size=.2)
 ```
 
-This is a bit of a mess, but we can at least see see that both interaction effects and non-monotonicity are present.
+This is a bit of a mess, but we can at least see see that interaction effects and non-monotonicity are both going on.
 
 Further exploration would look into which other inputs age is interacting with to determine these differently shaped curves.

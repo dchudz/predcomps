@@ -1,0 +1,42 @@
+## An R Package for Understanding Arbitrary Complex Models
+
+As complex models become widely used, it's more important than ever to have ways of understanding them. Whether a model is built primarily for prediction or primarily for understanding, we need to know what it's telling us. It's (relatively) clear how to interpret the coefficients of a linear regression, at least when there are few inputs and no interaction terms. 
+
+This R package is a collection of tools that are meant to generalize the idea of these coefficients to arbitrary predictive models: Holding all else equal, how does the output vary with the input of interest? The tools here apply to any model that lets you map inputs to outputs, whether it's a linear model, a GLM (with any link function), a neural network, a random forest, etc.
+
+### Inspiration
+
+The ideas implemented here originate in [Gelman and Pardoe 2007](http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9531.2007.00181.x/abstract). If you are already familiar with the paper, you can [skip to the differences between that and what's here](more-compared-with-paper.html). As far as I know, this is the only implementation intended for general use.
+
+### Installation
+
+The package is not hosted on CRAN, but it's still easy to install:
+
+```{r eval=FALSE}
+library(devtools) # first install devtools if you haven't
+install_github("predcomps", user="dchudz")
+```
+
+### Quick Start
+
+If you want to get started quickly before reading about the functions in more detail, here's an example:
+
+.
+.
+.
+
+
+### Current Limitations
+
+The package has some major limitations in its current form, but we have to start somewhere:
+
+**Input types**: At the time of this writing, all inputs to the model must be numerical (or coercable to such). In practice this means that binary or ordered categorical inputs are okay, but unordered categorical inputs are not.
+
+**Computational efficiency**: At the moment, the package's implementation is not particularly efficient. You should probably not ask it to handle more than 200-500 observations. (Note however that your model may be trained on any number of observations.) 
+
+**Weight function**: The weight function used to estimate conditional distributions doesn't get much attention in the paper, and I haven't given it much more here (yet).
+
+
+## Contact
+
+I'm very interested in feedback from folks who are trying this out. Please get in touch with me at dchudz@gmail.com.}

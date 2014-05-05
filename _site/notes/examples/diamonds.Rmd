@@ -1,0 +1,108 @@
+# A new way to visualize models
+
+```{r message=FALSE, echo=FALSE}
+library(knitr)
+knitr::opts_chunk$set(tidy = FALSE, message=FALSE, warning=FALSE, fig.align='center')
+library(randomForest)
+library(plyr)
+library(predcomps)
+library(ggplot2)
+```
+
+```{r}
+diamonds <- transform(diamonds, clarity = 
+                        factor(clarity, levels =c("SI1", "SI2", "VS1", "VS2", "VVS1", "VVS2", "IF")))
+
+diamonds2 <- transform(diamonds,
+                       clarity = as.integer(clarity),
+                       cut = as.integer(cut),
+                       color = as.integer(color))
+
+diamonds3 <- subset(diamonds2, !is.na(clarity))
+
+rf <- randomForest(price ~ carat + cut + color + clarity, data=diamonds3, ntree=20)
+diamondsSmall <- diamonds3[sample.int(nrow(diamonds3), size=500), ]
+
+apcDf <- GetPredCompsDF(function(df) predict(rf, df), diamondsSmall, inputVars=row.names(rf$importance))
+PlotPredCompsDF(apcDf)
+PlotPredCompsDF(apcDf, variant="Apc")
+
+
+pairs <- GetPairs(diamondsSmall, "carat", c("cut", "color", "clarity"), 
+                  removeDiagonal=FALSE,
+                  mahalanobisConstantTerm=.1)
+
+u <- "carat"
+pairsSampled <- ddply(pairs, 
+                      "OriginalRowNumber", function(df) {
+                        df[sample.int(nrow(df), size=5, prob=df$Weight), ]
+                        })
+
+originalRowNumbersToUse <- sample(unique(pairsSampled$OriginalRowNumber), size=10)
+
+pairsSampled$carat <- pairsSampled$carat.B
+
+pairsSampled$Prediction <- predict(rf, pairsSampled)
+
+ggplot(subset(pairsSampled, OriginalRowNumber %in% originalRowNumbersToUse),
+       aes(x=carat, y=Prediction, color=factor(OriginalRowNumber, levels=sample(originalRowNumbersToUse)))) +
+  geom_point() +
+  geom_line(size=.2) 
+
+last_plot() + scale_x_continuous(limits=c(0,1)) + scale_y_continuous(limits=c(0,5000))
+
+
+
+u <- "clarity"
+v <- c("carat", "cut", "color")
+pairs <- GetPairs(diamondsSmall, u, v, 
+                  removeDiagonal=FALSE,
+                  mahalanobisConstantTerm=.1)
+
+pairsSampled <- ddply(pairs, 
+                      "OriginalRowNumber", function(df) {
+                        df[sample.int(nrow(df), size=5, prob=df$Weight), ]
+                        })
+
+originalRowNumbersToUse <- sample(unique(pairsSampled$OriginalRowNumber), size=10)
+
+pairsSampled[[u]] <- pairsSampled[[paste0(u,".B")]]
+
+pairsSampled$Prediction <- predict(rf, pairsSampled)
+
+pairsSampled$OriginalRowNumberFactor <- factor(pairsSampled$OriginalRowNumber, levels=sample(originalRowNumbersToUse))
+ggplot(subset(pairsSampled, OriginalRowNumber %in% originalRowNumbersToUse),
+       aes_string(x=u, y="Prediction", color="OriginalRowNumberFactor")) +
+  geom_point() +
+  geom_line(size=.2) 
+
+
+
+u <- "color"
+v <- c("cut", "clarity", "carat")
+pairs <- GetPairs(diamondsSmall, u, v, 
+                  removeDiagonal=FALSE,
+                  mahalanobisConstantTerm=.1)
+
+pairsSampled <- ddply(pairs, 
+                      "OriginalRowNumber", function(df) {
+                        df[sample.int(nrow(df), size=5, prob=df$Weight), ]
+                        })
+
+originalRowNumbersToUse <- sample(unique(pairsSampled$OriginalRowNumber), size=10)
+
+pairsSampled[[u]] <- pairsSampled[[paste0(u,".B")]]
+
+pairsSampled$Prediction <- predict(rf, pairsSampled)
+
+pairsSampled$OriginalRowNumberFactor <- factor(pairsSampled$OriginalRowNumber, levels=sample(originalRowNumbersToUse))
+ggplot(subset(pairsSampled, OriginalRowNumber %in% originalRowNumbersToUse),
+       aes_string(x=u, y="Prediction", color="OriginalRowNumberFactor")) +
+  geom_point() +
+  geom_line(size=.2) 
+
+
+
+
+
+```

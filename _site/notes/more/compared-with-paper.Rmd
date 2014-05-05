@@ -1,0 +1,27 @@
+### One Difference: Renormalizing Weights
+
+There is only one outright difference between APCs as described in [Gelman and Pardoe 2007](http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9531.2007.00181.x/abstract) and as implemented here: After weights are assigned to pairs of observations (as in section __), the weights are normalized across the first element of the pair. [(explanation and justification)](more-renormalize-weights.html)
+
+### Absolute APCs
+
+Gelman & Pardoe mention an unsigned version APCs in the case where the input of interest is an unordered categorical variable (in which case signs wouldn't make sense). They propose a root mean squared APC (equaton 4), but I prefer absolute values and I believe this absolute-values version is more generally useful. By default, I always compute and display an absolute version of the APC alongside the signed version. See e.g. the input $u_8$ in my [simulated linear model with interactions](examples-simulated-linear-model-interactions.html) for an example demonstrating the importance of this notion, and [my explanation of APCs](apc.html) for more detail.
+
+### Impact: A variation on APCs with comparable units
+
+I've created a statistic similar to the APC, but which addresses two issues I've had with APCs:
+
+1. APCs are good for their purpose (the expected difference in outcome per unit change in input), but it doesn't tell me the what difference an input makes to my predictions. The APC could be high while the variation in the input is so small that it doesn't make a difference.
+
+2. APCs across inputs with different units have different units themselves and so are not directly comparable. The example in the paper (see p. 47) uses mostly binary inputs, so this is mostly not a problem there. But I'm not sure the other inputs belong on the same chart.
+
+Both (1) and (2) could be addressed by standardizing the coefficients before computing the APC, but this feels a bit ad hoc and arbitrary. Instead, I take the simpler and more elegant approach of just not dividing by the difference in inputs. The computed quantity is therefore the expected value of the predictive difference caused by a random transition for the input of interest. The units are the same as the output variable. It depends on the model, the variation in the input of interest, and the relationship between that inputs and the other inputs.
+
+I'm calling this notion *impact* (feel free to suggest another name), and it's described in more detail [here](impact.html) and in the examples. Just like APCs, it comes in signed and absolute forms.
+
+### Transition Plots
+
+(Again, feel free to suggest a better name!)
+
+Both APCs and impact summarize the role of an input with one number. This is useful, but I also want to examine the model in more detail. For example, how does the influence of an input vary across its range? Breiman & Cutler's "partial dependence plots" as implemented in the [randomForests](http://cran.r-project.org/web/packages/randomForest/randomForest.pdf) package partly get at this question, but I wanted a visualization more in line with the spirit of APCs. See [my explanation of transition plots](transition-plots.html) and the examples for more detail.
+
+
