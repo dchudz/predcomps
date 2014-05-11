@@ -4,12 +4,6 @@ layout: page
 
 <h2>Future work</h2>
 
-<h3>Speed/scalability</h3>
-
-<p>I often find myself cutting down the data set size for computational reasons. E.g. starting with 10k rows and looking only at 300. It might be better to use different numbers of rows in different roles, e.g. pairs between 300 rows and 1000 other rows.</p>
-
-<p>I should make it faster / work with more data.</p>
-
 <h3>Comparison with other approaches</h3>
 
 <p>For example, I&#39;d like to compare with the tools (variable importance and partial plots) available in the <code>randomForest</code> package. I would guess that those tools are the most similar thing to this that&#39;s in common use.</p>
@@ -35,11 +29,9 @@ layout: page
 
 <h3>Weights</h3>
 
-<p>We should have better &amp; more automated choice of weights. Weights should be chosen in such a way that our estimates of conditional distributions approach the true distributions <a href="more-large-N-limit.html">in the limit as we get more data</a>.</p>
+<p>More study is necessary to understand better what the weights should be, and make automated choices.</p>
 
 <h3>Code robustness</h3>
 
-<p>I should deal with potential column name conflicts in data frames (e.g. I use a &ldquo;weight&rdquo; column, so I&#39;ll have problems if one of the inputs has that name).</p>
-
-<p>I should add unit tests to make further development more efficient.</p>
+<p>I should deal with potential column name conflicts in data frames (e.g. I use a &ldquo;Weight&rdquo; column, so I&#39;ll have problems if one of the inputs has that name).</p>
 

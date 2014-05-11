@@ -5,7 +5,7 @@ root: index.html apc.html impact.html transition-plots.html
 examples: examples-diamonds.html examples-simulated-linear-model-interactions.html  \
 	examples-wine-logistic-regression.html examples-overview.html examples-loan-defaults.html
 
-more: more-compared-with-paper.html more-future-work.html more-large-N-limit.html more-renormalize-weights.html
+more: more-compared-with-paper.html more-future-work.html more-pairs-and-weights.html
 
 ### Root
 ###
@@ -49,11 +49,8 @@ more-compared-with-paper.html: ../predcomps/notes/more/compared-with-paper.Rmd
 more-future-work.html: ../predcomps/notes/more/future-work.Rmd
 	Rscript -e "library(knitr); knit2html('../predcomps/notes/more/future-work.Rmd', template='../predcomps/notes/template', output='more-future-work.html')"
 
-more-large-N-limit.html: ../predcomps/notes/more/large-N-limit.Rmd	
-	Rscript -e "library(knitr); knit2html('../predcomps/notes/more/large-N-limit.Rmd', template='../predcomps/notes/template', output='more-large-N-limit.html')"
-
-more-renormalize-weights.html: ../predcomps/notes/more/renormalize-weights.Rmd
-	Rscript -e "library(knitr); knit2html('../predcomps/notes/more/renormalize-weights.Rmd', template='../predcomps/notes/template', output='more-renormalize-weights.html')"
+more-pairs-and-weights.html: ../predcomps/notes/more/pairs-and-weights.Rmd
+	Rscript -e "library(knitr); knit2html('../predcomps/notes/more/pairs-and-weights.Rmd', template='../predcomps/notes/template', output='more-pairs-and-weights.html')"
 
 
 

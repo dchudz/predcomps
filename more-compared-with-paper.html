@@ -2,13 +2,17 @@
 layout: page
 ---
 
-<h3>One Difference: Renormalizing Weights</h3>
+<h2>As Compared With the Paper</h2>
 
-<p>There is only one outright difference between APCs as described in <a href="http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9531.2007.00181.x/abstract">Gelman and Pardoe 2007</a> and as implemented here: After weights are assigned to pairs of observations (as in section __), the weights are normalized across the first element of the pair. <a href="more-renormalize-weights.html">(explanation and justification)</a></p>
+<p>There are a few differences between what&#39;s here and what&#39;s discribed in <a href="http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9531.2007.00181.x/abstract">Gelman and Pardoe 2007</a>. Many features described in the paper (such as categorical inputs) are just not implemented here. This page ignores those, and describes only outright differences, or additions.</p>
+
+<h3>Pairs and Weights</h3>
+
+<p><a href="more-pairs-and-weights.html">This page</a> comments on how the weights are computed and describes from differences between this package and what&#39;s described in section 4.1 of the paper.</p>
 
 <h3>Absolute APCs</h3>
 
-<p>Gelman &amp; Pardoe mention an unsigned version APCs in the case where the input of interest is an unordered categorical variable (in which case signs wouldn&#39;t make sense). They propose a root mean squared APC (equaton 4), but I prefer absolute values and I believe this absolute-values version is more generally useful. By default, I always compute and display an absolute version of the APC alongside the signed version. See e.g. the input \(u_8\) in my <a href="examples-simulated-linear-model-interactions.html">simulated linear model with interactions</a> for an example demonstrating the importance of this notion, and <a href="apc.html">my explanation of APCs</a> for more detail.</p>
+<p>Gelman &amp; Pardoe mention an unsigned version APCs in the case where the input of interest is an unordered categorical variable (in which case signs wouldn&#39;t make sense). They propose a root mean squared APC (equaton 4), but I prefer absolute values and I believe this absolute-values version is useful for any inputs, not just categorical ones. By default, I always compute and display an absolute version of the APC alongside the signed version. See e.g. the input \(u_8\) in my <a href="examples-simulated-linear-model-interactions.html">simulated linear model with interactions</a> for an artificial example demonstrating the importance of this notion, and see <a href="apc.html">my explanation of APCs</a> for more detail.</p>
 
 <h3>Impact: A variation on APCs with comparable units</h3>
 
@@ -19,13 +23,17 @@ layout: page
 <li><p>APCs across inputs with different units have different units themselves and so are not directly comparable. The example in the paper (see p. 47) uses mostly binary inputs, so this is mostly not a problem there. But I&#39;m not sure the other inputs belong on the same chart.</p></li>
 </ol>
 
-<p>Both (1) and (2) could be addressed by standardizing the coefficients before computing the APC, but this feels a bit ad hoc and arbitrary. Instead, I take the simpler and more elegant approach of just not dividing by the difference in inputs. The computed quantity is therefore the expected value of the predictive difference caused by a random transition for the input of interest. The units are the same as the output variable. It depends on the model, the variation in the input of interest, and the relationship between that inputs and the other inputs.</p>
+<p>Both (1) and (2) could be addressed by standardizing the coefficients before computing the APC, but this feels a bit ad hoc and arbitrary. Instead, I take the simpler and more elegant approach of just not dividing by the difference in inputs. The computed quantity is therefore the expected value of the predictive difference caused by a random transition for the input of interest. The units are the same as the output variable, and hence are always comparable across different inputs. Just as with APCs, this quantity depends on the model, the variation in the input of interest, and the relationship between that inputs and the other inputs.</p>
 
 <p>I&#39;m calling this notion <em>impact</em> (feel free to suggest another name), and it&#39;s described in more detail <a href="impact.html">here</a> and in the examples. Just like APCs, it comes in signed and absolute forms.</p>
 
-<h3>Transition Plots</h3>
+<h3>All-else-equal Curves</h3>
 
-<p>(Again, feel free to suggest a better name!)</p>
+<p>To visualize the model in more detail than is provided by our aggregated predictive comparisons, we can plot \(u\) vs. the prediction at a variaty of values of \(v\). In order that these plots represent \(p(u|v)\), we can use the same set of pairs/weights as is constructed for computing aggregated predictive comparisons.</p>
 
-<p>Both APCs and impact summarize the role of an input with one number. This is useful, but I also want to examine the model in more detail. For example, how does the influence of an input vary across its range? Breiman &amp; Cutler&#39;s &ldquo;partial dependence plots&rdquo; as implemented in the <a href="http://cran.r-project.org/web/packages/randomForest/randomForest.pdf">randomForests</a> package partly get at this question, but I wanted a visualization more in line with the spirit of APCs. See <a href="transition-plots.html">my explanation of transition plots</a> and the examples for more detail.</p>
+<p>This plot shows age vs. probability of default, as in <a href="examples-loan-defaults.html">the loan defaults example</a>:</p>
+
+<p><img src="/figure/AgeDefaultCurves.png" alt="AgeDefaultCurves"/></p>
+
+<p>Plots like this are not yet computed in the package, but see <a href="examples-loan-defaults.html">the example</a> for how to construct them.</p>
 
