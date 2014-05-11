@@ -151,7 +151,10 @@ ggplot(pairsSummarized, aes(x=NumberOfTime30.59DaysPastDueNotWorse.B, y=yHat2, c
   geom_point(aes(size = Weight)) +
   geom_line(size=.2) +
   scale_x_continuous(limits=c(0,2)) +
-  scale_size_area()
+  scale_size_area() + 
+  xlab("NumberOfTime30.59DaysPastDueNotWorse") +
+  ylab("Prediction") + 
+  guides(color = FALSE)
 ```
 
 I've made the size of the points proportional to weight that the point receives. The summarized predictive comparisons give more weight to points with more weight, and so should we.
@@ -163,7 +166,10 @@ ggplot(pairsSummarized, aes(x=NumberOfTime30.59DaysPastDueNotWorse.B, y=yHat2, c
   geom_point(aes(size = Weight)) +
   geom_line(aes(alpha=ifelse(OriginalRowNumber == 18, 1, .3))) +
   scale_x_continuous(limits=c(0,2)) +
-  scale_alpha_identity()
+  scale_alpha_identity() +
+  xlab("NumberOfTime30.59DaysPastDueNotWorse") +
+  ylab("Prediction") + 
+  guides(color = FALSE)
 ```
 
 Why does the default probability decrease when `NumberOfTime30.59DaysPastDueNotWorse` increases? Values for all the other inputs are held constant, so let's see what they are:
@@ -188,7 +194,7 @@ Further exploratory analysis would further improve our understanding:
  
 For one more example, let's examine the `Age` input in more detail.
 
-```{r}
+```{r AgeDefaultCurves}
 set.seed(3)
 pairs <- GetComparisonDF(rfFit, credit, 
                          u="age",
@@ -202,7 +208,10 @@ pairsSummarized <- pairs[c("OriginalRowNumber", "age.B", "yHat2", "Weight")] %.%
 
 ggplot(pairsSummarized, aes(x=age.B, y=yHat2, color=factor(OriginalRowNumber))) + 
   geom_point(aes(size = Weight)) +
-  geom_line(size=.2)
+  geom_line(size=.2) +
+  xlab("age") +
+  ylab("Prediction") + 
+  guides(color = FALSE)
 ```
 
 This is a bit of a mess, but we can at least see see that both interaction effects and non-monotonicity are present.

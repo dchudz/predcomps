@@ -17,10 +17,10 @@ GetPredCompsDF <- function(model, df, inputVars = NULL, ...) {
     cat(paste("Working on:", currentVar, "\n"))
     data.frame(Input = currentVar,
                GetSingleInputPredComps(model, 
-                            df, 
-                            currentVar, 
-                            c(setdiff(inputVars, currentVar)),
-                            ...))},
+                                       df, 
+                                       currentVar, 
+                                       c(setdiff(inputVars, currentVar)),
+                                       ...))},
     inputVars
   )
   apcDF <- do.call(rbind, apcList)
@@ -34,6 +34,11 @@ GetPredCompsDF <- function(model, df, inputVars = NULL, ...) {
 #' @param apcDF the output of GetApcDF
 #' @export
 PlotPredCompsDF <- function(apcDF, variant="Impact") {
+  xLabel <- switch(variant, 
+                   "Impact"="Avg Change in Output",
+                   "Apc"="Avg Change in Output Per Unit Input",
+                   stop("Unknown Predcomps Variant"))
+  
   apcDF <- apcDF[c("Input", grep(paste0("^",variant,"\\."), names(apcDF), value=TRUE))]
   names(apcDF) <- gsub(paste0("^",variant,"\\."), "", names(apcDF))
   
@@ -45,12 +50,14 @@ PlotPredCompsDF <- function(apcDF, variant="Impact") {
     transform(subset(longAPCs, Type=="Absolute"), Value=-Value)
   )
   longAPCs2 <- longAPCs2[order(factor(longAPCs2$Type, levels=c("Absolute", "Signed"))), ]  
+  
   return(
     ggplot(longAPCs2) +
       geom_point(aes(y = Input, x=Value, color=Type, shape=Type, size=Type)) +
       scale_x_continuous(limits=c(-maxAPC, maxAPC)) +
       scale_size_discrete(range=c(3,4)) +
       ggtitle(variant) +
-      geom_vline(aes(xintercept=0), alpha=.5)
+      geom_vline(aes(xintercept=0), alpha=.5) +
+      xlab(xLabel)
   )
 }
