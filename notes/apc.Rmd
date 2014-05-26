@@ -10,7 +10,7 @@ Our $f$ could come from any predictive model. If we have a statistical model, th
 
 $$f(u,v) = \mathcal{E}[y \mid u, v, \theta]$$
 
-(where $\theta$ are the parameters of the model). But we need not have a statistical model at all. The prediction function $f$ could come from a random forest, or a support vector machine.
+(where $\theta$ are the parameters of the model). But we need not have a statistical model at all. For example, the prediction function $f$ could come from a random forest, or a support vector machine.
 
 Given the function $f$ and a choice of $u_1$, $u_2$, and $v$, we can compute
 
@@ -20,7 +20,7 @@ If $f$ were a linear model with no interactions, the above would not depend on t
 
 ### Choice of Inputs
 
-The APC is
+The APC is defined as
 
 $$\frac{\mathcal{E}[\Delta_f]}{\mathcal{E}[\Delta_u]}$$
 
@@ -29,9 +29,9 @@ where $\Delta_f = f(u_2,v) - f(u_1,v)$, $\Delta_u = u_2 - u_1$, and $\mathcal{E}
 1. sample $v$ from the (marginal) distribution of the corresponding inputs
 2. sample $u_1$ and $u_2$ independently from the distribution of $u$ conditional on $v$
 
-The reason for this definition is that we want to use values of $v$ that are representative of our data generation process, and transitions in $u$ that are representative of what really occurs at those values of $v$.
+The reason for this definition is that we want to use representative values of $v$, and transitions in $u$ that are representative of what really occurs at those values of $v$.
 
-Computing the numerator and denominator separately rather than taking an expected value of $\delta_{u_1 \rightarrow u_2, v}$ amounts to weighting by the size of $(u_2 - u_1)$. This avoids having the result excessively influenced by small changes in $u$.
+The fact that we are computing the numerator and denominator separately (rather than taking an expected value of $\delta_{u_1 \rightarrow u_2, v}$) amounts to weighting by the size of $(u_2 - u_1)$. This avoids having the result excessively influenced by small changes in $u$.
 
 ### Estimation
 
@@ -41,11 +41,11 @@ $$\frac{1}{\text{mahalanobisConstantTerm} + \text{(mahalanobis distance)}}$$
 
 The [*mahalanobis distance*](https://en.wikipedia.org/wiki/Mahalanobis_distance) is a unitless version of distance that takes into account the correlation structure of $v$. The *mahalanobisConstantTerm* (which defaults to 1, but this is not always an appropriate choice) prevents all of the weight from going to the closest points. More work needs to be done in thinking about the weights.
 
-For more details, see [Gelman and Pardoe 2007](http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9531.2007.00181.x/abstract) (section 4), [my note](more-renormalize-weights.html) explaining a small change from the weights described in the paper, or [my code](https://github.com/dchudz/predcomps/blob/master/R/pairs.R) that computes the appropriate weights.
+For more details, see [Gelman and Pardoe 2007](http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9531.2007.00181.x/abstract) (section 4), [my note](more-pairs-and-weights.html) explaining a small change from the weights described in the paper (renormalization) and reasons for considering only a set of the closest $N$ points. You can also look at [my code](https://github.com/dchudz/predcomps/blob/master/R/pairs.R) that computes the appropriate weights.
 
 ### Absolute Version
 
-The absolute APC (as opposed to the signed version described above) replaces $\Delta_f = f(u_2,v) - f(u_1,v)$ above with $|\Delta_f| = |f(u_2,v) - f(u_1,v)|$. See e.g. the input $u_8$ in my [simulated linear model with interactions](examples-simulated-linear-model-interactions.html) for an example where the signed APC is roughly 0 but the absolute APC is large.
+The absolute APC (as opposed to the signed version described above) replaces $\Delta_f = f(u_2,v) - f(u_1,v)$ above with $|\Delta_f| = |f(u_2,v) - f(u_1,v)|$. For an extreme artificial example see e.g. the input $u_8$ in my [simulated linear model with interactions](examples-simulated-linear-model-interactions.html), where the signed APC is roughly 0 but the absolute APC is large.
 
 By default, I always compute and display an absolute version of the APC alongside the signed version. 
 
@@ -85,10 +85,10 @@ PlotPredCompsDF(apcDF, variant="Apc") + theme_gray(base_size = 18)
 
 Using different shapes / colors, both the absolute and signed versions are plotted. For symmetry, the absolute version is plotted with both a positive and negative sign. Since this is a linear model with no interactions, the signed APCs match those from the fitted linear model. 
 
-This is what the returned data frame `apcDF` looks like:
+The call to `GetPredCompsDF` returns this data frame:
 
 ```{r}
 apcDF
 ```
 
-The columns plotted here are `Apc.Signed` and `Apc.Absolute`. The [next section](impact.html) is about those columns labeled "Impact".
+The columns plotted here are `Apc.Signed` and `Apc.Absolute`. The [next section](impact.html) desceibes those columns labeled "Impact".

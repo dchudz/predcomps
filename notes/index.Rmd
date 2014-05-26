@@ -1,8 +1,10 @@
 ## An R Package for Understanding Arbitrary Complex Models
 
-As complex models become widely used, it's more important than ever to have ways of understanding them. Whether a model is built primarily for prediction or primarily for understanding, we need to know what it's telling us. It's (relatively) clear how to interpret the coefficients of a linear regression, at least when there are few inputs and no interaction terms. 
+As complex models become widely used, it's more important than ever to have ways of understanding them. Even when a model is built primarily for prediction (rather than primarily as an aid to understanding), we still need to know what it's telling us. If we were using linear regression with no interactions, it would be (relatively) clear how to interpret the coefficients. For more complicated models, things get difficult.
 
 This R package is a collection of tools that are meant to generalize the idea of these coefficients to arbitrary predictive models: Holding all else equal, how does the output vary with the input of interest? The tools here apply to any model that lets you map inputs to outputs, whether it's a linear model, a GLM (with any link function), a neural network, a random forest, etc.
+
+One advantage of the fact that these tools work equally well for any model is that they can be used to **compare models**.
 
 ### Inspiration
 
@@ -17,14 +19,19 @@ library(devtools) # first install devtools if you haven't
 install_github("predcomps", user="dchudz")
 ```
 
-### Quick Start
+### Example Output
 
-If you want to get started quickly before reading about the functions in more detail, here's an example:
+Here's an example of the output I'm calling [impact](impact.html) (which gets at a idea similar to 'variable importance' in other packages) from [an example predicting loan defaults](examples-loan-defaults.html). The model is a random forest. Note that unlike the *average predictive comparison* described in the paper, this *impact* measure is **not** per unit change in input. The units are probabilities, and hence it always makes sense to show it for all of the inputs on the same scale:
 
-.
-.
-.
+![LoanDefaultImpact](/figure/LoanDefaultImpact.png)
 
+The signed version should be interpreted as the expected value of the change in default probability for a random change in input. The absolute version is the expected absolute value, and is shown on both the positive and negative sides of horizontal axes. The signed version will always be between the two points representing the absolute version. When the signed version is close to the absolute version, the impact of a change the corresponding variable more consistently has the same sign. 
+
+We can also look in more detail at an individual input, examining the default probability as we vary that input (holding all else equal at a few example values):
+
+![NumTimes30To59DaysLateDefaultCurves](/figure/NumTimes30To59DaysLateDefaultCurves.png)
+
+Notice that for one particular choice of other input values, transitioning from 0 to 1 previous time 30-59 days late leads to a *decrease* in predicted default probability. The [the example](examples-loan-defaults.html) for some thoughts on why this might be.
 
 ### Current Limitations
 
@@ -32,11 +39,8 @@ The package has some major limitations in its current form, but we have to start
 
 **Input types**: At the time of this writing, all inputs to the model must be numerical (or coercable to such). In practice this means that binary or ordered categorical inputs are okay, but unordered categorical inputs are not.
 
-**Computational efficiency**: At the moment, the package's implementation is not particularly efficient. You should probably not ask it to handle more than 200-500 observations. (Note however that your model may be trained on any number of observations.) 
-
-**Weight function**: The weight function used to estimate conditional distributions doesn't get much attention in the paper, and I haven't given it much more here (yet).
-
+**Parameters controlling the weights between pairs**: These parameters are important for reasons that are both computational and statistical, and are not yet automatically tuned for you.
 
 ## Contact
 
-I'm very interested in feedback from folks who are trying this out. Please get in touch with me at dchudz@gmail.com.}
+I'm very interested in feedback from folks who are trying this out. Please get in touch with me at dchudz@gmail.com.

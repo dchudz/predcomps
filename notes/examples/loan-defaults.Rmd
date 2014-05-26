@@ -108,7 +108,7 @@ kable(apcDF, row.names=FALSE)
 
 Since the [impact](impact.html) values all have the same units, it makes sense to chart them on the same axes:
 
-```{r}
+```{r LoanDefaultImpact}
 PlotPredCompsDF(apcDF)
 ```
 
@@ -136,7 +136,7 @@ Recall that the data from which the summarized predictive comparisons are comput
 
 I'll plot the predicted default probability vs. `NumberOfTime30.59DaysPastDueNotWorse`, holding the other inputs constant. Each line corresponds to one choice of values for the other inputs:
 
-```{r}
+```{r NumTimes30To59DaysLateDefaultCurves}
 set.seed(6)
 pairs <- GetComparisonDF(rfFit, credit, 
                          u="NumberOfTime30.59DaysPastDueNotWorse",
@@ -172,7 +172,7 @@ ggplot(pairsSummarized, aes(x=NumberOfTime30.59DaysPastDueNotWorse.B, y=yHat2, c
   guides(color = FALSE)
 ```
 
-Why does the default probability decrease when `NumberOfTime30.59DaysPastDueNotWorse` increases? Values for all the other inputs are held constant, so let's see what they are:
+Why does the default probability decrease (for this one choice of other input values) when `NumberOfTime30.59DaysPastDueNotWorse` increases? Values for all the other inputs are held constant, so let's see what they are:
 
 ```{r echo=FALSE}
 oneOriginalRowNumber <- subset(pairs, OriginalRowNumber == 18)

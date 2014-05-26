@@ -2,14 +2,14 @@
 
 ### Simulated Examples
 
-The simulated examples are constructed to demonstrate a property of predictive comparisons.  Simulated examples are nice because (since we set up the data-generating process and we really know what's going on) it's easier to know of the predictive comparisons are telling us what they should be. 
+The simulated examples are constructed to demonstrate properties of predictive comparisons in artificial simulations that we can perfectly understand (because we created them).
 
-- [Logistic regression for wine prices](examples-wine-logistic-regression.html): This is a logistic regression model run in two different simulated data situations. Changing the relationship between the inputs (and nothing else) leads to differences in the predictive comparisons (both APC and impact).
+- [Logistic regression for wine prices](examples-wine-logistic-regression.html): This is a logistic regression model run in different simulated data situations. Changing the relationship between the inputs (and nothing else) leads to differences in the predictive comparisons (both APC and impact), despite the logistic regression model remaining the same.
 
-- [Linear model with interactions](examples-simulated-linear-model-interactions.html): This is a linear model with 9 features and 8 interaction terms (an interaction between $v$ and each of $u_1 \ldots u_8$) which are all the same. The way the $u_i$'s are related to $v$ in the distribution of the inputs gives rise to differences in the APC.
+- [Linear model with interactions](examples-simulated-linear-model-interactions.html): This is a linear model with 9 features and 8 interaction terms (an interaction between $v$ and each of $u_1 \ldots u_8$) which are all the same. The way the $u_i$'s are related to $v$ in the distribution of the inputs gives rise to differences in the APC, despite each $u_i$ playing the same role in the model.
 
 ### Real Examples
 
 Simulated examples are good for gaining understanding of how the package works and what it's doing, but they don't help us understand how it is useful in the real world. These are examples with real-world data sets:
 
-- [Diamond prices](examples-diamonds.html): In this example, applying predictive comparisons to a random forest helps understand the influence of carat, cut, color, and clarity on prices.
+- [Loan Default Model](examples-loan-defaults.html): In this example, applying predictive comparisons to a random forest helps understand the drivers of a credit risk model.

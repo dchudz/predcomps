@@ -6,8 +6,6 @@
 
 First off, I don't love the name "Impact" for this. "Variable importance" may signal somewhat the right idea to people already familiar with other measures of variable importance, but this notion is (or can be) signed, whereas variable importance generally isn't.
 
-Also, I believe that this metric may turn out to be more commonly useful in my work than APCs, in which case perhaps the name of the package and metric should be chosen to emphasize this.
-
 ### Impact
 
 *Impact* is a statistic similar to the APC, but which addresses two issues I've had with APCs:
