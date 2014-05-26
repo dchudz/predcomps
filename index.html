@@ -4,9 +4,11 @@ layout: page
 
 <h2>An R Package for Understanding Arbitrary Complex Models</h2>
 
-<p>As complex models become widely used, it&#39;s more important than ever to have ways of understanding them. Whether a model is built primarily for prediction or primarily for understanding, we need to know what it&#39;s telling us. It&#39;s (relatively) clear how to interpret the coefficients of a linear regression, at least when there are few inputs and no interaction terms. </p>
+<p>As complex models become widely used, it&#39;s more important than ever to have ways of understanding them. Even when a model is built primarily for prediction (rather than primarily as an aid to understanding), we still need to know what it&#39;s telling us. If we were using linear regression with no interactions, it would be (relatively) clear how to interpret the coefficients. For more complicated models, things get difficult.</p>
 
 <p>This R package is a collection of tools that are meant to generalize the idea of these coefficients to arbitrary predictive models: Holding all else equal, how does the output vary with the input of interest? The tools here apply to any model that lets you map inputs to outputs, whether it&#39;s a linear model, a GLM (with any link function), a neural network, a random forest, etc.</p>
+
+<p>One advantage of the fact that these tools work equally well for any model is that they can be used to <strong>compare models</strong>.</p>
 
 <h3>Inspiration</h3>
 
@@ -20,13 +22,19 @@ layout: page
 install_github(&quot;predcomps&quot;, user = &quot;dchudz&quot;)
 </code></pre>
 
-<h3>Quick Start</h3>
+<h3>Example Output</h3>
 
-<p>If you want to get started quickly before reading about the functions in more detail, here&#39;s an example:</p>
+<p>Here&#39;s an example of the output I&#39;m calling <a href="impact.html">impact</a> (which gets at a idea similar to &#39;variable importance&#39; in other packages) from <a href="examples-loan-defaults.html">an example predicting loan defaults</a>. The model is a random forest. Note that unlike the <em>average predictive comparison</em> described in the paper, this <em>impact</em> measure is <strong>not</strong> per unit change in input. The units are probabilities, and hence it always makes sense to show it for all of the inputs on the same scale:</p>
 
-<p>.
-.
-.</p>
+<p><img src="/figure/LoanDefaultImpact.png" alt="LoanDefaultImpact"/></p>
+
+<p>The signed version should be interpreted as the expected value of the change in default probability for a random change in input. The absolute version is the expected absolute value, and is shown on both the positive and negative sides of horizontal axes. The signed version will always be between the two points representing the absolute version. When the signed version is close to the absolute version, the impact of a change the corresponding variable more consistently has the same sign. </p>
+
+<p>We can also look in more detail at an individual input, examining the default probability as we vary that input (holding all else equal at a few example values):</p>
+
+<p><img src="/figure/NumTimes30To59DaysLateDefaultCurves.png" alt="NumTimes30To59DaysLateDefaultCurves"/></p>
+
+<p>Notice that for one particular choice of other input values, transitioning from 0 to 1 previous time 30-59 days late leads to a <em>decrease</em> in predicted default probability. The <a href="examples-loan-defaults.html">the example</a> for some thoughts on why this might be.</p>
 
 <h3>Current Limitations</h3>
 
@@ -34,11 +42,9 @@ install_github(&quot;predcomps&quot;, user = &quot;dchudz&quot;)
 
 <p><strong>Input types</strong>: At the time of this writing, all inputs to the model must be numerical (or coercable to such). In practice this means that binary or ordered categorical inputs are okay, but unordered categorical inputs are not.</p>
 
-<p><strong>Computational efficiency</strong>: At the moment, the package&#39;s implementation is not particularly efficient. You should probably not ask it to handle more than 200-500 observations. (Note however that your model may be trained on any number of observations.) </p>
-
-<p><strong>Weight function</strong>: The weight function used to estimate conditional distributions doesn&#39;t get much attention in the paper, and I haven&#39;t given it much more here (yet).</p>
+<p><strong>Parameters controlling the weights between pairs</strong>: These parameters are important for reasons that are both computational and statistical, and are not yet automatically tuned for you.</p>
 
 <h2>Contact</h2>
 
-<p>I&#39;m very interested in feedback from folks who are trying this out. Please get in touch with me at <a href="mailto:dchudz@gmail.com">dchudz@gmail.com</a>.}</p>
+<p>I&#39;m very interested in feedback from folks who are trying this out. Please get in touch with me at <a href="mailto:dchudz@gmail.com">dchudz@gmail.com</a>.</p>
 

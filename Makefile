@@ -1,6 +1,6 @@
 all: root examples more
 
-root: index.html apc.html impact.html transition-plots.html
+root: index.html apc.html impact.html
 
 examples: examples-diamonds.html examples-simulated-linear-model-interactions.html  \
 	examples-wine-logistic-regression.html examples-overview.html examples-loan-defaults.html
@@ -18,10 +18,6 @@ apc.html: ../predcomps/notes/apc.Rmd
 
 impact.html: ../predcomps/notes/impact.Rmd
 	Rscript -e "library(knitr); knit2html('../predcomps/notes/impact.Rmd', template='../predcomps/notes/template', output='impact.html')"
-
-transition-plots.html: ../predcomps/notes/transition-plots.Rmd
-	Rscript -e "library(knitr); knit2html('../predcomps/notes/transition-plots.Rmd', template='../predcomps/notes/template', output='transition-plots.html')"
-
 
 ### Examples
 ###
