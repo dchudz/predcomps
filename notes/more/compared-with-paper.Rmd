@@ -28,6 +28,6 @@ To visualize the model in more detail than is provided by our aggregated predict
 
 This plot shows age vs. probability of default, as in [the loan defaults example](examples-loan-defaults.html):
 
-![AgeDefaultCurves](/figure/AgeDefaultCurves.png)
+![AgeDefaultCurves](figure/AgeDefaultCurves.png)
 
 Plots like this are not yet computed in the package, but see [the example](examples-loan-defaults.html) for how to construct them.

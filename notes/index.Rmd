@@ -23,13 +23,13 @@ install_github("predcomps", user="dchudz")
 
 Here's an example of the output I'm calling [impact](impact.html) (which gets at a idea similar to 'variable importance' in other packages) from [an example predicting loan defaults](examples-loan-defaults.html). The model is a random forest. Note that unlike the *average predictive comparison* described in the paper, this *impact* measure is **not** per unit change in input. The units are probabilities, and hence it always makes sense to show it for all of the inputs on the same scale:
 
-![LoanDefaultImpact](/figure/LoanDefaultImpact.png)
+![LoanDefaultImpact](figure/LoanDefaultImpact.png)
 
 The signed version should be interpreted as the expected value of the change in default probability for a random change in input. The absolute version is the expected absolute value, and is shown on both the positive and negative sides of horizontal axes. The signed version will always be between the two points representing the absolute version. When the signed version is close to the absolute version, the impact of a change the corresponding variable more consistently has the same sign. 
 
 We can also look in more detail at an individual input, examining the default probability as we vary that input (holding all else equal at a few example values):
 
-![NumTimes30To59DaysLateDefaultCurves](/figure/NumTimes30To59DaysLateDefaultCurves.png)
+![NumTimes30To59DaysLateDefaultCurves](figure/NumTimes30To59DaysLateDefaultCurves.png)
 
 Notice that for one particular choice of other input values, transitioning from 0 to 1 previous time 30-59 days late leads to a *decrease* in predicted default probability. The [the example](examples-loan-defaults.html) for some thoughts on why this might be.
 
