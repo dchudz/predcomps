@@ -225,3 +225,22 @@ As expected, the APCs are (both) larger than in *Variation 1*:
 ```{r}
 apc3[c("Input", "Apc.Signed")]
 ```
+
+### Comparing the Variations
+
+Comparing all of the variation in one plot, we can see the increase in the effect of wine quality on purchase probability going from Variation 1 to Variation 3:
+
+```{r echo=FALSE}
+apc1$Variation <- 1
+apc2$Variation <- 2
+apc3$Variation <- 3
+
+apcAllVariations <- do.call(rbind, list(apc1, apc2, apc3))
+ggplot(subset(apcAllVariations, Input=="Quality")) +
+  geom_point(aes(x=factor(Variation), y=Apc.Signed), size=3) + 
+  expand_limits(y=0) +
+  xlab("Variation") + 
+  ggtitle("APC for Quality across Variations")
+
+```
+

@@ -1,4 +1,4 @@
-# APCs in a Synthetic Example of a Linear Model with Interactions
+## APCs in a Synthetic Example of a Linear Model with Interactions
 
 ```{r message=FALSE, echo=FALSE}
 library(knitr)
@@ -12,7 +12,7 @@ library(reshape2)
 library(plyr)
 ```
 
-## Input Generation
+### Input Generation
 
 This example will have 9 inputs: $v$ and $u_1$, $u_2$, ..., $u_8$. The input $v$ is uniformly distributed between 7 values, $-3, -2, \ldots, 2, 3$. Each $u$ is mostly constant (at $0$) but at one value of $v$ (which is $v=-3$ for $u_1$, $v=-2$ for $u_2$, etc), $u$ can be either $0$ and $10$. The input $u_8$ can transition at two values of $v$: At either $v=-3$ or $v=3$, $u_8$ can be $0$ or $10$; otherwise, $u_8$ is 0. I'll construct the data and plot the relationship between the $u$'s and $v$. 
 
@@ -49,7 +49,7 @@ ggplot(melt(df, id="v")) +
   opts(axis.text.y = theme_blank(), axis.ticks.y = theme_blank())
 ```
 
-## Outcome Generation
+### Outcome Generation
 
 Each $u$ will have the same role in the model, which is $$\mathbb{E}[y] = vu_1 + vu_2 + vu_3 + vu_4 + vu_5 + vu_6 + vu_7 + vu_8.$$ 
 
@@ -66,7 +66,7 @@ outcomeGenerationFunction <- function(df) {
 df$y <- outcomeGenerationFunction(df)
 ```
 
-## Computing and Plotting the APC
+### Computing and Plotting the APC
 
 I will compute both the signed and absolute APC. My absolute APCs are different from anything discussed in the paper, but the idea is simple: Everywhere we would use a predictive difference, we use its absolute value instead. I believe that whenever we display the signed APC, we should display the absolute APC alongside it. Transitions for a given input may have a large expected absolute impact on the output variable, but with signs that cancel out. If that's happening in your model, it would be important to know.
 
