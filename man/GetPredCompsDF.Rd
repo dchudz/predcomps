@@ -2,7 +2,7 @@
 \alias{GetPredCompsDF}
 \title{GetApcDF}
 \usage{
-GetPredCompsDF(model, df, numRowsToUse = NULL, inputVars = NULL, ...)
+GetPredCompsDF(model, df, inputVars = NULL, ...)
 }
 \arguments{
   \item{model}{Either a function (from a data frame to

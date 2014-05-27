@@ -1,3 +1,6 @@
+library(testthat)
+library(predcomps)
+
 test_that("APC matches coefficient exactly for linear model", {
   
   df <- data.frame(X = rep(c(1,2),2),

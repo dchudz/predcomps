@@ -1,3 +1,6 @@
+library(testthat)
+library(predcomps)
+
 MakeComparable <- function(df) {
   df <- round(df, digits = 5)
   return(df[do.call(order, df), ])
