@@ -14,8 +14,13 @@ The [documentation](http://www.davidchudzicki.com/predcomps/) is hosted on Githu
 
 ## Next steps for me:
 
-- add example in quickstart section to index
-- document every function other people would use
 - blog post for Kaggle blog
 - presentation (for event hosted at Kaggle, or for another meetup)
 - send some e-mails
+
+### A page on alternatives
+
+I should add a page discussing other methods people have used to get at somewhat the same idea.
+
+- `randomForest` package in R (partial plots, variable importance)
+- `earth` package in R (variable importance)
