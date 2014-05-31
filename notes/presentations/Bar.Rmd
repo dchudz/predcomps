@@ -1,0 +1,18 @@
+```{r echo=FALSE, message=FALSE}
+load(file="../examples/wine-logistic-regression.RData")
+library(ggplot2)
+library(knitr)
+opts_chunk$set(fig.cap="", echo=FALSE)
+```
+
+## Hi
+
+First slide
+
+## Hmm
+ 
+```{r}
+qplot(Price, Quality, alpha=I(.5), data = df1Sample) + 
+  expand_limits(y=c(0,100))
+```
+

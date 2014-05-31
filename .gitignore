@@ -3,3 +3,4 @@
 main.R
 *figure/
 ..Rcheck
+*.RData

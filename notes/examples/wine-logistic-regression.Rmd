@@ -50,11 +50,12 @@ df1 <- local({
              PurchaseProbability = purchaseProbability, 
              Purchased = purchased)
   })
+print(getwd())
 ```
 
 A scatter plot (using a random subset to avoid overplotting) shows us the relationship between price and quality:
 
-```{r}
+```{r V1Scatter}
 df1Sample <- df1[sample.int(nWines, size=nRowsForPlottingSample), ]
 qplot(Price, Quality, alpha=I(.5), data = df1Sample) + 
   expand_limits(y=c(0,100))
@@ -70,7 +71,7 @@ logitFit1
 
 This plot shows the relationship between quality and probability of purchase for a few prices:
 
-```{r}
+```{r V1QualityVsProb}
 myScales <- list(scale_x_continuous(limits=c(0,100)),
                  scale_y_continuous(limits=c(0,1)))
 
@@ -85,7 +86,7 @@ Each colored set of points is one portion of a shifted inverse logistic curve, d
 
 We can also see the portion of the curve that isn't represented in our data:
 
-```{r echo=FALSE}
+```{r V1QualityVsProbWithLines, echo=FALSE}
 linesDF <- expand.grid(Price = seq(20, 120, by=10), Quality = 0:100)
 linesDF$PurchaseProbability <- with(linesDF,
                                     inv.logit(priceCoef*(Price - 70) + qualityCoef*(Quality - 50)))
@@ -244,3 +245,6 @@ ggplot(subset(apcAllVariations, Input=="Quality")) +
 
 ```
 
+```{r echo=FALSE}
+save.image(file="wine-logistic-regression.RData")
+```
