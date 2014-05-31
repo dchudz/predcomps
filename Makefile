@@ -9,7 +9,7 @@ more: more-compared-with-paper.html more-future-work.html more-pairs-and-weights
 
 ### Presentations
 ###
-bar.html: ../predcomps/notes/presentations/Bar.Rmd
+bar.html: ../predcomps/notes/presentations/Bar.Rmd examples-wine-logistic-regression.html
 	Rscript -e " \
 	library(knitr); \
 	knit('../predcomps/notes/presentations/Bar.Rmd', output='markdown/Bar.md'); \
