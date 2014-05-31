@@ -1,15 +1,16 @@
-#' GetComparisonDF
+#' GetSingleInputPredComps
 #' 
-#' makes average predictive comparison (based on Gelman/Pardoe) by forming pairs with two versions of the input of interest and averaging the predictive difference using Weights. I think Weights should be an approximation of the density p(u1,u2|v) or something like that... I need to look back at this. At present, I believe this is probably implementing the version in the Gelman/Pardoe paper.
-#' returns a list with the Apc and the Apc applied to the absolute value of the prediction function
+#' makes predictive comparison summaries (APC and impact, absolute and signed) by forming an data frame of pairs with appropriate weights and then calling `ComputeApcFromPairs`. 
 #' Only works fore continuous inputs right now
 #' 
-#' @param predictionFunction
-#' @param X 
-#' @param u input of interest
-#' @param v other inputs
-#' @param k Weights are (1 / (k + Mahalanobis distance))
+#' @param predictionFunction this could be a function (which takes data frame and makes returns a vector of predictions) or an object of class `lm`, `glm`, or `randomForest`
+#' @param X a data frame with all inputs
+#' @param u a string naming the input of interest
+#' @param v a string naming the other inputs
+#' @param ... other arguments to be passed to `GetPairs`
 #' @return a list with: \code{signed} (the usual Apc) and \code{absolute} (Apc applied to the absolute value of the differences)
+#' @example
+#' 
 #' @export
 GetSingleInputPredComps <- function(predictionFunction, X, u, v, ...) {
   pairs <- GetPairs(X, u, v, ...)
