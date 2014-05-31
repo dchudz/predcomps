@@ -1,4 +1,4 @@
-all: root examples more
+all: root examples more bar.html
 
 root: index.html apc.html impact.html
 
@@ -6,6 +6,16 @@ examples: examples-diamonds.html examples-simulated-linear-model-interactions.ht
 	examples-wine-logistic-regression.html examples-overview.html examples-loan-defaults.html
 
 more: more-compared-with-paper.html more-future-work.html more-pairs-and-weights.html
+
+### Presentations
+###
+bar.html: ../predcomps/notes/presentations/Bar.Rmd
+	Rscript -e " \
+	library(knitr); \
+	knit('../predcomps/notes/presentations/Bar.Rmd', output='markdown/Bar.md'); \
+	system(paste('pandoc -s -S -t slidy --mathjax', 'markdown/Bar.md', '-o', 'presentation-bar.html'))"
+
+
 
 ### Root
 ###
