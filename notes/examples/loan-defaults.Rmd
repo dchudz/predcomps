@@ -196,17 +196,17 @@ For one more example, let's examine the `Age` input in more detail.
 
 ```{r AgeDefaultCurves}
 set.seed(3)
-pairs <- GetComparisonDF(rfFit, credit, 
+pairsAge <- GetComparisonDF(rfFit, credit, 
                          u="age",
                          numForTransitionStart = 20,
                          numForTransitionEnd = numForTransitionEnd*10,
                          onlyIncludeNearestN = onlyIncludeNearestN*10)
 
-pairsSummarized <- pairs[c("OriginalRowNumber", "age.B", "yHat2", "Weight")] %.% 
+pairsSummarizedAge <- pairsAge[c("OriginalRowNumber", "age.B", "yHat2", "Weight")] %.% 
   group_by(OriginalRowNumber, age.B, yHat2) %.% 
   summarise(Weight = sum(Weight))
 
-ggplot(pairsSummarized, aes(x=age.B, y=yHat2, color=factor(OriginalRowNumber))) + 
+ggplot(pairsSummarizedAge, aes(x=age.B, y=yHat2, color=factor(OriginalRowNumber))) + 
   geom_point(aes(size = Weight)) +
   geom_line(size=.2) +
   xlab("age") +
@@ -217,3 +217,7 @@ ggplot(pairsSummarized, aes(x=age.B, y=yHat2, color=factor(OriginalRowNumber))) 
 This is a bit of a mess, but we can at least see see that both interaction effects and non-monotonicity are present.
 
 Further exploration would look into which other inputs age is interacting with to determine these differently shaped curves.
+
+```{r echo=FALSE}
+save.image(file="loan-defaults.RData")
+```

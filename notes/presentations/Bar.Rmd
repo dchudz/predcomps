@@ -1,18 +1,376 @@
 ```{r echo=FALSE, message=FALSE}
 load(file="../examples/wine-logistic-regression.RData")
 library(ggplot2)
+theme_set(theme_gray(base_size = 18))
+library(gridExtra)
 library(knitr)
-opts_chunk$set(fig.cap="", echo=FALSE)
+library(predcomps)
+opts_chunk$set(fig.cap="", echo=FALSE, 
+               fig.width=2*opts_chunk$get("fig.width"),
+               fig.height=.9*opts_chunk$get("fig.height")
+               )
 ```
 
-## Hi
+## Title
 
-First slide
+## Related concepts
 
-## Hmm
- 
+- sensitivity analysis
+- elasticity
+- variable importance
+- partial dependence
+- etc.
+
+## Distinguishing features here:
+
+- treats model as a black box
+- **tries to properly account for relationships among the inputs of interest**
+
+## Plan
+
+1. Motivating fake example
+2. Predictive comparisons definitions: what we want 
+4. Applying average predictive comparisons to (1)
+5. An example with real data: credit scoring
+3. (Optional) Estimation & Computation: how to get what we want
+6. (Optional) Comparison with other approaches
+7. Discussion!
+
+## Silly Example
+
+- We sell wine
+- Wine varies in: price, quality
+- Customers randomly do/don't buy, depending on price and quality
+
+## Logistic Regression
+
+- $P$: price ($)
+- $Q$: quality (score on arbitrary scale)
+- **Model**: $P(\text{wine is purchased}) = logit^{-1}(\beta_0 + \beta_1 Q + \beta_2 P)$
+
+```{r echo=FALSE}
+library(boot)
+s <- seq(-4,4,by=.01)
+qplot(s, 1/(1+exp(-s)), geom="line") + ggtitle("Inverse Logit Curve")
+```
+
+**True model**: $P(\text{wine is purchased}) = logit^{-1}(0.1 Q - 0.12 P)$
+
+## Distribution of Inputs (variation 1):
+
+Price and quality are (noisily) related:
+
 ```{r}
+myScales <- list(scale_x_continuous(limits=c(-15,125)),
+                 scale_y_continuous(limits=c(0,1)))
+qualityScale <- ylim(c(-20,130))
 qplot(Price, Quality, alpha=I(.5), data = df1Sample) + 
-  expand_limits(y=c(0,100))
+  qualityScale
 ```
 
+## We don't really need a model to understand this...
+
+(for clarity, showing only a discrete subset of prices)
+
+```{r}
+v1Plot <- ggplot(subset(df1Sample, Price %in% seq(20, 120, by=10))) + 
+  geom_point(aes(x = Quality, y = PurchaseProbability, color = factor(Price)), 
+             size = 3, alpha = 1) + 
+  ggtitle("Quality vs. Purchase Probability at Various Prices") +
+  myScales +
+  scale_color_discrete("Price")
+v1Plot
+```
+
+## We don't really need a model to understand this...
+
+For each individual price, quality vs. purchase probability forms a portion of a shifted inverse logit curve:
+
+```{r warning=FALSE}
+last_plot() + geom_line(aes(x = Quality, y = PurchaseProbability, color = factor(Price)), 
+                        data = linesDF,
+                        size=.2)
+```
+
+- how changes in price/quality affect $P(\text{wine is purchased})$ depends a lot on where you are in input space
+- changes in $logit(P(\text{wine is purchased}))$ don't depend on where you are in input space
+- but you probability care more about probabilities than logits of probabilities
+
+## Variation 2
+
+In another possible world, mid-range wines are more common:
+
+```{r}
+qplot(Price, Quality, alpha=I(.5), data = df2Sample) + 
+  qualityScale
+```
+
+- input distribution is changed
+- ... but model is not changed
+
+## Now examples in the range where quality matters are more common
+
+```{r}
+v2Plot <- ggplot(subset(df2Sample, Price %in% seq(20, 120, by=10))) + 
+  geom_point(aes(x = Quality, y = PurchaseProbability, color = factor(Price)), 
+             size = 3, alpha = 1) + 
+  ggtitle("Quality vs. Purchase Probability at Various Prices") +
+  myScales +
+  scale_color_discrete("Price")
+v2Plot
+```
+
+## Variation 3
+
+In a third possible world, price varies more strongly with quality:
+
+```{r}
+qplot(Price, Quality, alpha=I(.5), data = df3Sample) + 
+  qualityScale
+```
+
+Again:
+
+- input distribution is changed
+- ... but model is not changed, still $P(\text{wine is purchased}) = logit^{-1}(\beta_0 + \beta_1 Q + \beta_2 P)$
+
+## Now quality matters more
+
+... across all price ranges
+
+```{r}
+v3Plot <- ggplot(subset(df3Sample, Price %in% seq(20, 120, by=10))) + 
+  geom_point(aes(x = Quality, y = PurchaseProbability, color = factor(Price)), 
+             size = 3, alpha = 1) + 
+  ggtitle("Quality vs. Purchase Probability at Various Prices") +
+  myScales +
+  scale_color_discrete("Price")
+v3Plot
+```
+
+## Now quality matters more
+
+... across all price ranges (for the kinds of variation **that we see in the data**)
+
+```{r warning=FALSE}
+last_plot() + geom_line(aes(x = Quality, y = PurchaseProbability, color = factor(Price)), 
+                        data = linesDF,
+                        size=.2)
+```
+
+## Lessons from this example
+
+1. We want to interpret things on the scale we care about (probability in this case)
+2. Relationships among the inputs matter
+
+## Goal is single-number summaries
+
+These concepts are vague, but keep them in mind as we try to formalize things in the next few slides:
+
+- **For each input, what is the average change in output per unit change in input?**
+(generalizes linear regression, units depend on units for input)
+
+- **How important is each input in influencing the output?**
+(units should be consistent across inputs -- think of standardized regression coefficients)
+
+## Some notation
+
+**$u$**: the variable under consideration
+
+**$v$**: the vector of other variables (the "all else held equal")
+
+**$f(u,v)$**: a function that makes predictions, e.g. maybe $f(u,v) = \mathcal{E}[y \mid u, v, \theta]$
+
+* We consider transitions in $u$ holding $v$ constant, e.g. $$\frac{f(u_2, v) - f(u_1, v)}{u_2-u_1}$$
+* To get one-point summaries we'll take an average
+* All of the subtlety lies in the choice of $v$, $u_1$, $u_2$
+
+
+## What average do we take?
+
+The APC is defined as
+
+$$\frac{\mathcal{E}[\Delta_f]}{\mathcal{E}[\Delta_u]}$$
+
+where
+
+* $\Delta_f = f(u_2,v) - f(u_1,v)$
+* $\Delta_u = u_2 - u_1$
+* $\mathcal{E}$ is expectation under the following process:
+
+1. sample $v$ from the (marginal) distribution of the corresponding inputs
+2. sample $u_1$ and $u_2$ independently from the distribution of $u$ conditional on $v$
+
+
+## Variations
+
+- "Impact" (my idea, my privisonal term) is just the expected value of $\Delta_f = f(u_2,v) - f(u_1,v)$
+- Absolute versions use $\mathcal{E}[|\Delta_f|]$ and $\mathcal{E}[|\Delta_u|]$
+
+## Computation
+
+- Once we've said what we want, computing/estimating it isn't trivial
+- More on this (depending on time/interest)
+
+## Returning to the wines...
+
+```{r fig.height=4}
+apcComparisonPlot <- ggplot(subset(apcAllVariations, Input=="Quality")) +
+  geom_bar(aes(x=factor(Variation, levels=3:1), y=Apc.Signed), stat="identity", width=.5) + 
+  expand_limits(y=0) +
+  xlab("Variation") + 
+  ggtitle("APC for Quality across Variations") +
+  coord_flip()
+apcComparisonPlot
+grid.arrange(v1Plot + ggtitle("V1"), v2Plot + ggtitle("V2"), v3Plot + ggtitle("V3"), nrow=1)
+```
+
+Exercise for the reader: Make an example where APC is larger than in Variation 1 but "Impact" is much smaller.
+
+## Credit Scoring Example
+
+```{r}
+load(file="../examples/loan-defaults.RData")
+```
+
+- **SeriousDlqin2yrs** (target variable):  Person experienced 90 days past due delinquency or worse 
+- **RevolvingUtilizationOfUnsecuredLines**:  Total balance on credit cards and personal lines of credit except real estate and no installment debt like car loans divided by the sum of credit limits
+- **age**:	Age of borrower in years
+- **NumberOfTime30-59DaysPastDueNotWorse**:	Number of times borrower has been 30-59 days past due but no worse in the last 2 years.
+- **NumberOfTime60-89DaysPastDueNotWorse**:	Number of times borrower has been 60-89 days past due but no worse in the last 2 years.
+- **NumberOfTimes90DaysLate**:	Number of times borrower has been 90 days or more past due.
+- **DebtRatio**:	Monthly debt payments, alimony,living costs divided by monthy gross income
+- **MonthlyIncome**:	Monthly income
+- **NumberOfOpenCreditLinesAndLoans**:	Number of Open loans (installment like car loan or mortgage) and Lines of credit (e.g. credit cards)
+- **NumberRealEstateLoansOrLines**:	Number of mortgage and real estate loans including home equity lines of credit
+- **NumberOfDependents**:	Number of dependents in family excluding themselves (spouse, children etc.)
+
+
+## Input Distribution
+
+```{r fig.height = 12, echo=FALSE}
+allHistograms
+```
+
+## Model Building
+
+We'll use a random forest for this example:
+
+```{r eval=FALSE, echo=TRUE}
+set.seed(1)
+# Turning the response to type "factor" causes the RF to be build for classification:
+credit$SeriousDlqin2yrs <- factor(credit$SeriousDlqin2yrs) 
+rfFit <- randomForest(SeriousDlqin2yrs ~ ., data=credit, ntree=ntree)
+```
+
+## Aggregate Predictive Comparisons
+
+```{r eval=FALSE, echo=TRUE}
+set.seed(1)
+apcDF <- GetPredCompsDF(rfFit, credit,
+                        numForTransitionStart = numForTransitionStart,
+                        numForTransitionEnd = numForTransitionEnd,
+                        onlyIncludeNearestN = onlyIncludeNearestN)
+```
+
+```{r}
+kable(apcDF, row.names=FALSE)
+```
+
+## Impact Plot
+
+```{r LoanDefaultImpact}
+PlotPredCompsDF(apcDF)
+```
+
+## Sensitivity: Age
+
+
+
+## Sensitivity: Number of Time 30-35 Days Past Due
+
+Mostly we see the increasing probability that we'd expect...
+
+```{r, warning=FALSE}
+ggplot(pairsSummarized, aes(x=NumberOfTime30.59DaysPastDueNotWorse.B, y=yHat2, color=factor(OriginalRowNumber))) + 
+  geom_point(aes(size = Weight)) +
+  geom_line(size=.2) +
+  scale_x_continuous(limits=c(0,2)) +
+  scale_size_area() + 
+  xlab("NumberOfTime30.59DaysPastDueNotWorse") +
+  ylab("Prediction") + 
+  guides(color = FALSE)
+```
+
+## Sensitivity: Number of Time 30-35 Days Past Due
+
+... but in one case, probability of default *decreases* with the 0-to-1 transition
+
+```{r echo=FALSE, warning=FALSE}
+ggplot(pairsSummarized, aes(x=NumberOfTime30.59DaysPastDueNotWorse.B, y=yHat2, color=factor(OriginalRowNumber))) + 
+  geom_point(aes(size = Weight)) +
+  geom_line(aes(alpha=ifelse(OriginalRowNumber == 18, 1, .3))) +
+  scale_x_continuous(limits=c(0,2)) +
+  scale_alpha_identity() +
+  scale_size_area() + 
+  xlab("NumberOfTime30.59DaysPastDueNotWorse") +
+  ylab("Prediction") + 
+  guides(color = FALSE)
+```
+
+## Can we explain it?
+
+```{r}
+oneRowWithDecreasingDefaultProbability <- oneOriginalRowNumber[1,intersect(names(oneOriginalRowNumber), names(credit))]
+kable(oneRowWithDecreasingDefaultProbability[,1:5])
+kable(oneRowWithDecreasingDefaultProbability[,6:8])
+kable(oneRowWithDecreasingDefaultProbability[,9:10])
+```
+
+
+
+
+
+## A Cruder Approach
+
+(This is the approach [linked in one of the group's FB threads](http://beckmw.wordpress.com/2013/10/07/sensitivity-analysis-for-neural-networks/#ref1))
+
+- (by default) determine a 6 representative values for "all else" according to percentiles: one for minimum of each, one for 20th percentile, 40th percentile, etc.
+- vary the input of interest, holding "all else" at those values
+
+## A Cruder Approach Can Give Wrong Results
+
+$x_1$, $x_2$ negatively correlated, $y = x_1*x_2*x_3*
+
+## "Partial Plots": A somewhat less crude approach
+
+(partial plots)
+
+- this accounts for relationships among the "all else held equal" but **not** between those and the input under consideration
+
+## Comparison with other approaches
+
+Things that vary
+
+- Units - depend on input or consistent across inputs
+- Sensitive to univariate distribution of inputs
+- Sensitive to dependence between inputs
+- Shows shape of non-linearity
+- Signed
+- Model
+- Based on holdout performance
+
+
+## Misc
+
+(Reread paper to add more)
+
+Application to RBM's might be natural (since they make sampling from conditional distributions easy?)
+
+
+## Interest in particular sized transitions
+
+e.g. "I'm interested in a credit score increase of 10 points"
+
+- what's the distribution of transition sizes (is 10 points common enough that we actually should care?)
+- what's the distribution of 

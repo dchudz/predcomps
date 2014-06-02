@@ -1,7 +1,7 @@
 ```{r echo=FALSE, results='hide', message=FALSE}
 library(predcomps)
 library(ggplot2)
-library(boot)
+library(boot) 
 library(knitr)
 opts_chunk$set(tidy = FALSE)
 set.seed(1)
@@ -78,7 +78,8 @@ myScales <- list(scale_x_continuous(limits=c(0,100)),
 ggplot(subset(df1Sample, Price %in% seq(20, 120, by=10))) + 
   geom_point(aes(x = Quality, y = PurchaseProbability, color = factor(Price)), 
              size = 3, alpha = 1) + 
-  ggtitle("Quality vs. Purchase Probability at Various Prices") + myScales
+  ggtitle("Quality vs. Purchase Probability at Various Prices") + myScales +
+  scale_color_discrete("Price")
 
 ```
 
@@ -87,7 +88,7 @@ Each colored set of points is one portion of a shifted inverse logistic curve, d
 We can also see the portion of the curve that isn't represented in our data:
 
 ```{r V1QualityVsProbWithLines, echo=FALSE}
-linesDF <- expand.grid(Price = seq(20, 120, by=10), Quality = 0:100)
+linesDF <- expand.grid(Price = seq(20, 120, by=10), Quality = -20:130)
 linesDF$PurchaseProbability <- with(linesDF,
                                     inv.logit(priceCoef*(Price - 70) + qualityCoef*(Quality - 50)))
 last_plot() + geom_line(aes(x = Quality, y = PurchaseProbability, color = factor(Price)), 
@@ -154,7 +155,8 @@ ggplot(subset(df2Sample, Price %in% seq(20, 120, by=10))) +
   geom_point(aes(x = Quality, y = PurchaseProbability, color = factor(Price)), 
              size = 3, alpha = 1) + 
   ggtitle("Quality vs. Purchase Probability at Various Prices") +
-  myScales
+  myScales + 
+  scale_color_discrete("Price")
 ```
 
 The APC for quality is correspondingly larger:
@@ -209,7 +211,8 @@ ggplot(subset(df3Sample, Price %in% seq(-100, 200, by=10))) +
   geom_point(aes(x = Quality, y = PurchaseProbability, color = factor(Price)), 
              size = 3, alpha = 1) + 
   ggtitle("Quality vs. Purchase Probability at Various Prices") + 
-  myScales
+  myScales +
+  scale_color_discrete("Price")
 ```
 
 We can get average predictive comparisons from our fitted regression:
