@@ -8,21 +8,341 @@
   <meta name="generator" content="pandoc" />
   <title></title>
   <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
   <link rel="stylesheet" type="text/css" media="screen, projection, print"
     href="http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css" />
+  <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
   <script src="http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js"
     charset="utf-8" type="text/javascript"></script>
 </head>
 <body>
-<div id="hi" class="slide section level2">
-<h1>Hi</h1>
-<p>First slide</p>
+<div id="title" class="slide section level2">
+<h1>Title</h1>
 </div>
-<div id="hmm" class="slide section level2">
-<h1>Hmm</h1>
+<div id="related-concepts" class="slide section level2">
+<h1>Related concepts</h1>
+<ul class="incremental">
+<li>sensitivity analysis</li>
+<li>elasticity</li>
+<li>variable importance</li>
+<li>partial dependence</li>
+<li>etc.</li>
+</ul>
+</div>
+<div id="distinguishing-features-here" class="slide section level2">
+<h1>Distinguishing features here:</h1>
+<ul class="incremental">
+<li>treats model as a black box</li>
+<li><strong>tries to properly account for relationships among the inputs of interest</strong></li>
+</ul>
+</div>
+<div id="plan" class="slide section level2">
+<h1>Plan</h1>
+<ol class="incremental" style="list-style-type: decimal">
+<li>Motivating fake example</li>
+<li>Predictive comparisons definitions: what we want</li>
+<li>Applying average predictive comparisons to (1)</li>
+<li>An example with real data: credit scoring</li>
+<li>(Optional) Estimation &amp; Computation: how to get what we want</li>
+<li>(Optional) Comparison with other approaches</li>
+<li>Discussion!</li>
+</ol>
+</div>
+<div id="silly-example" class="slide section level2">
+<h1>Silly Example</h1>
+<ul class="incremental">
+<li>We sell wine</li>
+<li>Wine varies in: price, quality</li>
+<li>Customers randomly do/don’t buy, depending on price and quality</li>
+</ul>
+</div>
+<div id="logistic-regression" class="slide section level2">
+<h1>Logistic Regression</h1>
+<ul class="incremental">
+<li><span class="math">\(P\)</span>: price ($)</li>
+<li><span class="math">\(Q\)</span>: quality (score on arbitrary scale)</li>
+<li><strong>Model</strong>: <span class="math">\(P(\text{wine is purchased}) = logit^{-1}(\beta_0 + \beta_1 Q + \beta_2 P)\)</span></li>
+</ul>
 <div class="figure">
 <img src="figure/unnamed-chunk-2.png" />
 </div>
+<p><strong>True model</strong>: <span class="math">\(P(\text{wine is purchased}) = logit^{-1}(0.1 Q - 0.12 P)\)</span></p>
+</div>
+<div id="distribution-of-inputs-variation-1" class="slide section level2">
+<h1>Distribution of Inputs (variation 1):</h1>
+<p>Price and quality are (noisily) related:</p>
+<div class="figure">
+<img src="figure/unnamed-chunk-3.png" />
+</div>
+</div>
+<div id="we-dont-really-need-a-model-to-understand-this" class="slide section level2">
+<h1>We don’t really need a model to understand this…</h1>
+<p>(for clarity, showing only a discrete subset of prices)</p>
+<div class="figure">
+<img src="figure/unnamed-chunk-4.png" />
+</div>
+</div>
+<div id="we-dont-really-need-a-model-to-understand-this-1" class="slide section level2">
+<h1>We don’t really need a model to understand this…</h1>
+<p>For each individual price, quality vs. purchase probability forms a portion of a shifted inverse logit curve:</p>
+<div class="figure">
+<img src="figure/unnamed-chunk-5.png" />
+</div>
+<ul class="incremental">
+<li>how changes in price/quality affect <span class="math">\(P(\text{wine is purchased})\)</span> depends a lot on where you are in input space</li>
+<li>changes in <span class="math">\(logit(P(\text{wine is purchased}))\)</span> don’t depend on where you are in input space</li>
+<li>but you probability care more about probabilities than logits of probabilities</li>
+</ul>
+</div>
+<div id="variation-2" class="slide section level2">
+<h1>Variation 2</h1>
+<p>In another possible world, mid-range wines are more common:</p>
+<div class="figure">
+<img src="figure/unnamed-chunk-6.png" />
+</div>
+<ul class="incremental">
+<li>input distribution is changed</li>
+<li>… but model is not changed</li>
+</ul>
+</div>
+<div id="now-examples-in-the-range-where-quality-matters-are-more-common" class="slide section level2">
+<h1>Now examples in the range where quality matters are more common</h1>
+<div class="figure">
+<img src="figure/unnamed-chunk-7.png" />
+</div>
+</div>
+<div id="variation-3" class="slide section level2">
+<h1>Variation 3</h1>
+<p>In a third possible world, price varies more strongly with quality:</p>
+<div class="figure">
+<img src="figure/unnamed-chunk-8.png" />
+</div>
+<p>Again:</p>
+<ul class="incremental">
+<li>input distribution is changed</li>
+<li>… but model is not changed, still <span class="math">\(P(\text{wine is purchased}) = logit^{-1}(\beta_0 + \beta_1 Q + \beta_2 P)\)</span></li>
+</ul>
+</div>
+<div id="now-quality-matters-more" class="slide section level2">
+<h1>Now quality matters more</h1>
+<p>… across all price ranges</p>
+<div class="figure">
+<img src="figure/unnamed-chunk-9.png" />
+</div>
+</div>
+<div id="now-quality-matters-more-1" class="slide section level2">
+<h1>Now quality matters more</h1>
+<p>… across all price ranges (for the kinds of variation <strong>that we see in the data</strong>)</p>
+<div class="figure">
+<img src="figure/unnamed-chunk-10.png" />
+</div>
+</div>
+<div id="lessons-from-this-example" class="slide section level2">
+<h1>Lessons from this example</h1>
+<ol class="incremental" style="list-style-type: decimal">
+<li>We want to interpret things on the scale we care about (probability in this case)</li>
+<li>Relationships among the inputs matter</li>
+</ol>
+</div>
+<div id="goal-is-single-number-summaries" class="slide section level2">
+<h1>Goal is single-number summaries</h1>
+<p>These concepts are vague, but keep them in mind as we try to formalize things in the next few slides:</p>
+<ul class="incremental">
+<li><p><strong>For each input, what is the average change in output per unit change in input?</strong> (generalizes linear regression, units depend on units for input)</p></li>
+<li><p><strong>How important is each input in influencing the output?</strong> (units should be consistent across inputs – think of standardized regression coefficients)</p></li>
+</ul>
+</div>
+<div id="some-notation" class="slide section level2">
+<h1>Some notation</h1>
+<p><strong><span class="math">\(u\)</span></strong>: the variable under consideration</p>
+<p><strong><span class="math">\(v\)</span></strong>: the vector of other variables (the “all else held equal”)</p>
+<p><strong><span class="math">\(f(u,v)\)</span></strong>: a function that makes predictions, e.g. maybe <span class="math">\(f(u,v) = \mathcal{E}[y \mid u, v, \theta]\)</span></p>
+<ul class="incremental">
+<li>We consider transitions in <span class="math">\(u\)</span> holding <span class="math">\(v\)</span> constant, e.g. <span class="math">\[\frac{f(u_2, v) - f(u_1, v)}{u_2-u_1}\]</span></li>
+<li>To get one-point summaries we’ll take an average</li>
+<li>All of the subtlety lies in the choice of <span class="math">\(v\)</span>, <span class="math">\(u_1\)</span>, <span class="math">\(u_2\)</span></li>
+</ul>
+</div>
+<div id="what-average-do-we-take" class="slide section level2">
+<h1>What average do we take?</h1>
+<p>The APC is defined as</p>
+<p><span class="math">\[\frac{\mathcal{E}[\Delta_f]}{\mathcal{E}[\Delta_u]}\]</span></p>
+<p>where</p>
+<ul class="incremental">
+<li><span class="math">\(\Delta_f = f(u_2,v) - f(u_1,v)\)</span></li>
+<li><span class="math">\(\Delta_u = u_2 - u_1\)</span></li>
+<li><span class="math">\(\mathcal{E}\)</span> is expectation under the following process:</li>
+</ul>
+<ol class="incremental" style="list-style-type: decimal">
+<li>sample <span class="math">\(v\)</span> from the (marginal) distribution of the corresponding inputs</li>
+<li>sample <span class="math">\(u_1\)</span> and <span class="math">\(u_2\)</span> independently from the distribution of <span class="math">\(u\)</span> conditional on <span class="math">\(v\)</span></li>
+</ol>
+</div>
+<div id="variations" class="slide section level2">
+<h1>Variations</h1>
+<ul class="incremental">
+<li>“Impact” (my idea, my privisonal term) is just the expected value of <span class="math">\(\Delta_f = f(u_2,v) - f(u_1,v)\)</span></li>
+<li>Absolute versions use <span class="math">\(\mathcal{E}[|\Delta_f|]\)</span> and <span class="math">\(\mathcal{E}[|\Delta_u|]\)</span></li>
+</ul>
+</div>
+<div id="computation" class="slide section level2">
+<h1>Computation</h1>
+<ul class="incremental">
+<li>Once we’ve said what we want, computing/estimating it isn’t trivial</li>
+<li>More on this (depending on time/interest)</li>
+</ul>
+</div>
+<div id="returning-to-the-wines" class="slide section level2">
+<h1>Returning to the wines…</h1>
+<p><img src="figure/unnamed-chunk-111.png" /> <img src="figure/unnamed-chunk-112.png" /></p>
+<p>Exercise for the reader: Make an example where APC is larger than in Variation 1 but “Impact” is much smaller.</p>
+</div>
+<div id="credit-scoring-example" class="slide section level2">
+<h1>Credit Scoring Example</h1>
+<ul class="incremental">
+<li><strong>SeriousDlqin2yrs</strong> (target variable): Person experienced 90 days past due delinquency or worse</li>
+<li><strong>RevolvingUtilizationOfUnsecuredLines</strong>: Total balance on credit cards and personal lines of credit except real estate and no installment debt like car loans divided by the sum of credit limits</li>
+<li><strong>age</strong>: Age of borrower in years</li>
+<li><strong>NumberOfTime30-59DaysPastDueNotWorse</strong>: Number of times borrower has been 30-59 days past due but no worse in the last 2 years.</li>
+<li><strong>NumberOfTime60-89DaysPastDueNotWorse</strong>: Number of times borrower has been 60-89 days past due but no worse in the last 2 years.</li>
+<li><strong>NumberOfTimes90DaysLate</strong>: Number of times borrower has been 90 days or more past due.</li>
+<li><strong>DebtRatio</strong>: Monthly debt payments, alimony,living costs divided by monthy gross income</li>
+<li><strong>MonthlyIncome</strong>: Monthly income</li>
+<li><strong>NumberOfOpenCreditLinesAndLoans</strong>: Number of Open loans (installment like car loan or mortgage) and Lines of credit (e.g. credit cards)</li>
+<li><strong>NumberRealEstateLoansOrLines</strong>: Number of mortgage and real estate loans including home equity lines of credit</li>
+<li><strong>NumberOfDependents</strong>: Number of dependents in family excluding themselves (spouse, children etc.)</li>
+</ul>
+</div>
+<div id="input-distribution" class="slide section level2">
+<h1>Input Distribution</h1>
+<div class="figure">
+<img src="figure/unnamed-chunk-13.png" />
+</div>
+</div>
+<div id="model-building" class="slide section level2">
+<h1>Model Building</h1>
+<p>We’ll use a random forest for this example:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">1</span>)
+<span class="co"># Turning the response to type &#39;factor&#39; causes the RF to be build for</span>
+<span class="co"># classification:</span>
+credit$SeriousDlqin2yrs &lt;-<span class="st"> </span><span class="kw">factor</span>(credit$SeriousDlqin2yrs)
+rfFit &lt;-<span class="st"> </span><span class="kw">randomForest</span>(SeriousDlqin2yrs ~<span class="st"> </span>., <span class="dt">data =</span> credit, <span class="dt">ntree =</span> ntree)</code></pre>
+</div>
+<div id="aggregate-predictive-comparisons" class="slide section level2">
+<h1>Aggregate Predictive Comparisons</h1>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">1</span>)
+apcDF &lt;-<span class="st"> </span><span class="kw">GetPredCompsDF</span>(rfFit, credit, <span class="dt">numForTransitionStart =</span> numForTransitionStart, 
+    <span class="dt">numForTransitionEnd =</span> numForTransitionEnd, <span class="dt">onlyIncludeNearestN =</span> onlyIncludeNearestN)</code></pre>
+<pre><code>## |Input                                 |  Apc.Signed|  Apc.Absolute|  Impact.Signed|  Impact.Absolute|
+## |:-------------------------------------|-----------:|-------------:|--------------:|----------------:|
+## |RevolvingUtilizationOfUnsecuredLines  |   8.265e-02|     1.590e-01|       0.024470|          0.04707|
+## |age                                   |  -3.263e-04|     2.496e-03|      -0.004750|          0.03633|
+## |NumberOfTime30.59DaysPastDueNotWorse  |   3.873e-02|     7.057e-02|       0.014864|          0.02708|
+## |DebtRatio                             |   8.705e-03|     1.888e-01|       0.001614|          0.03500|
+## |MonthlyIncome                         |   3.270e-07|     9.794e-06|       0.001104|          0.03307|
+## |NumberOfOpenCreditLinesAndLoans       |   1.634e-03|     7.746e-03|       0.007147|          0.03387|
+## |NumberOfTimes90DaysLate               |   1.511e-01|     1.889e-01|       0.021397|          0.02676|
+## |NumberRealEstateLoansOrLines          |   2.855e-03|     2.294e-02|       0.002085|          0.01675|
+## |NumberOfTime60.89DaysPastDueNotWorse  |   9.203e-02|     1.853e-01|       0.007781|          0.01567|
+## |NumberOfDependents                    |   4.221e-03|     1.849e-02|       0.004173|          0.01828|</code></pre>
+</div>
+<div id="impact-plot" class="slide section level2">
+<h1>Impact Plot</h1>
+<div class="figure">
+<img src="figure/LoanDefaultImpact.png" />
+</div>
+</div>
+<div id="sensitivity-age" class="slide section level2">
+<h1>Sensitivity: Age</h1>
+</div>
+<div id="sensitivity-number-of-time-30-35-days-past-due" class="slide section level2">
+<h1>Sensitivity: Number of Time 30-35 Days Past Due</h1>
+<p>Mostly we see the increasing probability that we’d expect…</p>
+<div class="figure">
+<img src="figure/unnamed-chunk-17.png" />
+</div>
+</div>
+<div id="sensitivity-number-of-time-30-35-days-past-due-1" class="slide section level2">
+<h1>Sensitivity: Number of Time 30-35 Days Past Due</h1>
+<p>… but in one case, probability of default <em>decreases</em> with the 0-to-1 transition</p>
+<div class="figure">
+<img src="figure/unnamed-chunk-18.png" />
+</div>
+</div>
+<div id="can-we-explain-it" class="slide section level2">
+<h1>Can we explain it?</h1>
+<pre><code>## |  RevolvingUtilizationOfUnsecuredLines|  age|  DebtRatio|  MonthlyIncome|  NumberOfOpenCreditLinesAndLoans|
+## |-------------------------------------:|----:|----------:|--------------:|--------------------------------:|
+## |                                     1|   27|     0.1543|           4800|                                4|</code></pre>
+<pre><code>## |  NumberOfTimes90DaysLate|  NumberRealEstateLoansOrLines|  NumberOfTime60.89DaysPastDueNotWorse|
+## |------------------------:|-----------------------------:|-------------------------------------:|
+## |                        1|                             0|                                     0|</code></pre>
+<pre><code>## |  NumberOfDependents|  NumberOfTime30.59DaysPastDueNotWorse|
+## |-------------------:|-------------------------------------:|
+## |                   0|                                     0|</code></pre>
+</div>
+<div id="a-cruder-approach" class="slide section level2">
+<h1>A Cruder Approach</h1>
+<p>(This is the approach <a href="http://beckmw.wordpress.com/2013/10/07/sensitivity-analysis-for-neural-networks/#ref1">linked in one of the group’s FB threads</a>)</p>
+<ul class="incremental">
+<li>(by default) determine a 6 representative values for “all else” according to percentiles: one for minimum of each, one for 20th percentile, 40th percentile, etc.</li>
+<li>vary the input of interest, holding “all else” at those values</li>
+</ul>
+</div>
+<div id="a-cruder-approach-can-give-wrong-results" class="slide section level2">
+<h1>A Cruder Approach Can Give Wrong Results</h1>
+<p><span class="math">\(x_1\)</span>, <span class="math">\(x_2\)</span> negatively correlated, $y = x_1<em>x_2</em>x_3*</p>
+</div>
+<div id="partial-plots-a-somewhat-less-crude-approach" class="slide section level2">
+<h1>“Partial Plots”: A somewhat less crude approach</h1>
+<p>(partial plots)</p>
+<ul class="incremental">
+<li>this accounts for relationships among the “all else held equal” but <strong>not</strong> between those and the input under consideration</li>
+</ul>
+</div>
+<div id="comparison-with-other-approaches" class="slide section level2">
+<h1>Comparison with other approaches</h1>
+<p>Things that vary</p>
+<ul class="incremental">
+<li>Units - depend on input or consistent across inputs</li>
+<li>Sensitive to univariate distribution of inputs</li>
+<li>Sensitive to dependence between inputs</li>
+<li>Shows shape of non-linearity</li>
+<li>Signed</li>
+<li>Model</li>
+<li>Based on holdout performance</li>
+</ul>
+</div>
+<div id="misc" class="slide section level2">
+<h1>Misc</h1>
+<p>(Reread paper to add more)</p>
+<p>Application to RBM’s might be natural (since they make sampling from conditional distributions easy?)</p>
+</div>
+<div id="interest-in-particular-sized-transitions" class="slide section level2">
+<h1>Interest in particular sized transitions</h1>
+<p>e.g. “I’m interested in a credit score increase of 10 points”</p>
+<ul class="incremental">
+<li>what’s the distribution of transition sizes (is 10 points common enough that we actually should care?)</li>
+<li>what’s the distribution of</li>
+</ul>
 </div>
 </body>
 </html>

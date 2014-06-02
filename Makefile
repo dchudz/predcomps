@@ -13,7 +13,7 @@ bar.html: ../predcomps/notes/presentations/Bar.Rmd examples-wine-logistic-regres
 	Rscript -e " \
 	library(knitr); \
 	knit('../predcomps/notes/presentations/Bar.Rmd', output='markdown/Bar.md'); \
-	system(paste('pandoc -s -S -t slidy --mathjax', 'markdown/Bar.md', '-o', 'presentation-bar.html'))"
+	system(paste('pandoc -s -S -i -t slidy --mathjax', 'markdown/Bar.md', '-o', 'presentation-bar.html'))"
 
 
 

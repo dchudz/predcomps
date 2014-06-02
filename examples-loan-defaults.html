@@ -169,17 +169,17 @@ ggplot(pairsSummarized, aes(x=NumberOfTime30.59DaysPastDueNotWorse.B, y=yHat2, c
 <p>For one more example, let&#39;s examine the <code>Age</code> input in more detail.</p>
 
 <pre><code class="r">set.seed(3)
-pairs &lt;- GetComparisonDF(rfFit, credit, 
+pairsAge &lt;- GetComparisonDF(rfFit, credit, 
                          u=&quot;age&quot;,
                          numForTransitionStart = 20,
                          numForTransitionEnd = numForTransitionEnd*10,
                          onlyIncludeNearestN = onlyIncludeNearestN*10)
 
-pairsSummarized &lt;- pairs[c(&quot;OriginalRowNumber&quot;, &quot;age.B&quot;, &quot;yHat2&quot;, &quot;Weight&quot;)] %.% 
+pairsSummarizedAge &lt;- pairsAge[c(&quot;OriginalRowNumber&quot;, &quot;age.B&quot;, &quot;yHat2&quot;, &quot;Weight&quot;)] %.% 
   group_by(OriginalRowNumber, age.B, yHat2) %.% 
   summarise(Weight = sum(Weight))
 
-ggplot(pairsSummarized, aes(x=age.B, y=yHat2, color=factor(OriginalRowNumber))) + 
+ggplot(pairsSummarizedAge, aes(x=age.B, y=yHat2, color=factor(OriginalRowNumber))) + 
   geom_point(aes(size = Weight)) +
   geom_line(size=.2) +
   xlab(&quot;age&quot;) +
