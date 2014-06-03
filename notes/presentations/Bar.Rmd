@@ -11,7 +11,12 @@ opts_chunk$set(fig.cap="", echo=FALSE,
                )
 ```
 
-## Title
+## An R Package to Help Interpret Predictive Models
+
+Refactorings Hangout
+
+David Chudzicki
+
 
 ## Related concepts
 
@@ -21,7 +26,7 @@ opts_chunk$set(fig.cap="", echo=FALSE,
 - partial dependence
 - etc.
 
-## Distinguishing features here:
+## Distinguishing features of **this** approach:
 
 - treats model as a black box
 - **tries to properly account for relationships among the inputs of interest**
@@ -70,7 +75,7 @@ qplot(Price, Quality, alpha=I(.5), data = df1Sample) +
 
 ## We don't really need a model to understand this...
 
-(for clarity, showing only a discrete subset of prices)
+(A random subset of the data. For clarity, showing only a discrete subset of prices.)
 
 ```{r}
 v1Plot <- ggplot(subset(df1Sample, Price %in% seq(20, 120, by=10))) + 
@@ -108,7 +113,7 @@ qplot(Price, Quality, alpha=I(.5), data = df2Sample) +
 - input distribution is changed
 - ... but model is not changed
 
-## Now examples in the range where quality matters are more common
+## Now quality matters more often
 
 ```{r}
 v2Plot <- ggplot(subset(df2Sample, Price %in% seq(20, 120, by=10))) + 
@@ -134,7 +139,7 @@ Again:
 - input distribution is changed
 - ... but model is not changed, still $P(\text{wine is purchased}) = logit^{-1}(\beta_0 + \beta_1 Q + \beta_2 P)$
 
-## Now quality matters more
+## Now quality always matters more
 
 ... across all price ranges
 
@@ -153,9 +158,10 @@ v3Plot
 ... across all price ranges (for the kinds of variation **that we see in the data**)
 
 ```{r warning=FALSE}
-last_plot() + geom_line(aes(x = Quality, y = PurchaseProbability, color = factor(Price)), 
-                        data = linesDF,
-                        size=.2)
+v3PlotWithCurves <- last_plot() + geom_line(aes(x = Quality, y = PurchaseProbability, color = factor(Price)), 
+                                            data = linesDF,
+                                            size=.2)
+v3PlotWithCurves
 ```
 
 ## Lessons from this example
@@ -233,7 +239,7 @@ Exercise for the reader: Make an example where APC is larger than in Variation 1
 load(file="../examples/loan-defaults.RData")
 ```
 
-- **SeriousDlqin2yrs** (target variable):  Person experienced 90 days past due delinquency or worse 
+- **SeriousDlqin2yrs** (target variable, 7% "yes"):  Person experienced 90 days past due delinquency or worse 
 - **RevolvingUtilizationOfUnsecuredLines**:  Total balance on credit cards and personal lines of credit except real estate and no installment debt like car loans divided by the sum of credit limits
 - **age**:	Age of borrower in years
 - **NumberOfTime30-59DaysPastDueNotWorse**:	Number of times borrower has been 30-59 days past due but no worse in the last 2 years.
@@ -283,13 +289,57 @@ kable(apcDF, row.names=FALSE)
 PlotPredCompsDF(apcDF)
 ```
 
-## Sensitivity: Age
+Summaries like this can guide questions that push is to dig deeper, like: 
+
+- What's going on with age? (To get the cancellation we see, it must have strong effects that vary in sign)
+- Why don't instances of previous lateness always increase your probability of a 90-days-past-due incident? (cancellation?)
 
 
+## Goals for sensitivity analysis
+
+- want something that properly accounts for relationships among variables of interest
+- want something that emphasizes the values that are plausible given the other values (2 reason: this is what we care about, and this is what our model has better estimates of)
+
+
+```{r warning=FALSE}
+v3PlotWithCurves + ggtitle("Wines: Variation 3")
+```
+
+## How we'll do sensitivity analysis
+
+- choose a few random values for $v$ (the "all else held equal")
+- sample from $u$ conditional on $v$
+- plot $u$ vs. the prediction for each $v$
+
+```{r}
+ggplot(pairsSummarizedAge, aes(x=age.B, y=yHat2, color=factor(OriginalRowNumber))) + 
+  geom_point(aes(size = Weight)) +
+  geom_line(size=.2) +
+  xlab("age") +
+  ylab("Prediction") + 
+  guides(color = FALSE)
+```
+
+## Zooming in...
+
+```{r}
+ggplot(subset(pairsSummarizedAge, OriginalRowNumber <= 8), 
+       aes(x=age.B, y=yHat2, color=factor(OriginalRowNumber))) + 
+  geom_point(aes(size = Weight)) +
+  geom_line(size=.2) +
+  xlab("age") +
+  ylab("Prediction") + 
+  guides(color = FALSE) + 
+  coord_cartesian(ylim=(c(-.01,.2)))
+```
+
+- weird stuff
+- dig deeper
+- try other models
 
 ## Sensitivity: Number of Time 30-35 Days Past Due
 
-Mostly we see the increasing probability that we'd expect...
+- Mostly we see the increasing probability that we'd expect...
 
 ```{r, warning=FALSE}
 ggplot(pairsSummarized, aes(x=NumberOfTime30.59DaysPastDueNotWorse.B, y=yHat2, color=factor(OriginalRowNumber))) + 
@@ -328,9 +378,6 @@ kable(oneRowWithDecreasingDefaultProbability[,9:10])
 ```
 
 
-
-
-
 ## A Cruder Approach
 
 (This is the approach [linked in one of the group's FB threads](http://beckmw.wordpress.com/2013/10/07/sensitivity-analysis-for-neural-networks/#ref1))
@@ -340,7 +387,7 @@ kable(oneRowWithDecreasingDefaultProbability[,9:10])
 
 ## A Cruder Approach Can Give Wrong Results
 
-$x_1$, $x_2$ negatively correlated, $y = x_1*x_2*x_3*
+$x_1$, $x_2$ negatively correlated, $y = x_1 x_2 x_3$
 
 ## "Partial Plots": A somewhat less crude approach
 
