@@ -1,7 +1,12 @@
 
 
 
-## Title
+## An R Package to Help Interpret Predictive Models
+
+Refactorings Hangout
+
+David Chudzicki
+
 
 ## Related concepts
 
@@ -11,7 +16,7 @@
 - partial dependence
 - etc.
 
-## Distinguishing features here:
+## Distinguishing features of **this** approach:
 
 - treats model as a black box
 - **tries to properly account for relationships among the inputs of interest**
@@ -52,7 +57,7 @@ Price and quality are (noisily) related:
 
 ## We don't really need a model to understand this...
 
-(for clarity, showing only a discrete subset of prices)
+(A random subset of the data. For clarity, showing only a discrete subset of prices.)
 
 ![](figure/unnamed-chunk-4.png) 
 
@@ -78,7 +83,7 @@ In another possible world, mid-range wines are more common:
 - input distribution is changed
 - ... but model is not changed
 
-## Now examples in the range where quality matters are more common
+## Now quality matters more often
 
 ![](figure/unnamed-chunk-7.png) 
 
@@ -95,7 +100,7 @@ Again:
 - input distribution is changed
 - ... but model is not changed, still $P(\text{wine is purchased}) = logit^{-1}(\beta_0 + \beta_1 Q + \beta_2 P)$
 
-## Now quality matters more
+## Now quality always matters more
 
 ... across all price ranges
 
@@ -175,7 +180,7 @@ Exercise for the reader: Make an example where APC is larger than in Variation 1
 
 
 
-- **SeriousDlqin2yrs** (target variable):  Person experienced 90 days past due delinquency or worse 
+- **SeriousDlqin2yrs** (target variable, 7% "yes"):  Person experienced 90 days past due delinquency or worse 
 - **RevolvingUtilizationOfUnsecuredLines**:  Total balance on credit cards and personal lines of credit except real estate and no installment debt like car loans divided by the sum of credit limits
 - **age**:	Age of borrower in years
 - **NumberOfTime30-59DaysPastDueNotWorse**:	Number of times borrower has been 30-59 days past due but no worse in the last 2 years.
@@ -239,22 +244,51 @@ apcDF <- GetPredCompsDF(rfFit, credit, numForTransitionStart = numForTransitionS
 ![](figure/LoanDefaultImpact.png) 
 
 
-## Sensitivity: Age
+Summaries like this can guide questions that push is to dig deeper, like: 
+
+- What's going on with age? (To get the cancellation we see, it must have strong effects that vary in sign)
+- Why don't instances of previous lateness always increase your probability of a 90-days-past-due incident? (cancellation?)
 
 
+## Goals for sensitivity analysis
+
+- want something that properly accounts for relationships among variables of interest
+- want something that emphasizes the values that are plausible given the other values (2 reason: this is what we care about, and this is what our model has better estimates of)
+
+
+![](figure/unnamed-chunk-17.png) 
+
+
+## How we'll do sensitivity analysis
+
+- choose a few random values for $v$ (the "all else held equal")
+- sample from $u$ conditional on $v$
+- plot $u$ vs. the prediction for each $v$
+
+![](figure/unnamed-chunk-18.png) 
+
+
+## Zooming in...
+
+![](figure/unnamed-chunk-19.png) 
+
+
+- weird stuff
+- dig deeper
+- try other models
 
 ## Sensitivity: Number of Time 30-35 Days Past Due
 
-Mostly we see the increasing probability that we'd expect...
+- Mostly we see the increasing probability that we'd expect...
 
-![](figure/unnamed-chunk-17.png) 
+![](figure/unnamed-chunk-20.png) 
 
 
 ## Sensitivity: Number of Time 30-35 Days Past Due
 
 ... but in one case, probability of default *decreases* with the 0-to-1 transition
 
-![](figure/unnamed-chunk-18.png) 
+![](figure/unnamed-chunk-21.png) 
 
 
 ## Can we explain it?
@@ -280,9 +314,6 @@ Mostly we see the increasing probability that we'd expect...
 
 
 
-
-
-
 ## A Cruder Approach
 
 (This is the approach [linked in one of the group's FB threads](http://beckmw.wordpress.com/2013/10/07/sensitivity-analysis-for-neural-networks/#ref1))
@@ -292,7 +323,7 @@ Mostly we see the increasing probability that we'd expect...
 
 ## A Cruder Approach Can Give Wrong Results
 
-$x_1$, $x_2$ negatively correlated, $y = x_1*x_2*x_3*
+$x_1$, $x_2$ negatively correlated, $y = x_1 x_2 x_3$
 
 ## "Partial Plots": A somewhat less crude approach
 

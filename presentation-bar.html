@@ -34,8 +34,10 @@ code > span.er { color: #ff0000; font-weight: bold; }
     charset="utf-8" type="text/javascript"></script>
 </head>
 <body>
-<div id="title" class="slide section level2">
-<h1>Title</h1>
+<div id="an-r-package-to-help-interpret-predictive-models" class="slide section level2">
+<h1>An R Package to Help Interpret Predictive Models</h1>
+<p>Refactorings Hangout</p>
+<p>David Chudzicki</p>
 </div>
 <div id="related-concepts" class="slide section level2">
 <h1>Related concepts</h1>
@@ -47,8 +49,8 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <li>etc.</li>
 </ul>
 </div>
-<div id="distinguishing-features-here" class="slide section level2">
-<h1>Distinguishing features here:</h1>
+<div id="distinguishing-features-of-this-approach" class="slide section level2">
+<h1>Distinguishing features of <strong>this</strong> approach:</h1>
 <ul class="incremental">
 <li>treats model as a black box</li>
 <li><strong>tries to properly account for relationships among the inputs of interest</strong></li>
@@ -95,7 +97,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 </div>
 <div id="we-dont-really-need-a-model-to-understand-this" class="slide section level2">
 <h1>We don’t really need a model to understand this…</h1>
-<p>(for clarity, showing only a discrete subset of prices)</p>
+<p>(A random subset of the data. For clarity, showing only a discrete subset of prices.)</p>
 <div class="figure">
 <img src="figure/unnamed-chunk-4.png" />
 </div>
@@ -123,8 +125,8 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <li>… but model is not changed</li>
 </ul>
 </div>
-<div id="now-examples-in-the-range-where-quality-matters-are-more-common" class="slide section level2">
-<h1>Now examples in the range where quality matters are more common</h1>
+<div id="now-quality-matters-more-often" class="slide section level2">
+<h1>Now quality matters more often</h1>
 <div class="figure">
 <img src="figure/unnamed-chunk-7.png" />
 </div>
@@ -141,14 +143,14 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <li>… but model is not changed, still <span class="math">\(P(\text{wine is purchased}) = logit^{-1}(\beta_0 + \beta_1 Q + \beta_2 P)\)</span></li>
 </ul>
 </div>
-<div id="now-quality-matters-more" class="slide section level2">
-<h1>Now quality matters more</h1>
+<div id="now-quality-always-matters-more" class="slide section level2">
+<h1>Now quality always matters more</h1>
 <p>… across all price ranges</p>
 <div class="figure">
 <img src="figure/unnamed-chunk-9.png" />
 </div>
 </div>
-<div id="now-quality-matters-more-1" class="slide section level2">
+<div id="now-quality-matters-more" class="slide section level2">
 <h1>Now quality matters more</h1>
 <p>… across all price ranges (for the kinds of variation <strong>that we see in the data</strong>)</p>
 <div class="figure">
@@ -218,7 +220,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <div id="credit-scoring-example" class="slide section level2">
 <h1>Credit Scoring Example</h1>
 <ul class="incremental">
-<li><strong>SeriousDlqin2yrs</strong> (target variable): Person experienced 90 days past due delinquency or worse</li>
+<li><strong>SeriousDlqin2yrs</strong> (target variable, 7% “yes”): Person experienced 90 days past due delinquency or worse</li>
 <li><strong>RevolvingUtilizationOfUnsecuredLines</strong>: Total balance on credit cards and personal lines of credit except real estate and no installment debt like car loans divided by the sum of credit limits</li>
 <li><strong>age</strong>: Age of borrower in years</li>
 <li><strong>NumberOfTime30-59DaysPastDueNotWorse</strong>: Number of times borrower has been 30-59 days past due but no worse in the last 2 years.</li>
@@ -269,22 +271,58 @@ apcDF &lt;-<span class="st"> </span><span class="kw">GetPredCompsDF</span>(rfFit
 <div class="figure">
 <img src="figure/LoanDefaultImpact.png" />
 </div>
+<p>Summaries like this can guide questions that push is to dig deeper, like:</p>
+<ul class="incremental">
+<li>What’s going on with age? (To get the cancellation we see, it must have strong effects that vary in sign)</li>
+<li>Why don’t instances of previous lateness always increase your probability of a 90-days-past-due incident? (cancellation?)</li>
+</ul>
 </div>
-<div id="sensitivity-age" class="slide section level2">
-<h1>Sensitivity: Age</h1>
+<div id="goals-for-sensitivity-analysis" class="slide section level2">
+<h1>Goals for sensitivity analysis</h1>
+<ul class="incremental">
+<li>want something that properly accounts for relationships among variables of interest</li>
+<li>want something that emphasizes the values that are plausible given the other values (2 reason: this is what we care about, and this is what our model has better estimates of)</li>
+</ul>
+<div class="figure">
+<img src="figure/unnamed-chunk-17.png" />
+</div>
+</div>
+<div id="how-well-do-sensitivity-analysis" class="slide section level2">
+<h1>How we’ll do sensitivity analysis</h1>
+<ul class="incremental">
+<li>choose a few random values for <span class="math">\(v\)</span> (the “all else held equal”)</li>
+<li>sample from <span class="math">\(u\)</span> conditional on <span class="math">\(v\)</span></li>
+<li>plot <span class="math">\(u\)</span> vs. the prediction for each <span class="math">\(v\)</span></li>
+</ul>
+<div class="figure">
+<img src="figure/unnamed-chunk-18.png" />
+</div>
+</div>
+<div id="zooming-in" class="slide section level2">
+<h1>Zooming in…</h1>
+<div class="figure">
+<img src="figure/unnamed-chunk-19.png" />
+</div>
+<ul class="incremental">
+<li>weird stuff</li>
+<li>dig deeper</li>
+<li>try other models</li>
+</ul>
 </div>
 <div id="sensitivity-number-of-time-30-35-days-past-due" class="slide section level2">
 <h1>Sensitivity: Number of Time 30-35 Days Past Due</h1>
-<p>Mostly we see the increasing probability that we’d expect…</p>
+<ul class="incremental">
+<li>Mostly we see the increasing probability that we’d expect…</li>
+</ul>
 <div class="figure">
-<img src="figure/unnamed-chunk-17.png" />
+<img src="figure/unnamed-chunk-20.png" />
 </div>
 </div>
 <div id="sensitivity-number-of-time-30-35-days-past-due-1" class="slide section level2">
 <h1>Sensitivity: Number of Time 30-35 Days Past Due</h1>
 <p>… but in one case, probability of default <em>decreases</em> with the 0-to-1 transition</p>
 <div class="figure">
-<img src="figure/unnamed-chunk-18.png" />
+<img src="figure/unnamed-chunk-21.png" />
 </div>
 </div>
 <div id="can-we-explain-it" class="slide section level2">
@@ -309,7 +347,7 @@ apcDF &lt;-<span class="st"> </span><span class="kw">GetPredCompsDF</span>(rfFit
 </div>
 <div id="a-cruder-approach-can-give-wrong-results" class="slide section level2">
 <h1>A Cruder Approach Can Give Wrong Results</h1>
-<p><span class="math">\(x_1\)</span>, <span class="math">\(x_2\)</span> negatively correlated, $y = x_1<em>x_2</em>x_3*</p>
+<p><span class="math">\(x_1\)</span>, <span class="math">\(x_2\)</span> negatively correlated, <span class="math">\(y = x_1 x_2 x_3\)</span></p>
 </div>
 <div id="partial-plots-a-somewhat-less-crude-approach" class="slide section level2">
 <h1>“Partial Plots”: A somewhat less crude approach</h1>
