@@ -11,7 +11,9 @@ opts_chunk$set(fig.cap="", echo=FALSE,
                )
 ```
 
-## An R Package to Help Interpret Predictive Models
+## An R Package to Help Interpret Predictive Models: 
+
+### (Average) Predictive Comparisons
 
 Refactorings Hangout
 
@@ -31,15 +33,20 @@ David Chudzicki
 - treats model as a black box
 - **tries to properly account for relationships among the inputs of interest**
 
+- based on Gelman & Pardoe (2007)
+
+
 ## Plan
 
 1. Motivating fake example
 2. Predictive comparisons definitions: what we want 
 4. Applying average predictive comparisons to (1)
 5. An example with real data: credit scoring
-3. (Optional) Estimation & Computation: how to get what we want
-6. (Optional) Comparison with other approaches
-7. Discussion!
+
+- Discussion!
+- (Appendix) Estimation & Computation: how to get what we want
+- (Appendix) Comparison with other approaches
+
 
 ## Silly Example
 
@@ -58,6 +65,9 @@ library(boot)
 s <- seq(-4,4,by=.01)
 qplot(s, 1/(1+exp(-s)), geom="line") + ggtitle("Inverse Logit Curve")
 ```
+
+- difficulty: interpreting coefficients on logit scale
+
 
 **True model**: $P(\text{wine is purchased}) = logit^{-1}(0.1 Q - 0.12 P)$
 
@@ -98,8 +108,6 @@ last_plot() + geom_line(aes(x = Quality, y = PurchaseProbability, color = factor
 ```
 
 - how changes in price/quality affect $P(\text{wine is purchased})$ depends a lot on where you are in input space
-- changes in $logit(P(\text{wine is purchased}))$ don't depend on where you are in input space
-- but you probability care more about probabilities than logits of probabilities
 
 ## Variation 2
 
@@ -113,7 +121,9 @@ qplot(Price, Quality, alpha=I(.5), data = df2Sample) +
 - input distribution is changed
 - ... but model is not changed
 
-## Now quality matters more often
+## In this world, quality matters more....
+
+- (more precisely, cases where quality matters are more common)
 
 ```{r}
 v2Plot <- ggplot(subset(df2Sample, Price %in% seq(20, 120, by=10))) + 
@@ -139,9 +149,9 @@ Again:
 - input distribution is changed
 - ... but model is not changed, still $P(\text{wine is purchased}) = logit^{-1}(\beta_0 + \beta_1 Q + \beta_2 P)$
 
-## Now quality always matters more
+## In this world, quality matters even more...
 
-... across all price ranges
+- (more precisely, quality matters in all cases that we actually see)
 
 ```{r}
 v3Plot <- ggplot(subset(df3Sample, Price %in% seq(20, 120, by=10))) + 
@@ -210,13 +220,13 @@ where
 
 ## Variations
 
-- "Impact" (my idea, my privisonal term) is just the expected value of $\Delta_f = f(u_2,v) - f(u_1,v)$
-- Absolute versions use $\mathcal{E}[|\Delta_f|]$ and $\mathcal{E}[|\Delta_u|]$
+- "Impact" (my idea; help me with naming!) is just the expected value of $\Delta_f = f(u_2,v) - f(u_1,v)$
+- Absolute versions (of both impact and APC) use $\mathcal{E}[|\Delta_f|]$ and $\mathcal{E}[|\Delta_u|]$
 
 ## Computation
 
 - Once we've said what we want, computing/estimating it isn't trivial
-- More on this (depending on time/interest)
+- More on this in the discussion (depending on time/interest)
 
 ## Returning to the wines...
 
@@ -258,6 +268,8 @@ load(file="../examples/loan-defaults.RData")
 allHistograms
 ```
 
+Note: previous lateness (esp. 90+) days is rare.
+
 ## Model Building
 
 We'll use a random forest for this example:
@@ -285,6 +297,10 @@ kable(apcDF, row.names=FALSE)
 
 ## Impact Plot
 
+(Showing +/- the absolute impact, since signed impact is bounded between those numbers)
+
+(Showing impact rather than APC b/c the different APC units wouldn't be comparable, shouldn't go on one chart)
+
 ```{r LoanDefaultImpact}
 PlotPredCompsDF(apcDF)
 ```
@@ -298,7 +314,7 @@ Summaries like this can guide questions that push is to dig deeper, like:
 ## Goals for sensitivity analysis
 
 - want something that properly accounts for relationships among variables of interest
-- want something that emphasizes the values that are plausible given the other values (2 reason: this is what we care about, and this is what our model has better estimates of)
+- want something that emphasizes the values that are plausible given the other values (two reasons: this is what we care about, and this is what our model has better estimates of)
 
 
 ```{r warning=FALSE}
@@ -333,9 +349,10 @@ ggplot(subset(pairsSummarizedAge, OriginalRowNumber <= 8),
   coord_cartesian(ylim=(c(-.01,.2)))
 ```
 
-- weird stuff
-- dig deeper
+- shows off some weird behavior of the model!
+- we should dig deeper, get more comfortable with the model
 - try other models
+
 
 ## Sensitivity: Number of Time 30-35 Days Past Due
 
@@ -380,20 +397,67 @@ kable(oneRowWithDecreasingDefaultProbability[,9:10])
 
 ## A Cruder Approach
 
-(This is the approach [linked in one of the group's FB threads](http://beckmw.wordpress.com/2013/10/07/sensitivity-analysis-for-neural-networks/#ref1))
+As an example, this is the [approach](http://beckmw.wordpress.com/2013/10/07/sensitivity-analysis-for-neural-networks/#ref1) linked in that BAR thread ("Algorithms are simple mathematical formulas that nobody understands.”)
 
 - (by default) determine a 6 representative values for "all else" according to percentiles: one for minimum of each, one for 20th percentile, 40th percentile, etc.
 - vary the input of interest, holding "all else" at those values
 
 ## A Cruder Approach Can Give Wrong Results
 
-$x_1$, $x_2$ negatively correlated, $y = x_1 x_2 x_3$
+E.g. $x_1$, $x_2$ related like this, independent of $x_3$: 
 
-## "Partial Plots": A somewhat less crude approach
+```{r}
 
-(partial plots)
+x1 <- rnorm(100)
+x2 <- -x1 + .2*rnorm(100) 
+qplot(x1,x2) + ggtitle("20th percentile of x1 doesn't co-occur with 20th percentile of x2!")
+```
 
-- this accounts for relationships among the "all else held equal" but **not** between those and the input under consideration
+With  $y = x_1 x_2 x_3$
+
+- maybe this isn't a horrible issue in practice? my example required a 3-way interaction. 
+- but I think the point still holds in practice (though maybe less extreme) that this isn't how we want to look at things
+
+## "Partial Plots"
+
+- e.g. `partialPlot` function in `randomForest` library in R
+
+
+This accounts for relationships among the "all else held equal" but **not** between those and the input under consideration
+
+Make predictions on a new data set constructed as follows:
+
+```{r}
+oneRow <- data.frame(v1=1, v2="a", v3=2.3, u=6)
+```
+
+One row:
+
+```{r results='markup'}
+kable(oneRow)
+```
+
+Repeat the row varying $u$ across its whole range:
+
+```{r results='markup'}
+oneRowRep <- oneRow[rep(1,20),]
+oneRowRep$u <- 1:20
+kable(oneRowRep)
+```
+
+- Then average predictions grouping by $u$ (or not)
+
+## Partial Plot Method Applied to Wines
+
+```{r}
+v3Plot + geom_point(aes(x=Quality, y=PurchaseProbability), stat="summary", fun.y="mean", data=linesDF) +
+  geom_point(aes(x = Quality, y = PurchaseProbability, color = factor(Price)), 
+                        data = linesDF,
+                        size=1) +
+  ggtitle("(V3)")
+```
+
+
 
 ## Comparison with other approaches
 
@@ -408,16 +472,28 @@ Things that vary
 - Based on holdout performance
 
 
-## Misc
+## Computing the APC
 
-(Reread paper to add more)
+- sampling a $v$ is easy (take a row from your data)
+- sampling $u_1$ given $v$ is easy (take the $u$ in that row)
+- sampling *another* $u$ ($u_2$) is harder
+- would be easy if you had a lot of data with the same $v$
+- so take $u$'s from rows of data where the correspinding $v$ is close to your $v$
 
-Application to RBM's might be natural (since they make sampling from conditional distributions easy?)
+## In Practice
 
+- Gelman & Pardoe look at all pairs of rows and assign weights $$\frac{1}{1 + d}$$
+- I think this was giving too much weight to faraway points (volume of $n$-spheres grows much faster than linearly in $d$)
+- I use Gelman's weights, but only looking at a fixed number of the closest points
+- Computational advantage: fewer points to deal with
+- A few example 
+```{r}
+pairsOrdered <- pairs[order(pairs$OriginalRowNumber),]
 
-## Interest in particular sized transitions
+for (i in 1:20) {
+  cat("\n\n")
+  kable(head(subset(pairsOrdered, OriginalRowNumber==i)[c("OriginalRowNumber", "age", "DebtRatio", "MonthlyIncome", "NumberOfOpenCreditLinesAndLoans", "NumberOfTime30.59DaysPastDueNotWorse", "NumberOfTime30.59DaysPastDueNotWorse.B","yHat1","yHat2", "Weight")]))
+}
 
-e.g. "I'm interested in a credit score increase of 10 points"
+```
 
-- what's the distribution of transition sizes (is 10 points common enough that we actually should care?)
-- what's the distribution of 
