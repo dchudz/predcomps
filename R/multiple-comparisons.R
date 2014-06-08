@@ -7,6 +7,16 @@
 #' @param inputVars inputs to the model
 #' @param ... extra parguments passed to GetPairs used to control Weight function
 #' @export
+#' @examples
+#' n <- 200
+#' x1 <- runif(n = n, min = 0, max = 1)
+#' x2 <- runif(n = n, min = 0, max = 1)
+#' x3 <- runif(n = n, min = 0, max = 10)
+#' y <- 2 * x1 + (-2) * x2 + 1 * x3 + rnorm(n, sd = 0.1)
+#' df <- data.frame(x1, x2, x3, y)
+#' fittedLm <- lm(y ~ ., data = df)
+#' apcDF <- GetPredCompsDF(fittedLm, df = df)
+#' apcDF
 GetPredCompsDF <- function(model, df, inputVars = NULL, ...) {
   
   # If inputVars is null, we can try to get the list of inputs from the model:
@@ -33,6 +43,16 @@ GetPredCompsDF <- function(model, df, inputVars = NULL, ...) {
 #' 
 #' @param apcDF the output of GetApcDF
 #' @export
+#' @examples
+#' n <- 200
+#' x1 <- runif(n = n, min = 0, max = 1)
+#' x2 <- runif(n = n, min = 0, max = 1)
+#' x3 <- runif(n = n, min = 0, max = 10)
+#' y <- 2 * x1 + (-2) * x2 + 1 * x3 + rnorm(n, sd = 0.1)
+#' df <- data.frame(x1, x2, x3, y)
+#' fittedLm <- lm(y ~ ., data = df)
+#' apcDF <- GetPredCompsDF(fittedLm, df = df)
+#' PlotPredCompsDF(apcDF, variant = "PerUnitInput") + theme_gray(base_size = 18)
 PlotPredCompsDF <- function(apcDF, variant="Impact") {
   xLabel <- switch(variant, 
                    "Impact"="Avg Change in Output",
