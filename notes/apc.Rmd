@@ -80,7 +80,7 @@ We can then plot the average predictive comparisons:
 ```{r results='hide', message=FALSE}
 library(predcomps)
 apcDF <- GetPredCompsDF(fittedLm, df=df)
-PlotPredCompsDF(apcDF, variant="Apc") + theme_gray(base_size = 18)
+PlotPredCompsDF(apcDF, variant="PerUnitInput") + theme_gray(base_size = 18)
 ```
 
 Using different shapes / colors, both the absolute and signed versions are plotted. For symmetry, the absolute version is plotted with both a positive and negative sign. Since this is a linear model with no interactions, the signed APCs match those from the fitted linear model. 

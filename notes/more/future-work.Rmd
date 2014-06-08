@@ -1,19 +1,14 @@
 ## Future work
 
-### Comparison with other approaches
-
-For example, I'd like to compare with the tools (variable importance and partial plots) available in the `randomForest` package. I would guess that those tools are the most similar thing to this that's in common use.
-
-Other notions of variable importance to compare with:
-
-- the one in the `earth` package (implementing MARS)
-- I should look through `caret` to see what's available there
-
 ### Categorical inputs
 
 I'm not quite sure about the best way to sample from the distribution for an input of interest, conditional on the other inputs, when those other inputs include categorical variables.
 
 Gelman & Pardoe 2007 discuss what to do when the input of interest is an unordered categorical variable, but I'm mainly interested in applying the statistic I'm calling [*impact*](impact.html) to categorical variables, since *impact* is comparable across all types of inputs.
+
+### Distribution of predictive comparisons
+
+Rigth now we're just providing point summaries. It'd be nice to see the distribution. (This is different from accounting for model uncertainty.)
 
 ### Uncertainty
 
@@ -23,8 +18,18 @@ I'm also interested in the uncertainty that arises from the density estimation.
 
 ### Weights
 
-More study is necessary to understand better what the weights should be, and make automated choices.
+More work is necessary to understand better what the weights should be / how to best represent the appropriate conditional distributions. Maybe in some cases we should even drop the distance-based approach and use something like BART?
 
 ### Code robustness
 
 I should deal with potential column name conflicts in data frames (e.g. I use a "Weight" column, so I'll have problems if one of the inputs has that name).
+
+### Other tools/methods for understanding complicated models
+
+I'd like to compile a list of other work in this direction, maybe comparing them with this (and perhaps giving examples that show why/when you'd want to use this instead).
+
+I should add a page discussing other methods people have used to get at somewhat the same idea.
+
+- `randomForest` package in R (partial plots, variable importance)
+- `earth` package in R (variable importance)
+- I should look through `caret` to see what's available there

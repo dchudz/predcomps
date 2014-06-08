@@ -1,12 +1,16 @@
 ## An R Package for Understanding Arbitrary Complex Models
 
-As complex models become widely used, it's more important than ever to have ways of understanding them. Even when a model is built primarily for prediction (rather than primarily as an aid to understanding), we still need to know what it's telling us. If we were using linear regression with no interactions, it would be (relatively) clear how to interpret the coefficients. For more complicated models, things get difficult.
+As complex models become widely used, it's more important than ever to have ways of understanding them. Even when a model is built primarily for prediction (rather than primarily as an aid to understanding), we still need to know what it's telling us. For each input to the model, we should be able to answer the question:
 
-This R package is a collection of tools that are meant to generalize the idea of these coefficients to arbitrary predictive models: Holding all else equal, how does the output vary with the input of interest? The tools here apply to any model that lets you map inputs to outputs, whether it's a linear model, a GLM (with any link function), a neural network, a random forest, etc.
+- **What difference does this input make to the predictions?**
+
+If we were using linear regression with no interactions and no transformations of the inputs, it would be (relatively) clear how to interpret the coefficients. The parameters we fit in the linear regression would tell us the per-unit influence of the input on the output.
+
+**This R package is a collection of tools that are meant to help answer these questions for more complicated models**. Holding all else equal, how does the output vary with the input of interest? The tools here apply to any model that lets you map inputs to outputs, whether it's a linear model, a GLM (with any link function), a neural network, a random forest, etc.
 
 One advantage of the fact that these tools work equally well for any model is that they can be used to **compare models**.
 
-### Inspiration
+### Origin
 
 The ideas implemented here originate in [Gelman and Pardoe 2007](http://onlinelibrary.wiley.com/doi/10.1111/j.1467-9531.2007.00181.x/abstract). If you are already familiar with the paper, you can [skip to the differences between that and what's here](more-compared-with-paper.html). As far as I know, this is the only implementation intended for general use.
 

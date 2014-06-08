@@ -78,14 +78,14 @@ For example, we can more quickly notice in the second version that the signed AP
 inputVars <- c("v",paste0("u",1:8))
 apcDF <- GetPredCompsDF(outcomeGenerationFunction, df, inputVars = inputVars)
 print(apcDF)
-PlotPredCompsDF(apcDF, variant="Apc")
+PlotPredCompsDF(apcDF, variant="PerUnitInput")
 ```
 
 These APCs are just what we would expect from the setup of the synthetic examples. When $u$-transitions are at small $v$, the APCs are small due to the $u$/$v$ interaction effect (and vice versa). Even though we know the prediction function exactly, the APCs are a bit off due to errors in our estimates of the distribution of each input conditional on the others. We can mitigate that in this case by increasing the weight given to closer points when assigning weights based on the Mahalanobis distance. The weights are $\frac{1}{\text{mahalanobisConstantTerm}+d}$ where $d$ is the distance, so we can do this by decreasing $\text{mahalanobisConstantTerm}$:
 
 ```{r DecreasedMahalanobisConstantTerm}
 apcDF <- GetPredCompsDF(outcomeGenerationFunction, df, inputVars, mahalanobisConstantTerm=.01)
-PlotPredCompsDF(apcDF, variant="Apc")
+PlotPredCompsDF(apcDF, variant="PerUnitInput")
 ```
 
 In this case, the APCs are much closer to the correct values. Giving such extreme weight to pairs with small distance does not cause any problems in this example, but it would in more realistic examples. In applications, getting the weights right may be difficult.

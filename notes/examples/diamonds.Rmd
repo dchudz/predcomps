@@ -25,7 +25,7 @@ diamondsSmall <- diamonds3[sample.int(nrow(diamonds3), size=500), ]
 
 apcDf <- GetPredCompsDF(function(df) predict(rf, df), diamondsSmall, inputVars=row.names(rf$importance))
 PlotPredCompsDF(apcDf)
-PlotPredCompsDF(apcDf, variant="Apc")
+PlotPredCompsDF(apcDf, variant="PerUnitInput")
 
 
 pairs <- GetPairs(diamondsSmall, "carat", c("cut", "color", "clarity"), 

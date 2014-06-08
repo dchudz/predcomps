@@ -118,7 +118,7 @@ It wouldn't make sense to chart the average predictive comparisons (which are pe
 
 ```{r}
 PlotPredCompsDF(apcDF[grep("NumberOfTime", apcDF$Input), ],
-                variant = "Apc")
+                variant = "PerUnitInput")
 ```
 
 As you'd expect, this shows that the effect size (per additional incident) increases with the length of lateness, while the previous chart shows that `NumberOfTime30.59DaysPastDueNotWorse` makes more overall difference to the model than `NumberOfTime60.89DaysPastDueNotWorse`. This is because its variation is larger (it's non-zero more often). We can see this more clearly looking at the *impact* chart for just these inputs:
