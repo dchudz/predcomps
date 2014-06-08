@@ -91,4 +91,4 @@ This is what the returned data frame `apcDF` looks like:
 apcDF
 ```
 
-The columns plotted here are `Apc.Signed` and `Apc.Absolute`. The [next section](impact.html) is about those columns labeled "Impact".
+The columns plotted here are `PerUnitInput.Signed` and `Apc.Absolute`. The [next section](impact.html) is about those columns labeled "Impact".

@@ -36,7 +36,7 @@ GetPredCompsDF <- function(model, df, inputVars = NULL, ...) {
 PlotPredCompsDF <- function(apcDF, variant="Impact") {
   xLabel <- switch(variant, 
                    "Impact"="Avg Change in Output",
-                   "Apc"="Avg Change in Output Per Unit Input",
+                   "PerUnitInput"="Avg Change in Output Per Unit Input",
                    stop("Unknown Predcomps Variant"))
   
   apcDF <- apcDF[c("Input", grep(paste0("^",variant,"\\."), names(apcDF), value=TRUE))]

@@ -91,4 +91,4 @@ The call to `GetPredCompsDF` returns this data frame:
 apcDF
 ```
 
-The columns plotted here are `Apc.Signed` and `Apc.Absolute`. The [next section](impact.html) desceibes those columns labeled "Impact".
+The columns plotted here are `PerUnitInput.Signed` and `Apc.Absolute`. The [next section](impact.html) desceibes those columns labeled "Impact".

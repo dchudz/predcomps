@@ -5,5 +5,5 @@ test_that("APC matches coefficient exactly for linear model", {
   
   predictionFunction <- function(df) 2*df$X + 3*df$Y
   result <- GetSingleInputApcs(predictionFunction, df, u="X", v="Y")
-  expect_that(result$Apc.Signed, equals(2)) 
+  expect_that(result$PerUnitInput.Signed, equals(2)) 
 })

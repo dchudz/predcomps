@@ -108,7 +108,7 @@ apc1 <- GetPredCompsDF(logitFit1, df1,
 The `GetPredCompsDF` function produces a few kinds of outputs, but for now let's just focus on the signed average predictive comparison:
 
 ```{r}
-apc1[c("Input", "Apc.Signed")]
+apc1[c("Input", "PerUnitInput.Signed")]
 ```
 
 This means that (on average) the probability of purchase increases by about 1.2% per 1 unit increase in quality.
@@ -167,7 +167,7 @@ apc2 <- GetPredCompsDF(logitFit2, df2,
                        numForTransitionEnd = numForTransitionEnd,
                        onlyIncludeNearestN = onlyIncludeNearestN)
 
-apc2[c("Input",  "Apc.Signed")]
+apc2[c("Input",  "PerUnitInput.Signed")]
 ```
 
 This means that in this variation the probability of purchase increases (on average) by about 1.5% (vs. 1.2% in *Variation 1*) per 1-point increase in quality. The magnitude of the APC for price is also larger.
@@ -227,7 +227,7 @@ apc3 <- GetPredCompsDF(logitFit3, df3,
 As expected, the APCs are (both) larger than in *Variation 1*:
 
 ```{r}
-apc3[c("Input", "Apc.Signed")]
+apc3[c("Input", "PerUnitInput.Signed")]
 ```
 
 ### Comparing the Variations
@@ -241,7 +241,7 @@ apc3$Variation <- 3
 
 apcAllVariations <- do.call(rbind, list(apc1, apc2, apc3))
 ggplot(subset(apcAllVariations, Input=="Quality")) +
-  geom_point(aes(x=factor(Variation), y=Apc.Signed), size=3) + 
+  geom_point(aes(x=factor(Variation), y=PerUnitInput.Signed), size=3) + 
   expand_limits(y=0) +
   xlab("Variation") + 
   ggtitle("APC for Quality across Variations")

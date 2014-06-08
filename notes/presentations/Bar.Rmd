@@ -232,7 +232,7 @@ where
 
 ```{r fig.height=4}
 apcComparisonPlot <- ggplot(subset(apcAllVariations, Input=="Quality")) +
-  geom_bar(aes(x=factor(Variation, levels=3:1), y=Apc.Signed), stat="identity", width=.5) + 
+  geom_bar(aes(x=factor(Variation, levels=3:1), y=PerUnitInput.Signed), stat="identity", width=.5) + 
   expand_limits(y=0) +
   xlab("Variation") + 
   ggtitle("APC for Quality across Variations") +

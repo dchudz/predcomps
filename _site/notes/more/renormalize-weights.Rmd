@@ -113,7 +113,7 @@ ApcApprox1
 I showed the full computation above, but we can also use the ```GetAPC``` function from this package:
 
 ```{r}
-GetSingleInputApcs(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=FALSE)$Apc.Signed
+GetSingleInputApcs(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=FALSE)$PerUnitInput.Signed
 ```
 
 Instead, we can normalize Weights so that within each first element of the pair. 
@@ -129,6 +129,6 @@ ApcApprox2
 These renormalized Weights are the ones returned from ```GetPairs``` by default, and used in ```GetAPC``` by default:
 
 ```{r}
-GetSingleInputApcs(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=TRUE)$Apc.Signed
+GetSingleInputApcs(function(df) return(df$u * df$v), exampleDF2, u="u", v="v", renormalizeWeights=TRUE)$PerUnitInput.Signed
 ```
 
