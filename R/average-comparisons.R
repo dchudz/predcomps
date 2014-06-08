@@ -1,4 +1,4 @@
-#' GetSingleInputPredComps
+#' GetSingleInputApcs
 #' 
 #' makes predictive comparison summaries (APC and impact, absolute and signed) by forming an data frame of pairs with appropriate weights and then calling `ComputeApcFromPairs`. 
 #' Only works fore continuous inputs right now
@@ -11,7 +11,18 @@
 #' @return a list with: \code{signed} (the usual Apc) and \code{absolute} (Apc applied to the absolute value of the differences)
 #' 
 #' @export
-GetSingleInputPredComps <- function(predictionFunction, X, u, v, ...) {
+#' 
+#' @examples
+#' n <- 200
+#' x1 <- runif(n = n, min = 0, max = 1)
+#' x2 <- runif(n = n, min = 0, max = 1)
+#' x3 <- runif(n = n, min = 0, max = 10)
+#' y <- 2 * x1 + (-2) * x2 + 1 * x3 + rnorm(n, sd = 0.1)
+#' df <- data.frame(x1, x2, x3, y)
+#' fittedLm <- lm(y ~ ., data = df)
+#' fittedLm
+#' GetSingleInputApcs(fittedLm, df, "x2", c("x1", "x3"))
+GetSingleInputApcs <- function(predictionFunction, X, u, v, ...) {
   pairs <- GetPairs(X, u, v, ...)
   return(
     list(Apc.Signed = ComputeApcFromPairs(predictionFunction, pairs, u, v),

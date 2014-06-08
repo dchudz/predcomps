@@ -11,7 +11,7 @@
 #' @param k Weights are (1 / (k + Mahalanobis distance))
 #' @return a list with: \code{signed} (the usual Apc) and \code{absolute} (Apc applied to the absolute value of the differences)
 #' @export
-GetSingleInputPredComps <- function(predictionFunction, X, u, v, ...) {
+GetSingleInputApcs <- function(predictionFunction, X, u, v, ...) {
   pairs <- GetPairs(X, u, v, ...)
   return(
     list(Apc.Signed = ComputeApcFromPairs(predictionFunction, pairs, u, v),

@@ -16,7 +16,7 @@ GetPredCompsDF <- function(model, df, inputVars = NULL, ...) {
   apcList <-  Map(function(currentVar) {
     cat(paste("Working on:", currentVar, "\n"))
     data.frame(Input = currentVar,
-               GetSingleInputPredComps(model, 
+               GetSingleInputApcs(model, 
                                        df, 
                                        currentVar, 
                                        c(setdiff(inputVars, currentVar)),

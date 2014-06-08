@@ -33,10 +33,11 @@ GetPairs <- function(X, u, v,
                      mahalanobisConstantTerm=1) {
   
   assert_that(length(u) == 1) # make sure we have exactly 1 input var of interest
-  for (columnName %in% c(u,v)) {
+  for (columnName in c(u,v)) {
     assert_that(columnName %in% names(X))
-    if (!(type(X[[columnName]] %in% c("integer", "numeric")))) {
-      stop("Sorry, I can only deal with integer and numeric types for now.")
+    columnClass <- class(X[[columnName]])
+    if (!(columnClass) %in% c("integer", "numeric")) {
+      stop(sprintf("Sorry, column %s is of class %s. I can only deal with integer and numeric types for now.", columnName, columnClass))
     }
   }
   
