@@ -10,13 +10,22 @@
 #' @param u input of interest
 #' @param v other inputs
 #' @param mahalanobisConstantTerm Weights are (1 / (mahalanobisConstantTerm + Mahalanobis distance))
-#' @param numForTransitionStart
-#' @param numForTransitionEnd
+#' @param numForTransitionStart number of rows to use as the start points of transitions (defaulting to `NULL`, we use all rows)
+#' @param numForTransitionEnd number of rows to use as potential end points of transitions (defaulting to `NULL`, we use all rows)
+#' @param onlyIncludeNearestN for each transition start, we only include as transition end points the nearest `onlyIncludeNearestN` rows  (defaulting to `NULL`, we use all rows)
 #' @return a data frame with the inputs \code{v} from the first of each pair, \code{u} from each half (with ".B" appended to the second), and the Mahalanobis distances between the pairs.
-#' @examples
-#' # Should put unit test example here
-#' 
 #' @export
+#' @examples
+#' v <- rnorm(100)
+#' u <- v + 0.3*rnorm(100)
+#' qplot(v,u)
+#' X = data.frame(v=v,u=u)
+#' pairsDF <- GetPairs(X, "v", "u")
+#' pairsDFRow1 <- subset(pairsDF, OriginalRowNumber==1)
+#' # When we subset to one "original row number", all of the v's are the same:
+#' print(pairsDFRow1$v)
+#' # ... and u's corresponding to closer v.B (the v in the second element of the pair) have higher weight:
+#' qplot(u.B, Weight, data=pairsDFRow1)
 GetPairs <- function(X, u, v,
                      numForTransitionStart = NULL,
                      numForTransitionEnd = NULL,
@@ -24,6 +33,12 @@ GetPairs <- function(X, u, v,
                      mahalanobisConstantTerm=1) {
   
   assert_that(length(u) == 1) # make sure we have exactly 1 input var of interest
+  for (columnName %in% c(u,v)) {
+    assert_that(columnName %in% names(X))
+    if (!(type(X[[columnName]] %in% c("integer", "numeric")))) {
+      stop("Sorry, I can only deal with integer and numeric types for now.")
+    }
+  }
   
   if (!is.null(numForTransitionStart)) {
     X1 <- X[sample.int(nrow(X), size=numForTransitionStart), c(v,u)] 
@@ -54,23 +69,12 @@ GetPairs <- function(X, u, v,
   distDF <- as.data.frame(as.table(distMatrix))
   names(distDF) <- c("OriginalRowNumber.B", "OriginalRowNumber", "MahalanobisDistance")
   
-  #   browser()
-  # This isn't really doing its filter properly. Something is wrong!
   if (!is.null(onlyIncludeNearestN)) {
     distDF <- distDF %.% 
       group_by(OriginalRowNumber) %.% 
       filter(rank(MahalanobisDistance, ties.method="random") < onlyIncludeNearestN)
   }
-  #   
-  #   distDF2 <- distDF %.% group_by(OriginalRowNumber) %.% mutate(rn = rank(MahalanobisDistance, ties.method="random"))  
-  #   
-  #   (subset(distDF, OriginalRowNumber == 1))
-  #   (subset(distDF2, OriginalRowNumber == 1))
-  #   
-  
-  #   sort(subset(distDF, OriginalRowNumber == 1)$MahalanobisDistance)
-  #   sort(subset(distDF2, OriginalRowNumber == 1)$MahalanobisDistance)
-  
+
   pairs <- merge(X1, distDF, by = "OriginalRowNumber")
   pairs <- merge(X2, pairs, by = "OriginalRowNumber.B", suffixes = c(".B", ""))
   pairs$Weight <- 1/(mahalanobisConstantTerm + pairs$MahalanobisDistance)
@@ -93,6 +97,14 @@ GetPairs <- function(X, u, v,
 #' For a sample of transition start rows, we plot rank of transition end (by increasing weight) vs. cumulative weight. This gives a sense of how much weight is going into the nearest points vs. further ones.
 #' 
 #' @export
+#' @examples
+#' v <- rnorm(100)
+#' u <- v + 0.3*rnorm(100)
+#' X = data.frame(v=v,u=u)
+#' pairsDF <- GetPairs(X, "v", "u")
+#' pairsDFRow1 <- subset(pairsDF, OriginalRowNumber==1)
+#' # For most original rows, we get 75% of the weight in 50% of the pairs:
+#' PlotPairCumulativeWeights(pairsDF)
 
 PlotPairCumulativeWeights <- function(pairs, numOriginalRowNumbersToPlot = 20) {
   rowNumSample <- sample(unique(pairs$OriginalRowNumber))[1:numOriginalRowNumbersToPlot]

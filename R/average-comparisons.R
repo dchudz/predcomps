@@ -9,7 +9,6 @@
 #' @param v a string naming the other inputs
 #' @param ... other arguments to be passed to `GetPairs`
 #' @return a list with: \code{signed} (the usual Apc) and \code{absolute} (Apc applied to the absolute value of the differences)
-#' @example
 #' 
 #' @export
 GetSingleInputPredComps <- function(predictionFunction, X, u, v, ...) {

@@ -15,9 +15,18 @@ GetPairs(X, u, v, numForTransitionStart = NULL, numForTransitionEnd = NULL,
   \item{mahalanobisConstantTerm}{Weights are (1 /
   (mahalanobisConstantTerm + Mahalanobis distance))}
 
-  \item{numForTransitionStart}{}
+  \item{numForTransitionStart}{number of rows to use as the
+  start points of transitions (defaulting to `NULL`, we use
+  all rows)}
 
-  \item{numForTransitionEnd}{}
+  \item{numForTransitionEnd}{number of rows to use as
+  potential end points of transitions (defaulting to
+  `NULL`, we use all rows)}
+
+  \item{onlyIncludeNearestN}{for each transition start, we
+  only include as transition end points the nearest
+  `onlyIncludeNearestN` rows (defaulting to `NULL`, we use
+  all rows)}
 }
 \value{
 a data frame with the inputs \code{v} from the first of
@@ -47,6 +56,15 @@ transition ends for each transition start (instead of all
 pairs).
 }
 \examples{
-# Should put unit test example here
+v <- rnorm(100)
+u <- v + 0.3*rnorm(100)
+qplot(v,u)
+X = data.frame(v=v,u=u)
+pairsDF <- GetPairs(X, "v", "u")
+pairsDFRow1 <- subset(pairsDF, OriginalRowNumber==1)
+# When we subset to one "original row number", all of the v's are the same:
+print(pairsDFRow1$v)
+# ... and u's corresponding to closer v.B (the v in the second element of the pair) have higher weight:
+qplot(u.B, Weight, data=pairsDFRow1)
 }
 
