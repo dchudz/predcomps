@@ -244,7 +244,7 @@ ggplot(subset(apcAllVariations, Input=="Quality")) +
   geom_point(aes(x=factor(Variation), y=PerUnitInput.Signed), size=3) + 
   expand_limits(y=0) +
   xlab("Variation") + 
-  ggtitle("APC for Quality across Variations")
+  ggtitle("Per Unit Quality APC for Quality across Variations")
 
 ```
 

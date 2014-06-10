@@ -1,6 +1,6 @@
 #' GetSingleInputApcs
 #' 
-#' makes predictive comparison summaries (APC and impact, absolute and signed) by forming an data frame of pairs with appropriate weights and then calling `ComputeApcFromPairs`. 
+#' makes predictive comparison summaries (both per unit input and impact, both absolute and signed) by forming an data frame of pairs with appropriate weights and then calling `ComputeApcFromPairs`. 
 #' Only works fore continuous inputs right now
 #' 
 #' @param predictionFunction this could be a function (which takes data frame and makes returns a vector of predictions) or an object of class `lm`, `glm`, or `randomForest`

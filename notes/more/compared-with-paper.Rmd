@@ -12,7 +12,7 @@ Gelman & Pardoe mention an unsigned version APCs in the case where the input of 
 
 ### Impact: A variation on APCs with comparable units
 
-I've created a statistic similar to the APC, but which addresses two issues I've had with APCs:
+I've created a statistic similar to the original APC, but which addresses two issues I've had with APCs:
 
 1. APCs are good for their purpose (the expected difference in outcome per unit change in input), but it doesn't tell me the what difference an input makes to my predictions. The APC could be high while the variation in the input is so small that it doesn't make a difference.
 
@@ -22,7 +22,7 @@ Both (1) and (2) could be addressed by standardizing the coefficients before com
 
 I'm calling this notion *impact* (feel free to suggest another name), and it's described in more detail [here](impact.html) and in the examples. Just like APCs, it comes in signed and absolute forms.
 
-### All-else-equal Curves
+### All-else-equal Curves / Sensitivity Analysis
 
 To visualize the model in more detail than is provided by our aggregated predictive comparisons, we can plot $u$ vs. the prediction at a variaty of values of $v$. In order that these plots represent $p(u|v)$, we can use the same set of pairs/weights as is constructed for computing aggregated predictive comparisons.
 

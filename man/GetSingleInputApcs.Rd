@@ -24,10 +24,11 @@ a list with: \code{signed} (the usual Apc) and
 differences)
 }
 \description{
-makes predictive comparison summaries (APC and impact,
-absolute and signed) by forming an data frame of pairs with
-appropriate weights and then calling `ComputeApcFromPairs`.
-Only works fore continuous inputs right now
+makes predictive comparison summaries (both per unit input
+and impact, both absolute and signed) by forming an data
+frame of pairs with appropriate weights and then calling
+`ComputeApcFromPairs`. Only works fore continuous inputs
+right now
 }
 \examples{
 n <- 200
