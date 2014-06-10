@@ -236,18 +236,18 @@ apcDF <- GetPredCompsDF(rfFit, credit, numForTransitionStart = numForTransitionS
 
 
 ```
-## |Input                                 |  Apc.Signed|  Apc.Absolute|  Impact.Signed|  Impact.Absolute|
-## |:-------------------------------------|-----------:|-------------:|--------------:|----------------:|
-## |RevolvingUtilizationOfUnsecuredLines  |   8.265e-02|     1.590e-01|       0.024470|          0.04707|
-## |age                                   |  -3.263e-04|     2.496e-03|      -0.004750|          0.03633|
-## |NumberOfTime30.59DaysPastDueNotWorse  |   3.873e-02|     7.057e-02|       0.014864|          0.02708|
-## |DebtRatio                             |   8.705e-03|     1.888e-01|       0.001614|          0.03500|
-## |MonthlyIncome                         |   3.270e-07|     9.794e-06|       0.001104|          0.03307|
-## |NumberOfOpenCreditLinesAndLoans       |   1.634e-03|     7.746e-03|       0.007147|          0.03387|
-## |NumberOfTimes90DaysLate               |   1.511e-01|     1.889e-01|       0.021397|          0.02676|
-## |NumberRealEstateLoansOrLines          |   2.855e-03|     2.294e-02|       0.002085|          0.01675|
-## |NumberOfTime60.89DaysPastDueNotWorse  |   9.203e-02|     1.853e-01|       0.007781|          0.01567|
-## |NumberOfDependents                    |   4.221e-03|     1.849e-02|       0.004173|          0.01828|
+## |Input                                 |  PerUnitInput.Signed|  PerUnitInput.Absolute|  Impact.Signed|  Impact.Absolute|
+## |:-------------------------------------|--------------------:|----------------------:|--------------:|----------------:|
+## |RevolvingUtilizationOfUnsecuredLines  |            8.265e-02|              1.590e-01|       0.024470|          0.04707|
+## |age                                   |           -3.263e-04|              2.496e-03|      -0.004750|          0.03633|
+## |NumberOfTime30.59DaysPastDueNotWorse  |            3.873e-02|              7.057e-02|       0.014864|          0.02708|
+## |DebtRatio                             |            8.705e-03|              1.888e-01|       0.001614|          0.03500|
+## |MonthlyIncome                         |            3.270e-07|              9.794e-06|       0.001104|          0.03307|
+## |NumberOfOpenCreditLinesAndLoans       |            1.634e-03|              7.746e-03|       0.007147|          0.03387|
+## |NumberOfTimes90DaysLate               |            1.511e-01|              1.889e-01|       0.021397|          0.02676|
+## |NumberRealEstateLoansOrLines          |            2.855e-03|              2.294e-02|       0.002085|          0.01675|
+## |NumberOfTime60.89DaysPastDueNotWorse  |            9.203e-02|              1.853e-01|       0.007781|          0.01567|
+## |NumberOfDependents                    |            4.221e-03|              1.849e-02|       0.004173|          0.01828|
 ```
 
 

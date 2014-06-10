@@ -1,4 +1,4 @@
-all: root examples more bar.html
+all: root examples more presentation-bar.html
 
 root: index.html apc.html impact.html
 
@@ -7,9 +7,16 @@ examples: examples-diamonds.html examples-simulated-linear-model-interactions.ht
 
 more: more-compared-with-paper.html more-future-work.html more-pairs-and-weights.html
 
+### PDF Manual
+
+predcomps-manual.pdf: ../predcomps/R/*
+	(cd ../predcomps/ && Rscript -e "print(getwd()); library(methods); library(utils); library(devtools); document();")
+	(cd ../predcomps/ && R CMD check .)
+	cp ../predcomps/..Rcheck/predcomps-manual.pdf predcomps-manual.pdf
+
 ### Presentations
 ###
-bar.html: ../predcomps/notes/presentations/Bar.Rmd examples-wine-logistic-regression.html
+presentation-bar.html: ../predcomps/notes/presentations/Bar.Rmd examples-wine-logistic-regression.html examples-loan-defaults.html
 	Rscript -e " \
 	library(knitr); \
 	knit('../predcomps/notes/presentations/Bar.Rmd', output='markdown/Bar.md'); \

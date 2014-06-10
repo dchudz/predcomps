@@ -4,22 +4,15 @@ layout: page
 
 <h2>Future work</h2>
 
-<h3>Comparison with other approaches</h3>
-
-<p>For example, I&#39;d like to compare with the tools (variable importance and partial plots) available in the <code>randomForest</code> package. I would guess that those tools are the most similar thing to this that&#39;s in common use.</p>
-
-<p>Other notions of variable importance to compare with:</p>
-
-<ul>
-<li>the one in the <code>earth</code> package (implementing MARS)</li>
-<li>I should look through <code>caret</code> to see what&#39;s available there</li>
-</ul>
-
 <h3>Categorical inputs</h3>
 
 <p>I&#39;m not quite sure about the best way to sample from the distribution for an input of interest, conditional on the other inputs, when those other inputs include categorical variables.</p>
 
 <p>Gelman &amp; Pardoe 2007 discuss what to do when the input of interest is an unordered categorical variable, but I&#39;m mainly interested in applying the statistic I&#39;m calling <a href="impact.html"><em>impact</em></a> to categorical variables, since <em>impact</em> is comparable across all types of inputs.</p>
+
+<h3>Distribution of predictive comparisons</h3>
+
+<p>Rigth now we&#39;re just providing point summaries. It&#39;d be nice to see the distribution. (This is different from accounting for model uncertainty.)</p>
 
 <h3>Uncertainty</h3>
 
@@ -29,9 +22,21 @@ layout: page
 
 <h3>Weights</h3>
 
-<p>More study is necessary to understand better what the weights should be, and make automated choices.</p>
+<p>More work is necessary to understand better what the weights should be / how to best represent the appropriate conditional distributions. Maybe in some cases we should even drop the distance-based approach and use something like BART?</p>
 
 <h3>Code robustness</h3>
 
 <p>I should deal with potential column name conflicts in data frames (e.g. I use a &ldquo;Weight&rdquo; column, so I&#39;ll have problems if one of the inputs has that name).</p>
+
+<h3>Other tools/methods for understanding complicated models</h3>
+
+<p>I&#39;d like to compile a list of other work in this direction, maybe comparing them with this (and perhaps giving examples that show why/when you&#39;d want to use this instead).</p>
+
+<p>I should add a page discussing other methods people have used to get at somewhat the same idea.</p>
+
+<ul>
+<li><code>randomForest</code> package in R (partial plots, variable importance)</li>
+<li><code>earth</code> package in R (variable importance)</li>
+<li>I should look through <code>caret</code> to see what&#39;s available there</li>
+</ul>
 
