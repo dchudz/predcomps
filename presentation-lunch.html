@@ -37,7 +37,6 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <div id="an-r-package-to-help-interpret-predictive-models" class="slide section level2">
 <h1>An R Package to Help Interpret Predictive Models:</h1>
 <h3 id="average-predictive-comparisons">(Average) Predictive Comparisons</h3>
-<p>Refactorings Hangout</p>
 <p>David Chudzicki</p>
 </div>
 <div id="related-concepts" class="slide section level2">
@@ -350,28 +349,8 @@ apcDF &lt;-<span class="st"> </span><span class="kw">GetPredCompsDF</span>(rfFit
 ## |-------------------:|-------------------------------------:|
 ## |                   0|                                     0|</code></pre>
 </div>
-<div id="a-cruder-approach" class="slide section level2">
-<h1>A Cruder Approach</h1>
-<p>As an example, this is the <a href="http://beckmw.wordpress.com/2013/10/07/sensitivity-analysis-for-neural-networks/#ref1">approach</a> linked in that BAR thread (“Algorithms are simple mathematical formulas that nobody understands.”)</p>
-<ul class="incremental">
-<li>(by default) determine a 6 representative values for “all else” according to percentiles: one for minimum of each, one for 20th percentile, 40th percentile, etc.</li>
-<li>vary the input of interest, holding “all else” at those values</li>
-</ul>
-</div>
-<div id="a-cruder-approach-can-give-wrong-results" class="slide section level2">
-<h1>A Cruder Approach Can Give Wrong Results</h1>
-<p>E.g. <span class="math">\(x_1\)</span>, <span class="math">\(x_2\)</span> related like this, independent of <span class="math">\(x_3\)</span>:</p>
-<div class="figure">
-<img src="figure/unnamed-chunk-23.png" />
-</div>
-<p>With <span class="math">\(y = x_1 x_2 x_3\)</span></p>
-<ul class="incremental">
-<li>maybe this isn’t a horrible issue in practice? my example required a 3-way interaction.</li>
-<li>but I think the point still holds in practice (though maybe less extreme) that this isn’t how we want to look at things</li>
-</ul>
-</div>
-<div id="partial-plots" class="slide section level2">
-<h1>“Partial Plots”</h1>
+<div id="alternative-approach-to-sensitivity-analysis-partial-plots" class="slide section level2">
+<h1>Alternative Approach to Sensitivity Analysis: “Partial Plots”</h1>
 <ul class="incremental">
 <li>e.g. <code>partialPlot</code> function in <code>randomForest</code> library in R</li>
 </ul>
@@ -413,7 +392,7 @@ apcDF &lt;-<span class="st"> </span><span class="kw">GetPredCompsDF</span>(rfFit
 <pre><code>## Warning: Removed 110 rows containing missing values (stat_summary).
 ## Warning: Removed 110 rows containing missing values (geom_point).</code></pre>
 <div class="figure">
-<img src="figure/unnamed-chunk-27.png" />
+<img src="figure/unnamed-chunk-26.png" />
 </div>
 </div>
 <div id="comparison-with-other-approaches" class="slide section level2">

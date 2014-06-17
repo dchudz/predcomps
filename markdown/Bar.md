@@ -5,8 +5,6 @@
 
 ### (Average) Predictive Comparisons
 
-Refactorings Hangout
-
 David Chudzicki
 
 
@@ -329,27 +327,7 @@ Summaries like this can guide questions that push is to dig deeper, like:
 ```
 
 
-
-## A Cruder Approach
-
-As an example, this is the [approach](http://beckmw.wordpress.com/2013/10/07/sensitivity-analysis-for-neural-networks/#ref1) linked in that BAR thread ("Algorithms are simple mathematical formulas that nobody understands.”)
-
-- (by default) determine a 6 representative values for "all else" according to percentiles: one for minimum of each, one for 20th percentile, 40th percentile, etc.
-- vary the input of interest, holding "all else" at those values
-
-## A Cruder Approach Can Give Wrong Results
-
-E.g. $x_1$, $x_2$ related like this, independent of $x_3$: 
-
-![](figure/unnamed-chunk-23.png) 
-
-
-With  $y = x_1 x_2 x_3$
-
-- maybe this isn't a horrible issue in practice? my example required a 3-way interaction. 
-- but I think the point still holds in practice (though maybe less extreme) that this isn't how we want to look at things
-
-## "Partial Plots"
+## Alternative Approach to Sensitivity Analysis: "Partial Plots"
 
 - e.g. `partialPlot` function in `randomForest` library in R
 
@@ -410,7 +388,7 @@ Repeat the row varying $u$ across its whole range:
 ## Warning: Removed 110 rows containing missing values (geom_point).
 ```
 
-![](figure/unnamed-chunk-27.png) 
+![](figure/unnamed-chunk-26.png) 
 
 
 
@@ -443,6 +421,7 @@ Things that vary
 - I use Gelman's weights, but only looking at a fixed number of the closest points
 - Computational advantage: fewer points to deal with
 - A few example 
+
 
 ```
 ## 
