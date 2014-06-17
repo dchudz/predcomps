@@ -1,4 +1,4 @@
-all: root examples more presentation-bar.html
+all: root examples more presentation-bar.html presentations
 
 root: index.html apc.html impact.html
 
@@ -16,12 +16,19 @@ predcomps-manual.pdf: ../predcomps/R/*
 
 ### Presentations
 ###
+presentations: presentation-bar.html presentation-lunch.html
+
 presentation-bar.html: ../predcomps/notes/presentations/Bar.Rmd examples-wine-logistic-regression.html examples-loan-defaults.html
 	Rscript -e " \
 	library(knitr); \
 	knit('../predcomps/notes/presentations/Bar.Rmd', output='markdown/Bar.md'); \
 	system(paste('pandoc -s -S -i -t slidy --mathjax', 'markdown/Bar.md', '-o', 'presentation-bar.html'))"
 
+presentation-lunch.html: ../predcomps/notes/presentations/Lunch.Rmd examples-wine-logistic-regression.html examples-loan-defaults.html
+	Rscript -e " \
+	library(knitr); \
+	knit('../predcomps/notes/presentations/Lunch.Rmd', output='markdown/Bar.md'); \
+	system(paste('pandoc -s -S -i -t slidy --mathjax', 'markdown/Bar.md', '-o', 'presentation-lunch.html'))"
 
 
 ### Root
