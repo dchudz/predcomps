@@ -1,3 +1,17 @@
+Changes to make:
+
+- Flesh out motivating examples in much more detail
+  - logistic regression: more explanation / focus on logistic regression equation
+  - maybe nothing different for other example?
+
+- For ML audience: lead more on how you would use it by switching order to:
+ - wine as is
+ - calling API on wine
+ - credit
+ - THEN the math definitions
+ - comparison with other approaches
+
+
 ```{r echo=FALSE, message=FALSE}
 load(file="../examples/wine-logistic-regression.RData")
 library(ggplot2)
