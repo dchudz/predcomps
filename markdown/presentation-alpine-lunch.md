@@ -6,6 +6,11 @@
 
 David Chudzicki
 
+- These slides: [http://www.davidchudzicki.com/predcomps/presentation-alpine-lunch.html](http://www.davidchudzicki.com/predcomps/presentation-alpine-lunch.html)
+- Package documentation: [http://www.davidchudzicki.com/predcomps/](http://www.davidchudzicki.com/predcomps/)
+- Package source: [https://github.com/dchudz/predcomps/](https://github.com/dchudz/predcomps/)
+- Slide source: [https://github.com/dchudz/predcomps/blob/master/notes/presentations/AlpineLunch.Rmd](https://github.com/dchudz/predcomps/blob/master/notes/presentations/AlpineLunch.Rmd)
+
 
 ## Related concepts
 
