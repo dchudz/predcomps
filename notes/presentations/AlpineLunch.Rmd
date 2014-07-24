@@ -1,29 +1,8 @@
-Changes to make:
-
-- Flesh out motivating examples in much more detail
-  - logistic regression: more explanation / focus on logistic regression equation
-  - maybe nothing different for other example?
-
-- For ML audience: lead more on how you would use it by switching order to:
- - wine as is
- - calling API on wine
- - credit
- - THEN the math definitions
- - comparison with other approaches
-
-Anthony feedback:
-
-- Say earlier why we're doing wine example
-- why are we looking at wine example?
-- picture in motivation for the equations
-- do the exercise live
-- don't need histograms or feature definitions
-
-
 ```{r echo=FALSE, message=FALSE}
 load(file="../examples/wine-logistic-regression.RData")
 library(ggplot2)
 theme_set(theme_gray(base_size = 18))
+library(grid)
 library(gridExtra)
 library(knitr)
 library(predcomps)
@@ -66,8 +45,13 @@ David Chudzicki
 - (Appendix) Estimation & Computation: how to get what we want
 - (Appendix) Comparison with other approaches
 
+## Example will show:
 
-## Silly Example
+1. Logistic regression coefficients may not be the right summary for a logistic regression
+2. Relationships among the inputs matter for measuring influence of each variable
+
+
+## Silly Fake Example
 
 - We sell wine
 - Wine varies in: price, quality
@@ -193,12 +177,67 @@ v3PlotWithCurves <- last_plot() + geom_line(aes(x = Quality, y = PurchaseProbabi
 v3PlotWithCurves
 ```
 
-## Lessons from this example
+## Lessons from fake example
 
-1. We want to interpret things on the scale we care about (probability in this case)
-2. Relationships among the inputs matter
+1. In each variation, the influence of the Quality changed without the regression coefficients changing
+2. Any approach to summarizing the influence should be sensitive to relationships among the input
 
-## Goal is single-number summaries
+## Headed toward single-summary summaries of average influence
+
+```{r fig.height=4}
+apcComparisonPlot <- ggplot(subset(apcAllVariations, Input=="Quality")) +
+  geom_bar(aes(x=factor(Variation, levels=3:1), y=PerUnitInput.Signed), stat="identity", width=.5) + 
+  expand_limits(y=0) +
+  xlab("Variation") + 
+  ggtitle("APC (Per Unit) for Quality across Variations") +
+  coord_flip()
+apcComparisonPlot
+grid.arrange(v1Plot + ggtitle("V1"), v2Plot + ggtitle("V2"), v3Plot + ggtitle("V3"), nrow=1)
+```
+
+
+## Generalizing Linear Regression
+
+```{r}
+nPoints <- 20
+set.seed(78)
+UnderlyingX <- rnorm(nPoints)
+df <- data.frame(X1=UnderlyingX + rnorm(nPoints), X2=UnderlyingX + rnorm(nPoints))
+df$NewX1 <- df$X1 + abs(.1*rnorm(nPoints)) # only positive transitions, for simplicity
+df$Y <- df$X1 + df$X2
+df$NewY <- df$NewX1 + df$X2
+
+ggplot(df) + 
+  geom_segment(aes(x=X1, y=Y, xend=NewX1, yend = NewY), arrow = arrow(length = unit(0.1,"cm"))) +
+  ggtitle("In linear model, per-unit change is consistent however you measure it")
+```
+
+## Generalizing Linear Regression
+
+```{r}
+nPoints <- 20
+set.seed(78)
+UnderlyingX <- rnorm(nPoints)
+df <- data.frame(X1=UnderlyingX + rnorm(nPoints), X2=UnderlyingX + rnorm(nPoints))
+df$NewX1 <- df$X1 + abs(.1*rnorm(nPoints)) # only positive transitions, for simplicity
+df$Y <- df$X1 + df$X2
+df$NewY <- df$NewX1 + df$X2
+
+ggplot(df) + 
+  geom_segment(aes(x=X1, y=Y, xend=NewX1, yend = NewY), arrow = arrow(length = unit(0.1,"cm"))) +
+  ggtitle("In linear model, per-unit change is consistent however you measure it")
+
+df$Y <- df$X1 * df$X2
+df$NewY <- df$NewX1 * df$X2
+
+ggplot(df) + 
+  geom_segment(aes(x=X1, y=Y, xend=NewX1, yend = NewY), arrow = arrow(length = unit(0.1,"cm"))) +
+  ggtitle("In non-linear model, per unit change depends on X1 values and other inputs")
+
+```
+
+
+## Goal for single-number summaries
 
 These concepts are vague, but keep them in mind as we try to formalize things in the next few slides:
 
@@ -254,7 +293,7 @@ apcComparisonPlot <- ggplot(subset(apcAllVariations, Input=="Quality")) +
   geom_bar(aes(x=factor(Variation, levels=3:1), y=PerUnitInput.Signed), stat="identity", width=.5) + 
   expand_limits(y=0) +
   xlab("Variation") + 
-  ggtitle("APC for Quality across Variations") +
+  ggtitle("APC (Per Unit) for Quality across Variations") +
   coord_flip()
 apcComparisonPlot
 grid.arrange(v1Plot + ggtitle("V1"), v2Plot + ggtitle("V2"), v3Plot + ggtitle("V3"), nrow=1)
@@ -268,22 +307,28 @@ Exercise for the reader: Make an example where APC is larger than in Variation 1
 load(file="../examples/loan-defaults.RData")
 ```
 
-- **SeriousDlqin2yrs** (target variable, 7% "yes"):  Person experienced 90 days past due delinquency or worse 
-- **RevolvingUtilizationOfUnsecuredLines**:  Total balance on credit cards and personal lines of credit except real estate and no installment debt like car loans divided by the sum of credit limits
-- **age**:	Age of borrower in years
-- **NumberOfTime30-59DaysPastDueNotWorse**:	Number of times borrower has been 30-59 days past due but no worse in the last 2 years.
-- **NumberOfTime60-89DaysPastDueNotWorse**:	Number of times borrower has been 60-89 days past due but no worse in the last 2 years.
-- **NumberOfTimes90DaysLate**:	Number of times borrower has been 90 days or more past due.
-- **DebtRatio**:	Monthly debt payments, alimony,living costs divided by monthy gross income
-- **MonthlyIncome**:	Monthly income
-- **NumberOfOpenCreditLinesAndLoans**:	Number of Open loans (installment like car loan or mortgage) and Lines of credit (e.g. credit cards)
-- **NumberRealEstateLoansOrLines**:	Number of mortgage and real estate loans including home equity lines of credit
-- **NumberOfDependents**:	Number of dependents in family excluding themselves (spouse, children etc.)
+Target:
 
+- **SeriousDlqin2yrs** (target variable, 7% "yes"):  Person experienced 90 days past due delinquency or worse 
+
+Features:
+
+- **age**
+- **NumberOfTime30-59DaysPastDueNotWorse**
+- **NumberOfTime60-89DaysPastDueNotWorse**
+- **NumberOfTimes90DaysLate**
+- **DebtRatio**
+- ...(etc., 10 features total)
 
 ## Input Distribution
 
-```{r fig.height = 12, echo=FALSE}
+```{r fig.height = 12, echo=FALSE, message=FALSE, warning=FALSE}
+histograms <- Map(function(colName) {
+  qplot(credit[[colName]]) + 
+    ggtitle(colName) +
+    xlab("")},
+  c("age", "NumberOfTime30.59DaysPastDueNotWorse", "NumberOfTime60.89DaysPastDueNotWorse", "NumberOfTimes90DaysLate"))
+allHistograms <- do.call(arrangeGrob, c(histograms, ncol=2))
 allHistograms
 ```
 
@@ -444,7 +489,7 @@ kable(oneRowRep)
 
 ## Partial Plot Method Applied to Wines
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 v3Plot + geom_point(aes(x=Quality, y=PurchaseProbability), stat="summary", fun.y="mean", data=linesDF) +
   geom_point(aes(x = Quality, y = PurchaseProbability, color = factor(Price)), 
                         data = linesDF,
@@ -483,6 +528,7 @@ Things that vary
 - Computational advantage: fewer points to deal with
 - A few example 
 
+
 ```{r}
 pairsOrdered <- pairs[order(pairs$OriginalRowNumber),]
 
@@ -493,3 +539,8 @@ for (i in 1:20) {
 
 ```
 
+## Better?
+
+Explicitly model the distribution $p(u|v)$?
+
+E.g. using BART (Bayesian Additive Regression Trees)
