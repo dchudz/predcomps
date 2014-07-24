@@ -1,33 +1,4 @@
-Changes to make:
 
-- Flesh out motivating examples in much more detail
-  - logistic regression: more explanation / focus on logistic regression equation
-  - maybe nothing different for other example?
-
-- For ML audience: lead more on how you would use it by switching order to:
- - wine as is
- - calling API on wine
- - credit
- - THEN the math definitions
- - comparison with other approaches
-
-Anthony feedback:
-
-- Say earlier why we're doing wine example
-- why are we looking at wine example?
-- picture in motivation for the equations
-- do the exercise live
-- don't need histograms or feature definitions
-
-
-
-```
-## Error: there is no package called 'gridExtra'
-```
-
-```
-## Error: there is no package called 'predcomps'
-```
 
 ## An R Package to Help Interpret Predictive Models: 
 
@@ -62,8 +33,13 @@ David Chudzicki
 - (Appendix) Estimation & Computation: how to get what we want
 - (Appendix) Comparison with other approaches
 
+## Example will show:
 
-## Silly Example
+1. Logistic regression coefficients may not be the right summary for a logistic regression
+2. Relationships among the inputs matter for measuring influence of each variable
+
+
+## Silly Fake Example
 
 - We sell wine
 - Wine varies in: price, quality
@@ -140,12 +116,26 @@ Again:
 
 ![](figure/unnamed-chunk-10.png) 
 
-## Lessons from this example
+## Lessons from fake example
 
-1. We want to interpret things on the scale we care about (probability in this case)
-2. Relationships among the inputs matter
+1. In each variation, the influence of the Quality changed without the regression coefficients changing
+2. Any approach to summarizing the influence should be sensitive to relationships among the input
 
-## Goal is single-number summaries
+## Headed toward single-summary summaries of average influence
+
+![](figure/unnamed-chunk-111.png) ![](figure/unnamed-chunk-112.png) 
+
+
+## Generalizing Linear Regression
+
+![](figure/unnamed-chunk-12.png) 
+
+## Generalizing Linear Regression
+
+![](figure/unnamed-chunk-131.png) ![](figure/unnamed-chunk-132.png) 
+
+
+## Goal for single-number summaries
 
 These concepts are vague, but keep them in mind as we try to formalize things in the next few slides:
 
@@ -196,11 +186,7 @@ where
 
 ## Returning to the wines...
 
-![](figure/unnamed-chunk-11.png) 
-
-```
-## Error: could not find function "grid.arrange"
-```
+![](figure/unnamed-chunk-141.png) ![](figure/unnamed-chunk-142.png) 
 
 Exercise for the reader: Make an example where APC is larger than in Variation 1 but "Impact" is much smaller.
 
@@ -208,25 +194,22 @@ Exercise for the reader: Make an example where APC is larger than in Variation 1
 
 
 
-- **SeriousDlqin2yrs** (target variable, 7% "yes"):  Person experienced 90 days past due delinquency or worse 
-- **RevolvingUtilizationOfUnsecuredLines**:  Total balance on credit cards and personal lines of credit except real estate and no installment debt like car loans divided by the sum of credit limits
-- **age**:	Age of borrower in years
-- **NumberOfTime30-59DaysPastDueNotWorse**:	Number of times borrower has been 30-59 days past due but no worse in the last 2 years.
-- **NumberOfTime60-89DaysPastDueNotWorse**:	Number of times borrower has been 60-89 days past due but no worse in the last 2 years.
-- **NumberOfTimes90DaysLate**:	Number of times borrower has been 90 days or more past due.
-- **DebtRatio**:	Monthly debt payments, alimony,living costs divided by monthy gross income
-- **MonthlyIncome**:	Monthly income
-- **NumberOfOpenCreditLinesAndLoans**:	Number of Open loans (installment like car loan or mortgage) and Lines of credit (e.g. credit cards)
-- **NumberRealEstateLoansOrLines**:	Number of mortgage and real estate loans including home equity lines of credit
-- **NumberOfDependents**:	Number of dependents in family excluding themselves (spouse, children etc.)
+Target:
 
+- **SeriousDlqin2yrs** (target variable, 7% "yes"):  Person experienced 90 days past due delinquency or worse 
+
+Features:
+
+- **age**
+- **NumberOfTime30-59DaysPastDueNotWorse**
+- **NumberOfTime60-89DaysPastDueNotWorse**
+- **NumberOfTimes90DaysLate**
+- **DebtRatio**
+- ...(etc., 10 features total)
 
 ## Input Distribution
 
-
-```
-## Error: No layers in plot
-```
+![](figure/unnamed-chunk-16.png) 
 
 Note: previous lateness (esp. 90+) days is rare.
 
@@ -277,10 +260,7 @@ apcDF <- GetPredCompsDF(rfFit, credit,
 
 (Showing impact rather than APC b/c the different APC units wouldn't be comparable, shouldn't go on one chart)
 
-
-```
-## Error: could not find function "PlotPredCompsDF"
-```
+![](figure/LoanDefaultImpact.png) 
 
 Summaries like this can guide questions that push is to dig deeper, like: 
 
@@ -294,7 +274,7 @@ Summaries like this can guide questions that push is to dig deeper, like:
 - want something that emphasizes the values that are plausible given the other values (two reasons: this is what we care about, and this is what our model has better estimates of)
 
 
-![](figure/unnamed-chunk-17.png) 
+![](figure/unnamed-chunk-20.png) 
 
 ## How we'll do sensitivity analysis
 
@@ -302,11 +282,11 @@ Summaries like this can guide questions that push is to dig deeper, like:
 - sample from $u$ conditional on $v$
 - plot $u$ vs. the prediction for each $v$
 
-![](figure/unnamed-chunk-18.png) 
+![](figure/unnamed-chunk-21.png) 
 
 ## Zooming in...
 
-![](figure/unnamed-chunk-19.png) 
+![](figure/unnamed-chunk-22.png) 
 
 - shows off some weird behavior of the model!
 - we should dig deeper, get more comfortable with the model
@@ -317,13 +297,13 @@ Summaries like this can guide questions that push is to dig deeper, like:
 
 - Mostly we see the increasing probability that we'd expect...
 
-![](figure/unnamed-chunk-20.png) 
+![](figure/unnamed-chunk-23.png) 
 
 ## Sensitivity: Number of Time 30-35 Days Past Due
 
 ... but in one case, probability of default *decreases* with the 0-to-1 transition
 
-![](figure/unnamed-chunk-21.png) 
+![](figure/unnamed-chunk-24.png) 
 
 ## Can we explain it?
 
@@ -408,13 +388,7 @@ Repeat the row varying $u$ across its whole range:
 
 ## Partial Plot Method Applied to Wines
 
-
-```
-## Warning: Removed 110 rows containing missing values (stat_summary).
-## Warning: Removed 110 rows containing missing values (geom_point).
-```
-
-![](figure/unnamed-chunk-26.png) 
+![](figure/unnamed-chunk-29.png) 
 
 
 
@@ -446,6 +420,7 @@ Things that vary
 - I use Gelman's weights, but only looking at a fixed number of the closest points
 - Computational advantage: fewer points to deal with
 - A few example 
+
 
 
 ```
@@ -691,3 +666,8 @@ Things that vary
 ## |98 |                20|  78|    0.6022|          7344|                              11|                                    0|                                      0|  0.05|  0.05| 0.0011|
 ```
 
+## Better?
+
+Explicitly model the distribution $p(u|v)$?
+
+E.g. using BART (Bayesian Additive Regression Trees)

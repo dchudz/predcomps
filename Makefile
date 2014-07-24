@@ -16,7 +16,7 @@ predcomps-manual.pdf: ../predcomps/R/*
 
 ### Presentations
 ###
-presentations: presentation-bar.html presentation-lunch.html
+presentations: presentation-bar.html presentation-lunch.html presentation-alpine-lunch.html
 
 presentation-bar.html: ../predcomps/notes/presentations/Bar.Rmd examples-wine-logistic-regression.html examples-loan-defaults.html
 	Rscript -e " \
@@ -29,6 +29,12 @@ presentation-lunch.html: ../predcomps/notes/presentations/Lunch.Rmd examples-win
 	library(knitr); \
 	knit('../predcomps/notes/presentations/Lunch.Rmd', output='markdown/Bar.md'); \
 	system(paste('pandoc -s -S -i -t slidy --mathjax', 'markdown/Bar.md', '-o', 'presentation-lunch.html'))"
+
+presentation-alpine-lunch.html: ../predcomps/notes/presentations/AlpineLunch.Rmd examples-wine-logistic-regression.html examples-loan-defaults.html
+	Rscript -e " \
+	library(knitr); \
+	knit('../predcomps/notes/presentations/AlpineLunch.Rmd', output='markdown/presentation-alpine-lunch.md'); \
+	system(paste('pandoc -s -S -i -t slidy --mathjax', 'markdown/presentation-alpine-lunch.md', '-o', 'presentation-alpine-lunch.html'))"
 
 
 ### Root

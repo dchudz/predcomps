@@ -1,261 +1,291 @@
-Changes to make:
-
-- Flesh out motivating examples in much more detail
-  - logistic regression: more explanation / focus on logistic regression equation
-  - maybe nothing different for other example?
-
-- For ML audience: lead more on how you would use it by switching order to:
- - wine as is
- - calling API on wine
- - credit
- - THEN the math definitions
- - comparison with other approaches
-
-Anthony feedback:
-
-- Say earlier why we're doing wine example
-- why are we looking at wine example?
-- picture in motivation for the equations
-- do the exercise live
-- don't need histograms or feature definitions
-
-
-
-```
-## Error: there is no package called 'gridExtra'
-```
-
-```
-## Error: there is no package called 'predcomps'
-```
-
-## An R Package to Help Interpret Predictive Models: 
-
-### (Average) Predictive Comparisons
-
-David Chudzicki
-
-
-## Related concepts
-
-- sensitivity analysis
-- elasticity
-- variable importance
-- partial dependence
-- etc.
-
-## **This** approach:
-
-- treats model as a black box
-- **tries to properly account for relationships among the inputs of interest**
-- based on Gelman & Pardoe (2007), which asked: "On average, much does the output increase per unit increase in input?"
-  
-
-## Plan
-
-1. Motivating fake example
-2. Predictive comparisons definitions: what we want 
-4. Applying average predictive comparisons to (1)
-5. An example with real data: credit scoring
-
-- Discussion!
-- (Appendix) Estimation & Computation: how to get what we want
-- (Appendix) Comparison with other approaches
-
-
-## Silly Example
-
-- We sell wine
-- Wine varies in: price, quality
-- Customers randomly do/don't buy, depending on price and quality
-
-## Logistic Regression
-
-- $P$: price ($)
-- $Q$: quality (score on arbitrary scale)
-- **Model**: $P(\text{wine is purchased}) = logit^{-1}(\beta_0 + \beta_1 Q + \beta_2 P)$
-
-![](figure/unnamed-chunk-2.png) 
-
-- difficulty: interpreting coefficients on logit scale
-
-
-**True model**: $P(\text{wine is purchased}) = logit^{-1}(0.1 Q - 0.12 P)$
-
-## Distribution of Inputs (variation 1):
-
-Price and quality are (noisily) related:
-
-![](figure/unnamed-chunk-3.png) 
-
-## We don't really need a model to understand this...
-
-(A random subset of the data. For clarity, showing only a discrete subset of prices.)
-
-![](figure/unnamed-chunk-4.png) 
-
-## We don't really need a model to understand this...
-
-For each individual price, quality vs. purchase probability forms a portion of a shifted inverse logit curve:
-
-![](figure/unnamed-chunk-5.png) 
-
-- how changes in price/quality affect $P(\text{wine is purchased})$ depends a lot on where you are in input space
-
-## Variation 2
-
-In another possible world, mid-range wines are more common:
-
-![](figure/unnamed-chunk-6.png) 
-
-- input distribution is changed
-- ... but model is not changed
-
-## In this world, quality matters more....
-
-- (more precisely, cases where quality matters are more common)
-
-![](figure/unnamed-chunk-7.png) 
-
-## Variation 3
-
-In a third possible world, price varies more strongly with quality:
-
-![](figure/unnamed-chunk-8.png) 
-
-Again:
-
-- input distribution is changed
-- ... but model is not changed, still $P(\text{wine is purchased}) = logit^{-1}(\beta_0 + \beta_1 Q + \beta_2 P)$
-
-## In this world, quality matters even more...
-
-- (more precisely: quality matters in all cases that we actually see)
-
-![](figure/unnamed-chunk-9.png) 
-
-## Now quality matters more
-
-... across all price ranges (for the kinds of variation **that we see in the data**)
-
-![](figure/unnamed-chunk-10.png) 
-
-## Lessons from this example
-
-1. We want to interpret things on the scale we care about (probability in this case)
-2. Relationships among the inputs matter
-
-## Goal is single-number summaries
-
-These concepts are vague, but keep them in mind as we try to formalize things in the next few slides:
-
-- **For each input, what is the average change in output per unit change in input?**
-(generalizes linear regression, units depend on units for input)
-
-- **How important is each input in influencing the output?**
-(units should be consistent across inputs -- think of standardized regression coefficients)
-
-## Some notation
-
-**$u$**: the variable under consideration
-
-**$v$**: the vector of other variables (the "all else held equal")
-
-**$f(u,v)$**: a function that makes predictions, e.g. maybe $f(u,v) = \mathcal{E}[y \mid u, v, \theta]$
-
-* We consider transitions in $u$ holding $v$ constant, e.g. $$\frac{f(u_2, v) - f(u_1, v)}{u_2-u_1}$$
-* To get one-point summaries we'll take an average
-* All of the subtlety lies in the choice of $v$, $u_1$, $u_2$
-
-
-## What average do we take?
-
-The APC is defined as
-
-$$\frac{\mathcal{E}[\Delta_f]}{\mathcal{E}[\Delta_u]}$$
-
-where
-
-* $\Delta_f = f(u_2,v) - f(u_1,v)$
-* $\Delta_u = u_2 - u_1$
-* $\mathcal{E}$ is expectation under the following process:
-
-1. sample $v$ from the (marginal) distribution of the corresponding inputs
-2. sample $u_1$ and $u_2$ independently from the distribution of $u$ conditional on $v$
-
-
-## Variations
-
-- "Impact" (my idea; help me with naming!) is just the expected value of $\Delta_f = f(u_2,v) - f(u_1,v)$
-- Absolute versions (of both impact and APC) use $\mathcal{E}[|\Delta_f|]$ and $\mathcal{E}[|\Delta_u|]$
-
-## Computation
-
-- Once we've said what we want, computing/estimating it isn't trivial
-- More on this in the discussion (depending on time/interest)
-
-## Returning to the wines...
-
-![](figure/unnamed-chunk-11.png) 
-
-```
-## Error: could not find function "grid.arrange"
-```
-
-Exercise for the reader: Make an example where APC is larger than in Variation 1 but "Impact" is much smaller.
-
-## Credit Scoring Example
-
-
-
-- **SeriousDlqin2yrs** (target variable, 7% "yes"):  Person experienced 90 days past due delinquency or worse 
-- **RevolvingUtilizationOfUnsecuredLines**:  Total balance on credit cards and personal lines of credit except real estate and no installment debt like car loans divided by the sum of credit limits
-- **age**:	Age of borrower in years
-- **NumberOfTime30-59DaysPastDueNotWorse**:	Number of times borrower has been 30-59 days past due but no worse in the last 2 years.
-- **NumberOfTime60-89DaysPastDueNotWorse**:	Number of times borrower has been 60-89 days past due but no worse in the last 2 years.
-- **NumberOfTimes90DaysLate**:	Number of times borrower has been 90 days or more past due.
-- **DebtRatio**:	Monthly debt payments, alimony,living costs divided by monthy gross income
-- **MonthlyIncome**:	Monthly income
-- **NumberOfOpenCreditLinesAndLoans**:	Number of Open loans (installment like car loan or mortgage) and Lines of credit (e.g. credit cards)
-- **NumberRealEstateLoansOrLines**:	Number of mortgage and real estate loans including home equity lines of credit
-- **NumberOfDependents**:	Number of dependents in family excluding themselves (spouse, children etc.)
-
-
-## Input Distribution
-
-
-```
-## Error: No layers in plot
-```
-
-Note: previous lateness (esp. 90+) days is rare.
-
-## Model Building
-
-We'll use a random forest for this example:
-
-
-```r
-set.seed(1)
-# Turning the response to type "factor" causes the RF to be build for classification:
-credit$SeriousDlqin2yrs <- factor(credit$SeriousDlqin2yrs) 
-rfFit <- randomForest(SeriousDlqin2yrs ~ ., data=credit, ntree=ntree)
-```
-
-## Aggregate Predictive Comparisons
-
-
-```r
-set.seed(1)
-apcDF <- GetPredCompsDF(rfFit, credit,
-                        numForTransitionStart = numForTransitionStart,
-                        numForTransitionEnd = numForTransitionEnd,
-                        onlyIncludeNearestN = onlyIncludeNearestN)
-```
-
-
-```
-## 
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" type="text/css" media="screen, projection, print"
+    href="http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css" />
+  <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+  <script src="http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js"
+    charset="utf-8" type="text/javascript"></script>
+</head>
+<body>
+<div id="an-r-package-to-help-interpret-predictive-models" class="slide section level2">
+<h1>An R Package to Help Interpret Predictive Models:</h1>
+<h3 id="average-predictive-comparisons">(Average) Predictive Comparisons</h3>
+<p>David Chudzicki</p>
+</div>
+<div id="related-concepts" class="slide section level2">
+<h1>Related concepts</h1>
+<ul class="incremental">
+<li>sensitivity analysis</li>
+<li>elasticity</li>
+<li>variable importance</li>
+<li>partial dependence</li>
+<li>etc.</li>
+</ul>
+</div>
+<div id="this-approach" class="slide section level2">
+<h1><strong>This</strong> approach:</h1>
+<ul class="incremental">
+<li>treats model as a black box</li>
+<li><strong>tries to properly account for relationships among the inputs of interest</strong></li>
+<li>based on Gelman &amp; Pardoe (2007), which asked: “On average, much does the output increase per unit increase in input?”</li>
+</ul>
+</div>
+<div id="plan" class="slide section level2">
+<h1>Plan</h1>
+<ol class="incremental" style="list-style-type: decimal">
+<li>Motivating fake example</li>
+<li>Predictive comparisons definitions: what we want</li>
+<li>Applying average predictive comparisons to (1)</li>
+<li>An example with real data: credit scoring</li>
+</ol>
+<ul class="incremental">
+<li>Discussion!</li>
+<li>(Appendix) Estimation &amp; Computation: how to get what we want</li>
+<li>(Appendix) Comparison with other approaches</li>
+</ul>
+</div>
+<div id="example-will-show" class="slide section level2">
+<h1>Example will show:</h1>
+<ol class="incremental" style="list-style-type: decimal">
+<li>Logistic regression coefficients may not be the right summary for a logistic regression</li>
+<li>Relationships among the inputs matter for measuring influence of each variable</li>
+</ol>
+</div>
+<div id="silly-fake-example" class="slide section level2">
+<h1>Silly Fake Example</h1>
+<ul class="incremental">
+<li>We sell wine</li>
+<li>Wine varies in: price, quality</li>
+<li>Customers randomly do/don’t buy, depending on price and quality</li>
+</ul>
+</div>
+<div id="logistic-regression" class="slide section level2">
+<h1>Logistic Regression</h1>
+<ul class="incremental">
+<li><span class="math">\(P\)</span>: price ($)</li>
+<li><span class="math">\(Q\)</span>: quality (score on arbitrary scale)</li>
+<li><strong>Model</strong>: <span class="math">\(P(\text{wine is purchased}) = logit^{-1}(\beta_0 + \beta_1 Q + \beta_2 P)\)</span></li>
+</ul>
+<div class="figure">
+<img src="figure/unnamed-chunk-2.png" />
+</div>
+<ul class="incremental">
+<li>difficulty: interpreting coefficients on logit scale</li>
+</ul>
+<p><strong>True model</strong>: <span class="math">\(P(\text{wine is purchased}) = logit^{-1}(0.1 Q - 0.12 P)\)</span></p>
+</div>
+<div id="distribution-of-inputs-variation-1" class="slide section level2">
+<h1>Distribution of Inputs (variation 1):</h1>
+<p>Price and quality are (noisily) related:</p>
+<div class="figure">
+<img src="figure/unnamed-chunk-3.png" />
+</div>
+</div>
+<div id="we-dont-really-need-a-model-to-understand-this" class="slide section level2">
+<h1>We don’t really need a model to understand this…</h1>
+<p>(A random subset of the data. For clarity, showing only a discrete subset of prices.)</p>
+<div class="figure">
+<img src="figure/unnamed-chunk-4.png" />
+</div>
+</div>
+<div id="we-dont-really-need-a-model-to-understand-this-1" class="slide section level2">
+<h1>We don’t really need a model to understand this…</h1>
+<p>For each individual price, quality vs. purchase probability forms a portion of a shifted inverse logit curve:</p>
+<div class="figure">
+<img src="figure/unnamed-chunk-5.png" />
+</div>
+<ul class="incremental">
+<li>how changes in price/quality affect <span class="math">\(P(\text{wine is purchased})\)</span> depends a lot on where you are in input space</li>
+</ul>
+</div>
+<div id="variation-2" class="slide section level2">
+<h1>Variation 2</h1>
+<p>In another possible world, mid-range wines are more common:</p>
+<div class="figure">
+<img src="figure/unnamed-chunk-6.png" />
+</div>
+<ul class="incremental">
+<li>input distribution is changed</li>
+<li>… but model is not changed</li>
+</ul>
+</div>
+<div id="in-this-world-quality-matters-more." class="slide section level2">
+<h1>In this world, quality matters more….</h1>
+<ul class="incremental">
+<li>(more precisely, cases where quality matters are more common)</li>
+</ul>
+<div class="figure">
+<img src="figure/unnamed-chunk-7.png" />
+</div>
+</div>
+<div id="variation-3" class="slide section level2">
+<h1>Variation 3</h1>
+<p>In a third possible world, price varies more strongly with quality:</p>
+<div class="figure">
+<img src="figure/unnamed-chunk-8.png" />
+</div>
+<p>Again:</p>
+<ul class="incremental">
+<li>input distribution is changed</li>
+<li>… but model is not changed, still <span class="math">\(P(\text{wine is purchased}) = logit^{-1}(\beta_0 + \beta_1 Q + \beta_2 P)\)</span></li>
+</ul>
+</div>
+<div id="in-this-world-quality-matters-even-more" class="slide section level2">
+<h1>In this world, quality matters even more…</h1>
+<ul class="incremental">
+<li>(more precisely: quality matters in all cases that we actually see)</li>
+</ul>
+<div class="figure">
+<img src="figure/unnamed-chunk-9.png" />
+</div>
+</div>
+<div id="now-quality-matters-more" class="slide section level2">
+<h1>Now quality matters more</h1>
+<p>… across all price ranges (for the kinds of variation <strong>that we see in the data</strong>)</p>
+<div class="figure">
+<img src="figure/unnamed-chunk-10.png" />
+</div>
+</div>
+<div id="lessons-from-fake-example" class="slide section level2">
+<h1>Lessons from fake example</h1>
+<ol class="incremental" style="list-style-type: decimal">
+<li>In each variation, the influence of the Quality changed without the regression coefficients changing</li>
+<li>Any approach to summarizing the influence should be sensitive to relationships among the input</li>
+</ol>
+</div>
+<div id="headed-toward-single-summary-summaries-of-average-influence" class="slide section level2">
+<h1>Headed toward single-summary summaries of average influence</h1>
+<p><img src="figure/unnamed-chunk-111.png" /> <img src="figure/unnamed-chunk-112.png" /></p>
+</div>
+<div id="generalizing-linear-regression" class="slide section level2">
+<h1>Generalizing Linear Regression</h1>
+<div class="figure">
+<img src="figure/unnamed-chunk-12.png" />
+</div>
+</div>
+<div id="generalizing-linear-regression-1" class="slide section level2">
+<h1>Generalizing Linear Regression</h1>
+<p><img src="figure/unnamed-chunk-131.png" /> <img src="figure/unnamed-chunk-132.png" /></p>
+</div>
+<div id="goal-for-single-number-summaries" class="slide section level2">
+<h1>Goal for single-number summaries</h1>
+<p>These concepts are vague, but keep them in mind as we try to formalize things in the next few slides:</p>
+<ul class="incremental">
+<li><p><strong>For each input, what is the average change in output per unit change in input?</strong> (generalizes linear regression, units depend on units for input)</p></li>
+<li><p><strong>How important is each input in influencing the output?</strong> (units should be consistent across inputs – think of standardized regression coefficients)</p></li>
+</ul>
+</div>
+<div id="some-notation" class="slide section level2">
+<h1>Some notation</h1>
+<p><strong><span class="math">\(u\)</span></strong>: the variable under consideration</p>
+<p><strong><span class="math">\(v\)</span></strong>: the vector of other variables (the “all else held equal”)</p>
+<p><strong><span class="math">\(f(u,v)\)</span></strong>: a function that makes predictions, e.g. maybe <span class="math">\(f(u,v) = \mathcal{E}[y \mid u, v, \theta]\)</span></p>
+<ul class="incremental">
+<li>We consider transitions in <span class="math">\(u\)</span> holding <span class="math">\(v\)</span> constant, e.g. <span class="math">\[\frac{f(u_2, v) - f(u_1, v)}{u_2-u_1}\]</span></li>
+<li>To get one-point summaries we’ll take an average</li>
+<li>All of the subtlety lies in the choice of <span class="math">\(v\)</span>, <span class="math">\(u_1\)</span>, <span class="math">\(u_2\)</span></li>
+</ul>
+</div>
+<div id="what-average-do-we-take" class="slide section level2">
+<h1>What average do we take?</h1>
+<p>The APC is defined as</p>
+<p><span class="math">\[\frac{\mathcal{E}[\Delta_f]}{\mathcal{E}[\Delta_u]}\]</span></p>
+<p>where</p>
+<ul class="incremental">
+<li><span class="math">\(\Delta_f = f(u_2,v) - f(u_1,v)\)</span></li>
+<li><span class="math">\(\Delta_u = u_2 - u_1\)</span></li>
+<li><span class="math">\(\mathcal{E}\)</span> is expectation under the following process:</li>
+</ul>
+<ol class="incremental" style="list-style-type: decimal">
+<li>sample <span class="math">\(v\)</span> from the (marginal) distribution of the corresponding inputs</li>
+<li>sample <span class="math">\(u_1\)</span> and <span class="math">\(u_2\)</span> independently from the distribution of <span class="math">\(u\)</span> conditional on <span class="math">\(v\)</span></li>
+</ol>
+</div>
+<div id="variations" class="slide section level2">
+<h1>Variations</h1>
+<ul class="incremental">
+<li>“Impact” (my idea; help me with naming!) is just the expected value of <span class="math">\(\Delta_f = f(u_2,v) - f(u_1,v)\)</span></li>
+<li>Absolute versions (of both impact and APC) use <span class="math">\(\mathcal{E}[|\Delta_f|]\)</span> and <span class="math">\(\mathcal{E}[|\Delta_u|]\)</span></li>
+</ul>
+</div>
+<div id="computation" class="slide section level2">
+<h1>Computation</h1>
+<ul class="incremental">
+<li>Once we’ve said what we want, computing/estimating it isn’t trivial</li>
+<li>More on this in the discussion (depending on time/interest)</li>
+</ul>
+</div>
+<div id="returning-to-the-wines" class="slide section level2">
+<h1>Returning to the wines…</h1>
+<p><img src="figure/unnamed-chunk-141.png" /> <img src="figure/unnamed-chunk-142.png" /></p>
+<p>Exercise for the reader: Make an example where APC is larger than in Variation 1 but “Impact” is much smaller.</p>
+</div>
+<div id="credit-scoring-example" class="slide section level2">
+<h1>Credit Scoring Example</h1>
+<p>Target:</p>
+<ul class="incremental">
+<li><strong>SeriousDlqin2yrs</strong> (target variable, 7% “yes”): Person experienced 90 days past due delinquency or worse</li>
+</ul>
+<p>Features:</p>
+<ul class="incremental">
+<li><strong>age</strong></li>
+<li><strong>NumberOfTime30-59DaysPastDueNotWorse</strong></li>
+<li><strong>NumberOfTime60-89DaysPastDueNotWorse</strong></li>
+<li><strong>NumberOfTimes90DaysLate</strong></li>
+<li><strong>DebtRatio</strong></li>
+<li>…(etc., 10 features total)</li>
+</ul>
+</div>
+<div id="input-distribution" class="slide section level2">
+<h1>Input Distribution</h1>
+<div class="figure">
+<img src="figure/unnamed-chunk-16.png" />
+</div>
+<p>Note: previous lateness (esp. 90+) days is rare.</p>
+</div>
+<div id="model-building" class="slide section level2">
+<h1>Model Building</h1>
+<p>We’ll use a random forest for this example:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">1</span>)
+<span class="co"># Turning the response to type &quot;factor&quot; causes the RF to be build for classification:</span>
+credit$SeriousDlqin2yrs &lt;-<span class="st"> </span><span class="kw">factor</span>(credit$SeriousDlqin2yrs) 
+rfFit &lt;-<span class="st"> </span><span class="kw">randomForest</span>(SeriousDlqin2yrs ~<span class="st"> </span>., <span class="dt">data=</span>credit, <span class="dt">ntree=</span>ntree)</code></pre>
+</div>
+<div id="aggregate-predictive-comparisons" class="slide section level2">
+<h1>Aggregate Predictive Comparisons</h1>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">1</span>)
+apcDF &lt;-<span class="st"> </span><span class="kw">GetPredCompsDF</span>(rfFit, credit,
+                        <span class="dt">numForTransitionStart =</span> numForTransitionStart,
+                        <span class="dt">numForTransitionEnd =</span> numForTransitionEnd,
+                        <span class="dt">onlyIncludeNearestN =</span> onlyIncludeNearestN)</code></pre>
+<pre><code>## 
 ## 
 ## |Input                                | PerUnitInput.Signed| PerUnitInput.Absolute| Impact.Signed| Impact.Absolute|
 ## |:------------------------------------|-------------------:|---------------------:|-------------:|---------------:|
@@ -268,117 +298,102 @@ apcDF <- GetPredCompsDF(rfFit, credit,
 ## |NumberOfTimes90DaysLate              |              0.1511|                0.1889|        0.0214|          0.0268|
 ## |NumberRealEstateLoansOrLines         |              0.0029|                0.0229|        0.0021|          0.0168|
 ## |NumberOfTime60.89DaysPastDueNotWorse |              0.0920|                0.1853|        0.0078|          0.0157|
-## |NumberOfDependents                   |              0.0042|                0.0185|        0.0042|          0.0183|
-```
-
-## Impact Plot
-
-(Showing +/- the absolute impact, since signed impact is bounded between those numbers)
-
-(Showing impact rather than APC b/c the different APC units wouldn't be comparable, shouldn't go on one chart)
-
-
-```
-## Error: could not find function "PlotPredCompsDF"
-```
-
-Summaries like this can guide questions that push is to dig deeper, like: 
-
-- What's going on with age? (To get the cancellation we see, it must have strong effects that vary in sign)
-- Why don't instances of previous lateness always increase your probability of a 90-days-past-due incident? (cancellation?)
-
-
-## Goals for sensitivity analysis
-
-- want something that properly accounts for relationships among variables of interest
-- want something that emphasizes the values that are plausible given the other values (two reasons: this is what we care about, and this is what our model has better estimates of)
-
-
-![](figure/unnamed-chunk-17.png) 
-
-## How we'll do sensitivity analysis
-
-- choose a few random values for $v$ (the "all else held equal")
-- sample from $u$ conditional on $v$
-- plot $u$ vs. the prediction for each $v$
-
-![](figure/unnamed-chunk-18.png) 
-
-## Zooming in...
-
-![](figure/unnamed-chunk-19.png) 
-
-- shows off some weird behavior of the model!
-- we should dig deeper, get more comfortable with the model
-- try other models
-
-
-## Sensitivity: Number of Time 30-35 Days Past Due
-
-- Mostly we see the increasing probability that we'd expect...
-
-![](figure/unnamed-chunk-20.png) 
-
-## Sensitivity: Number of Time 30-35 Days Past Due
-
-... but in one case, probability of default *decreases* with the 0-to-1 transition
-
-![](figure/unnamed-chunk-21.png) 
-
-## Can we explain it?
-
-
-```
-## 
+## |NumberOfDependents                   |              0.0042|                0.0185|        0.0042|          0.0183|</code></pre>
+</div>
+<div id="impact-plot" class="slide section level2">
+<h1>Impact Plot</h1>
+<p>(Showing +/- the absolute impact, since signed impact is bounded between those numbers)</p>
+<p>(Showing impact rather than APC b/c the different APC units wouldn’t be comparable, shouldn’t go on one chart)</p>
+<div class="figure">
+<img src="figure/LoanDefaultImpact.png" />
+</div>
+<p>Summaries like this can guide questions that push is to dig deeper, like:</p>
+<ul class="incremental">
+<li>What’s going on with age? (To get the cancellation we see, it must have strong effects that vary in sign)</li>
+<li>Why don’t instances of previous lateness always increase your probability of a 90-days-past-due incident? (cancellation?)</li>
+</ul>
+</div>
+<div id="goals-for-sensitivity-analysis" class="slide section level2">
+<h1>Goals for sensitivity analysis</h1>
+<ul class="incremental">
+<li>want something that properly accounts for relationships among variables of interest</li>
+<li>want something that emphasizes the values that are plausible given the other values (two reasons: this is what we care about, and this is what our model has better estimates of)</li>
+</ul>
+<div class="figure">
+<img src="figure/unnamed-chunk-20.png" />
+</div>
+</div>
+<div id="how-well-do-sensitivity-analysis" class="slide section level2">
+<h1>How we’ll do sensitivity analysis</h1>
+<ul class="incremental">
+<li>choose a few random values for <span class="math">\(v\)</span> (the “all else held equal”)</li>
+<li>sample from <span class="math">\(u\)</span> conditional on <span class="math">\(v\)</span></li>
+<li>plot <span class="math">\(u\)</span> vs. the prediction for each <span class="math">\(v\)</span></li>
+</ul>
+<div class="figure">
+<img src="figure/unnamed-chunk-21.png" />
+</div>
+</div>
+<div id="zooming-in" class="slide section level2">
+<h1>Zooming in…</h1>
+<div class="figure">
+<img src="figure/unnamed-chunk-22.png" />
+</div>
+<ul class="incremental">
+<li>shows off some weird behavior of the model!</li>
+<li>we should dig deeper, get more comfortable with the model</li>
+<li>try other models</li>
+</ul>
+</div>
+<div id="sensitivity-number-of-time-30-35-days-past-due" class="slide section level2">
+<h1>Sensitivity: Number of Time 30-35 Days Past Due</h1>
+<ul class="incremental">
+<li>Mostly we see the increasing probability that we’d expect…</li>
+</ul>
+<div class="figure">
+<img src="figure/unnamed-chunk-23.png" />
+</div>
+</div>
+<div id="sensitivity-number-of-time-30-35-days-past-due-1" class="slide section level2">
+<h1>Sensitivity: Number of Time 30-35 Days Past Due</h1>
+<p>… but in one case, probability of default <em>decreases</em> with the 0-to-1 transition</p>
+<div class="figure">
+<img src="figure/unnamed-chunk-24.png" />
+</div>
+</div>
+<div id="can-we-explain-it" class="slide section level2">
+<h1>Can we explain it?</h1>
+<pre><code>## 
 ## 
 ## |   | RevolvingUtilizationOfUnsecuredLines| age| DebtRatio| MonthlyIncome| NumberOfOpenCreditLinesAndLoans|
 ## |:--|------------------------------------:|---:|---------:|-------------:|-------------------------------:|
-## |15 |                                    1|  27|    0.1543|          4800|                               4|
-```
-
-```
-## 
+## |15 |                                    1|  27|    0.1543|          4800|                               4|</code></pre>
+<pre><code>## 
 ## 
 ## |   | NumberOfTimes90DaysLate| NumberRealEstateLoansOrLines| NumberOfTime60.89DaysPastDueNotWorse|
 ## |:--|-----------------------:|----------------------------:|------------------------------------:|
-## |15 |                       1|                            0|                                    0|
-```
-
-```
-## 
+## |15 |                       1|                            0|                                    0|</code></pre>
+<pre><code>## 
 ## 
 ## |   | NumberOfDependents| NumberOfTime30.59DaysPastDueNotWorse|
 ## |:--|------------------:|------------------------------------:|
-## |15 |                  0|                                    0|
-```
-
-## Alternative Approach to Sensitivity Analysis: "Partial Plots"
-
-- e.g. `partialPlot` function in `randomForest` library in R
-
-
-This accounts for relationships among the "all else held equal" but **not** between those and the input under consideration
-
-Make predictions on a new data set constructed as follows:
-
-
-
-One row:
-
-
-```
-## 
+## |15 |                  0|                                    0|</code></pre>
+</div>
+<div id="alternative-approach-to-sensitivity-analysis-partial-plots" class="slide section level2">
+<h1>Alternative Approach to Sensitivity Analysis: “Partial Plots”</h1>
+<ul class="incremental">
+<li>e.g. <code>partialPlot</code> function in <code>randomForest</code> library in R</li>
+</ul>
+<p>This accounts for relationships among the “all else held equal” but <strong>not</strong> between those and the input under consideration</p>
+<p>Make predictions on a new data set constructed as follows:</p>
+<p>One row:</p>
+<pre><code>## 
 ## 
 ## | v1|v2 |  v3|  u|
 ## |--:|:--|---:|--:|
-## |  1|a  | 2.3|  6|
-```
-
-Repeat the row varying $u$ across its whole range:
-
-
-```
-## 
+## |  1|a  | 2.3|  6|</code></pre>
+<p>Repeat the row varying <span class="math">\(u\)</span> across its whole range:</p>
+<pre><code>## 
 ## 
 ## |     | v1|v2 |  v3|  u|
 ## |:----|--:|:--|---:|--:|
@@ -401,55 +416,50 @@ Repeat the row varying $u$ across its whole range:
 ## |1.16 |  1|a  | 2.3| 17|
 ## |1.17 |  1|a  | 2.3| 18|
 ## |1.18 |  1|a  | 2.3| 19|
-## |1.19 |  1|a  | 2.3| 20|
-```
-
-- Then average predictions grouping by $u$ (or not)
-
-## Partial Plot Method Applied to Wines
-
-
-```
-## Warning: Removed 110 rows containing missing values (stat_summary).
-## Warning: Removed 110 rows containing missing values (geom_point).
-```
-
-![](figure/unnamed-chunk-26.png) 
-
-
-
-## Comparison with other approaches
-
-Things that vary
-
-- Units - depend on input or consistent across inputs
-- Sensitive to univariate distribution of inputs
-- Sensitive to dependence between inputs
-- Shows shape of non-linearity
-- Signed
-- Model
-- Based on holdout performance
-
-
-## Computing the APC
-
-- sampling a $v$ is easy (take a row from your data)
-- sampling $u_1$ given $v$ is easy (take the $u$ in that row)
-- sampling *another* $u$ ($u_2$) is harder
-- would be easy if you had a lot of data with the same $v$
-- so take $u$'s from rows of data where the correspinding $v$ is close to your $v$
-
-## In Practice
-
-- Gelman & Pardoe look at all pairs of rows and assign weights $$\frac{1}{1 + d}$$
-- I think this was giving too much weight to faraway points (volume of $n$-spheres grows much faster than linearly in $d$)
-- I use Gelman's weights, but only looking at a fixed number of the closest points
-- Computational advantage: fewer points to deal with
-- A few example 
-
-
-```
-## 
+## |1.19 |  1|a  | 2.3| 20|</code></pre>
+<ul class="incremental">
+<li>Then average predictions grouping by <span class="math">\(u\)</span> (or not)</li>
+</ul>
+</div>
+<div id="partial-plot-method-applied-to-wines" class="slide section level2">
+<h1>Partial Plot Method Applied to Wines</h1>
+<div class="figure">
+<img src="figure/unnamed-chunk-29.png" />
+</div>
+</div>
+<div id="comparison-with-other-approaches" class="slide section level2">
+<h1>Comparison with other approaches</h1>
+<p>Things that vary</p>
+<ul class="incremental">
+<li>Units - depend on input or consistent across inputs</li>
+<li>Sensitive to univariate distribution of inputs</li>
+<li>Sensitive to dependence between inputs</li>
+<li>Shows shape of non-linearity</li>
+<li>Signed</li>
+<li>Model</li>
+<li>Based on holdout performance</li>
+</ul>
+</div>
+<div id="computing-the-apc" class="slide section level2">
+<h1>Computing the APC</h1>
+<ul class="incremental">
+<li>sampling a <span class="math">\(v\)</span> is easy (take a row from your data)</li>
+<li>sampling <span class="math">\(u_1\)</span> given <span class="math">\(v\)</span> is easy (take the <span class="math">\(u\)</span> in that row)</li>
+<li>sampling <em>another</em> <span class="math">\(u\)</span> (<span class="math">\(u_2\)</span>) is harder</li>
+<li>would be easy if you had a lot of data with the same <span class="math">\(v\)</span></li>
+<li>so take <span class="math">\(u\)</span>’s from rows of data where the correspinding <span class="math">\(v\)</span> is close to your <span class="math">\(v\)</span></li>
+</ul>
+</div>
+<div id="in-practice" class="slide section level2">
+<h1>In Practice</h1>
+<ul class="incremental">
+<li>Gelman &amp; Pardoe look at all pairs of rows and assign weights <span class="math">\[\frac{1}{1 + d}\]</span></li>
+<li>I think this was giving too much weight to faraway points (volume of <span class="math">\(n\)</span>-spheres grows much faster than linearly in <span class="math">\(d\)</span>)</li>
+<li>I use Gelman’s weights, but only looking at a fixed number of the closest points</li>
+<li>Computational advantage: fewer points to deal with</li>
+<li>A few example</li>
+</ul>
+<pre><code>## 
 ## 
 ## 
 ## 
@@ -688,6 +698,12 @@ Things that vary
 ## |44 |                20|  78|    0.6022|          7344|                              11|                                    0|                                      0|  0.05|  0.05| 0.0009|
 ## |61 |                20|  78|    0.6022|          7344|                              11|                                    0|                                      0|  0.05|  0.05| 0.0009|
 ## |69 |                20|  78|    0.6022|          7344|                              11|                                    0|                                      0|  0.05|  0.05| 0.0008|
-## |98 |                20|  78|    0.6022|          7344|                              11|                                    0|                                      0|  0.05|  0.05| 0.0011|
-```
-
+## |98 |                20|  78|    0.6022|          7344|                              11|                                    0|                                      0|  0.05|  0.05| 0.0011|</code></pre>
+</div>
+<div id="better" class="slide section level2">
+<h1>Better?</h1>
+<p>Explicitly model the distribution <span class="math">\(p(u|v)\)</span>?</p>
+<p>E.g. using BART (Bayesian Additive Regression Trees)</p>
+</div>
+</body>
+</html>

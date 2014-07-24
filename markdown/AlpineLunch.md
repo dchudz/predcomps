@@ -62,6 +62,11 @@ David Chudzicki
 - (Appendix) Estimation & Computation: how to get what we want
 - (Appendix) Comparison with other approaches
 
+## Lessons from fake example
+
+1. Logistic regression coefficients may not be the right summary for a logistic regression
+2. Relationships among the inputs matter for measuring influence of each variable
+
 
 ## Silly Example
 
@@ -142,10 +147,24 @@ Again:
 
 ## Lessons from this example
 
-1. We want to interpret things on the scale we care about (probability in this case)
-2. Relationships among the inputs matter
+1. In each variation, the influence of the Quality changed without the regression coefficients changing
+2. Any approach to summarizing the influence should be sensitive to relationships among the input
 
-## Goal is single-number summaries
+## Headed toward single-summary summaries
+
+![](figure/unnamed-chunk-11.png) 
+
+```
+## Error: could not find function "grid.arrange"
+```
+
+Exercise for the reader: Make an example where APC is larger than in Variation 1 but "Impact" is much smaller.
+
+## Generalizing Linear Regression
+
+![](figure/unnamed-chunk-121.png) ![](figure/unnamed-chunk-122.png) 
+
+## Goal for single-number summaries
 
 These concepts are vague, but keep them in mind as we try to formalize things in the next few slides:
 
@@ -196,7 +215,7 @@ where
 
 ## Returning to the wines...
 
-![](figure/unnamed-chunk-11.png) 
+![](figure/unnamed-chunk-13.png) 
 
 ```
 ## Error: could not find function "grid.arrange"
@@ -294,7 +313,7 @@ Summaries like this can guide questions that push is to dig deeper, like:
 - want something that emphasizes the values that are plausible given the other values (two reasons: this is what we care about, and this is what our model has better estimates of)
 
 
-![](figure/unnamed-chunk-17.png) 
+![](figure/unnamed-chunk-19.png) 
 
 ## How we'll do sensitivity analysis
 
@@ -302,11 +321,11 @@ Summaries like this can guide questions that push is to dig deeper, like:
 - sample from $u$ conditional on $v$
 - plot $u$ vs. the prediction for each $v$
 
-![](figure/unnamed-chunk-18.png) 
+![](figure/unnamed-chunk-20.png) 
 
 ## Zooming in...
 
-![](figure/unnamed-chunk-19.png) 
+![](figure/unnamed-chunk-21.png) 
 
 - shows off some weird behavior of the model!
 - we should dig deeper, get more comfortable with the model
@@ -317,13 +336,13 @@ Summaries like this can guide questions that push is to dig deeper, like:
 
 - Mostly we see the increasing probability that we'd expect...
 
-![](figure/unnamed-chunk-20.png) 
+![](figure/unnamed-chunk-22.png) 
 
 ## Sensitivity: Number of Time 30-35 Days Past Due
 
 ... but in one case, probability of default *decreases* with the 0-to-1 transition
 
-![](figure/unnamed-chunk-21.png) 
+![](figure/unnamed-chunk-23.png) 
 
 ## Can we explain it?
 
@@ -414,7 +433,7 @@ Repeat the row varying $u$ across its whole range:
 ## Warning: Removed 110 rows containing missing values (geom_point).
 ```
 
-![](figure/unnamed-chunk-26.png) 
+![](figure/unnamed-chunk-28.png) 
 
 
 
