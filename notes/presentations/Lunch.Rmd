@@ -11,6 +11,14 @@ Changes to make:
  - THEN the math definitions
  - comparison with other approaches
 
+Anthony feedback:
+
+- Say earlier why we're doing wine example
+- why are we looking at wine example?
+- picture in motivation for the equations
+- do the exercise live
+- don't need histograms or feature definitions
+
 
 ```{r echo=FALSE, message=FALSE}
 load(file="../examples/wine-logistic-regression.RData")
