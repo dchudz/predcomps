@@ -71,8 +71,8 @@ GetPairs <- function(X, u, v,
   names(distDF) <- c("OriginalRowNumber.B", "OriginalRowNumber", "MahalanobisDistance")
   
   if (!is.null(onlyIncludeNearestN)) {
-    distDF <- distDF %.% 
-      group_by(OriginalRowNumber) %.% 
+    distDF <- distDF %>% 
+      group_by(OriginalRowNumber) %>% 
       filter(rank(MahalanobisDistance, ties.method="random") < onlyIncludeNearestN)
   }
 
@@ -87,7 +87,7 @@ GetPairs <- function(X, u, v,
   }
   
   # Renormalize weights:
-  pairs <- pairs %.% group_by(OriginalRowNumber) %.% mutate(Weight = Weight/sum(Weight))
+  pairs <- pairs %>% group_by(OriginalRowNumber) %>% mutate(Weight = Weight/sum(Weight))
   
   return(data.frame(pairs))
 }
