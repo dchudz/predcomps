@@ -109,9 +109,9 @@ GetPairs <- function(X, u, v,
 
 PlotPairCumulativeWeights <- function(pairs, numOriginalRowNumbersToPlot = 20) {
   rowNumSample <- sample(unique(pairs$OriginalRowNumber))[1:numOriginalRowNumbersToPlot]
-  pairsWithCumWeightSums <- pairs %.% 
-    group_by(OriginalRowNumber) %.% 
-    arrange(OriginalRowNumber, -Weight) %.% 
+  pairsWithCumWeightSums <- pairs %>% 
+    group_by(OriginalRowNumber) %>% 
+    arrange(OriginalRowNumber, -Weight) %>% 
     mutate(CumulativeWeight = cumsum(Weight), Rank = dense_rank(-Weight))
   
   pairsSubset <- subset(pairsWithCumWeightSums, OriginalRowNumber %in% rowNumSample)
