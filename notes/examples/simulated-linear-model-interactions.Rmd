@@ -46,7 +46,7 @@ ggplot(melt(df, id="v")) +
   scale_x_discrete("v") +
   ggtitle("u_i conditional on v") +
   scale_y_continuous("sample conditional distribution") + 
-  opts(axis.text.y = theme_blank(), axis.ticks.y = theme_blank())
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
 ```
 
 ### Outcome Generation
